@@ -14,4 +14,7 @@ class ENCOUNTERS_API AEncountersGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+public:
+	AEncountersGameMode();
+
 };
