@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../Encounters.h"
+#include "Encounters.h"
 #include "GameFramework/Character.h"
 #include "EncCharacter.generated.h"
 

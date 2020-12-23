@@ -28,7 +28,25 @@ AEncCharacter::AEncCharacter()
 	CharMovementComp->bUseControllerDesiredRotation = false;
 	CharMovementComp->RotationRate = FRotator(0.0f, 720.0f, 0.0f);
 
+	USkeletalMeshComponent* SkeletalMeshComp = GetMesh();
+	SkeletalMeshComp->SetRelativeLocationAndRotation(
+		FVector(0.0f, 0.0f, -88.0f), FRotator(0.0f, -90.0f, 0.0f));
 
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_DEFAULT(
+		TEXT("/Game/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin"));
+	if (SK_DEFAULT.Succeeded())
+	{
+		SkeletalMeshComp->SetSkeletalMesh(SK_DEFAULT.Object);
+	}
+
+	SkeletalMeshComp->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+
+	static ConstructorHelpers::FClassFinder<UAnimInstance> ENC_ANIM(
+		TEXT("/Game/Encounters/Characters/Animations/EncAnimBlueprint.EncAnimBlueprint_C"));
+	if (ENC_ANIM.Succeeded())
+	{
+		SkeletalMeshComp->SetAnimInstanceClass(ENC_ANIM.Class);
+	}
 }
 
 // Called when the game starts or when spawned
