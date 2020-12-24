@@ -31,6 +31,7 @@ private:
 	void MoveRight(float NewAxisValue);
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
+	void Launch();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -38,4 +39,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	UCameraComponent* Camera;
+
+	FVector DirectionToMove = FVector::ZeroVector;
 };

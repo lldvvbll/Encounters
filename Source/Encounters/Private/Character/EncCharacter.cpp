@@ -72,16 +72,21 @@ void AEncCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &AEncCharacter::MoveRight);
 	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &AEncCharacter::LookUp);
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &AEncCharacter::Turn);
+	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &AEncCharacter::Launch);
 }
 
 void AEncCharacter::MoveForward(float NewAxisValue)
 {
 	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::X), NewAxisValue);
+
+	DirectionToMove.X = NewAxisValue;
 }
 
 void AEncCharacter::MoveRight(float NewAxisValue)
 {
 	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::Y), NewAxisValue);
+
+	DirectionToMove.Y = NewAxisValue;
 }
 
 void AEncCharacter::LookUp(float NewAxisValue)
@@ -92,4 +97,19 @@ void AEncCharacter::LookUp(float NewAxisValue)
 void AEncCharacter::Turn(float NewAxisValue)
 {
 	AddControllerYawInput(NewAxisValue);
+}
+
+void AEncCharacter::Launch()
+{
+	if (GetMovementComponent()->IsFalling())
+		return;
+	if (DirectionToMove.IsNearlyZero())
+		return;
+
+	FVector LocalDirToMove = DirectionToMove;
+	LocalDirToMove.Normalize();
+	LocalDirToMove *= 800.0f;
+	LocalDirToMove.Z = 200.0f;
+	
+	LaunchCharacter(FRotator(0.0f, GetControlRotation().Yaw, 0.0f).RotateVector(LocalDirToMove), true, true);
 }
