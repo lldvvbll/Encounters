@@ -39,6 +39,4 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	UCameraComponent* Camera;
-
-	FVector DirectionToMove = FVector::ZeroVector;
 };

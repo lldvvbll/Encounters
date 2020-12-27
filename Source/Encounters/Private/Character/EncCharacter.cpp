@@ -78,15 +78,11 @@ void AEncCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 void AEncCharacter::MoveForward(float NewAxisValue)
 {
 	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::X), NewAxisValue);
-
-	DirectionToMove.X = NewAxisValue;
 }
 
 void AEncCharacter::MoveRight(float NewAxisValue)
 {
 	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::Y), NewAxisValue);
-
-	DirectionToMove.Y = NewAxisValue;
 }
 
 void AEncCharacter::LookUp(float NewAxisValue)
@@ -101,15 +97,14 @@ void AEncCharacter::Turn(float NewAxisValue)
 
 void AEncCharacter::Launch()
 {
-	if (GetMovementComponent()->IsFalling())
-		return;
-	if (DirectionToMove.IsNearlyZero())
+	FVector DirToMove = GetCharacterMovement()->GetLastInputVector();
+	if (DirToMove.IsNearlyZero())
 		return;
 
-	FVector LocalDirToMove = DirectionToMove;
-	LocalDirToMove.Normalize();
-	LocalDirToMove *= 800.0f;
-	LocalDirToMove.Z = 200.0f;
-	
-	LaunchCharacter(FRotator(0.0f, GetControlRotation().Yaw, 0.0f).RotateVector(LocalDirToMove), true, true);
+	SetActorRotation(DirToMove.Rotation(), ETeleportType::TeleportPhysics);
+
+	DirToMove.Normalize();
+	DirToMove *= 800.0f;
+	DirToMove.Z = 200.0f;	
+	LaunchCharacter(DirToMove, true, true);
 }
