@@ -47,6 +47,9 @@ AEncCharacter::AEncCharacter()
 	{
 		SkeletalMeshComp->SetAnimInstanceClass(ENC_ANIM.Class);
 	}
+
+	RollingDuration = 0.15f;
+	RollingForceScale = 4000000.0f;
 }
 
 // Called when the game starts or when spawned
@@ -61,6 +64,19 @@ void AEncCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (bRolling)
+	{
+		RollingRemainTime -= DeltaTime;
+		if (RollingRemainTime < 0.0f || FMath::IsNearlyZero(RollingRemainTime))
+		{
+			EndRolling();
+		}
+		else
+		{
+			float Scale = GetCharacterMovement()->IsFalling() ? RollingForceScale / 2.0f : RollingForceScale;
+			GetCharacterMovement()->AddForce(RollingDirection * Scale);
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -72,16 +88,22 @@ void AEncCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &AEncCharacter::MoveRight);
 	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &AEncCharacter::LookUp);
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &AEncCharacter::Turn);
-	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &AEncCharacter::Launch);
+	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &AEncCharacter::Rolling);
 }
 
 void AEncCharacter::MoveForward(float NewAxisValue)
 {
+	if (bRolling)
+		return;
+
 	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::X), NewAxisValue);
 }
 
 void AEncCharacter::MoveRight(float NewAxisValue)
 {
+	if (bRolling)
+		return;
+
 	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::Y), NewAxisValue);
 }
 
@@ -95,16 +117,36 @@ void AEncCharacter::Turn(float NewAxisValue)
 	AddControllerYawInput(NewAxisValue);
 }
 
-void AEncCharacter::Launch()
+void AEncCharacter::Rolling()
 {
-	FVector DirToMove = GetCharacterMovement()->GetLastInputVector();
+	if (bRolling)
+		return;
+
+	UCharacterMovementComponent* CharMovement = GetCharacterMovement();
+	if (CharMovement->IsFalling())
+		return;
+
+	FVector DirToMove = CharMovement->GetLastInputVector();
 	if (DirToMove.IsNearlyZero())
 		return;
 
 	SetActorRotation(DirToMove.Rotation(), ETeleportType::TeleportPhysics);
 
 	DirToMove.Normalize();
-	DirToMove *= 800.0f;
-	DirToMove.Z = 200.0f;	
-	LaunchCharacter(DirToMove, true, true);
+	BeginRolling(DirToMove);
+}
+
+void AEncCharacter::BeginRolling(const FVector& Direction)
+{
+	bRolling = true;
+	RollingRemainTime = RollingDuration;
+	RollingDirection = Direction;
+}
+
+void AEncCharacter::EndRolling()
+{
+	bRolling = false;
+	RollingRemainTime = 0.0f;
+
+	LaunchCharacter(FVector::ZeroVector, true, false);
 }

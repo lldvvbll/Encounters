@@ -31,12 +31,28 @@ private:
 	void MoveRight(float NewAxisValue);
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
-	void Launch();
+	void Rolling();
+
+	void BeginRolling(const FVector& Direction);
+	void EndRolling();
 
 private:
-	UPROPERTY(VisibleAnywhere, Category = Camera)
+	UPROPERTY()
 	USpringArmComponent* SpringArm;
 
-	UPROPERTY(VisibleAnywhere, Category = Camera)
+	UPROPERTY()
 	UCameraComponent* Camera;
+
+	UPROPERTY(EditAnywhere, Category = Rolling, Meta = (AllowPrivateAccess = true))
+	float RollingDuration;
+
+	UPROPERTY(EditAnywhere, Category = Rolling, Meta = (AllowPrivateAccess = true))
+	float RollingForceScale;
+
+	UPROPERTY(EditAnywhere, Category = Rolling, Meta = (AllowPrivateAccess = true))
+	float RollingAfterDelay;
+
+	bool bRolling = false;
+	float RollingRemainTime = 0.0f;
+	FVector RollingDirection = FVector::ZeroVector;
 };
