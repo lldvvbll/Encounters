@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "EncCharacter.generated.h"
 
+class UEncCharacterMovementComponent;
+
 UCLASS()
 class ENCOUNTERS_API AEncCharacter : public ACharacter
 {
@@ -13,7 +15,7 @@ class ENCOUNTERS_API AEncCharacter : public ACharacter
 
 public:
 	// Sets default values for this character's properties
-	AEncCharacter();
+	AEncCharacter(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	// Called when the game starts or when spawned
@@ -26,6 +28,10 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void PostInitializeComponents() override;
+
+	UEncCharacterMovementComponent* GetEncCharacterMovement() const;
+
 private:
 	void MoveForward(float NewAxisValue);
 	void MoveRight(float NewAxisValue);
@@ -33,26 +39,13 @@ private:
 	void Turn(float NewAxisValue);
 	void Rolling();
 
-	void BeginRolling(const FVector& Direction);
-	void EndRolling();
-
 private:
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, Category = Camera, Meta = (AllowPrivateAccess = true))
 	USpringArmComponent* SpringArm;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, Category = Camera, Meta = (AllowPrivateAccess = true))
 	UCameraComponent* Camera;
 
-	UPROPERTY(EditAnywhere, Category = Rolling, Meta = (AllowPrivateAccess = true))
-	float RollingDuration;
-
-	UPROPERTY(EditAnywhere, Category = Rolling, Meta = (AllowPrivateAccess = true))
-	float RollingForceScale;
-
-	UPROPERTY(EditAnywhere, Category = Rolling, Meta = (AllowPrivateAccess = true))
-	float RollingAfterDelay;
-
-	bool bRolling = false;
-	float RollingRemainTime = 0.0f;
-	FVector RollingDirection = FVector::ZeroVector;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
+	UEncCharacterMovementComponent* EncCharacterMovement;
 };

@@ -2,9 +2,11 @@
 
 
 #include "Character/EncCharacter.h"
+#include "Character/EncCharacterMovementComponent.h"
 
 // Sets default values
-AEncCharacter::AEncCharacter()
+AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UEncCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -47,9 +49,6 @@ AEncCharacter::AEncCharacter()
 	{
 		SkeletalMeshComp->SetAnimInstanceClass(ENC_ANIM.Class);
 	}
-
-	RollingDuration = 0.15f;
-	RollingForceScale = 4000000.0f;
 }
 
 // Called when the game starts or when spawned
@@ -64,19 +63,6 @@ void AEncCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bRolling)
-	{
-		RollingRemainTime -= DeltaTime;
-		if (RollingRemainTime < 0.0f || FMath::IsNearlyZero(RollingRemainTime))
-		{
-			EndRolling();
-		}
-		else
-		{
-			float Scale = GetCharacterMovement()->IsFalling() ? RollingForceScale / 2.0f : RollingForceScale;
-			GetCharacterMovement()->AddForce(RollingDirection * Scale);
-		}
-	}
 }
 
 // Called to bind functionality to input
@@ -91,9 +77,21 @@ void AEncCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &AEncCharacter::Rolling);
 }
 
+void AEncCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	EncCharacterMovement = Cast<UEncCharacterMovementComponent>(GetCharacterMovement());
+}
+
+UEncCharacterMovementComponent* AEncCharacter::GetEncCharacterMovement() const
+{
+	return EncCharacterMovement;
+}
+
 void AEncCharacter::MoveForward(float NewAxisValue)
 {
-	if (bRolling)
+	if (GetEncCharacterMovement()->IsRolling())
 		return;
 
 	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::X), NewAxisValue);
@@ -101,7 +99,7 @@ void AEncCharacter::MoveForward(float NewAxisValue)
 
 void AEncCharacter::MoveRight(float NewAxisValue)
 {
-	if (bRolling)
+	if (GetEncCharacterMovement()->IsRolling())
 		return;
 
 	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::Y), NewAxisValue);
@@ -119,11 +117,8 @@ void AEncCharacter::Turn(float NewAxisValue)
 
 void AEncCharacter::Rolling()
 {
-	if (bRolling)
-		return;
-
-	UCharacterMovementComponent* CharMovement = GetCharacterMovement();
-	if (CharMovement->IsFalling())
+	UEncCharacterMovementComponent* CharMovement = GetEncCharacterMovement();
+	if (!CharMovement->CanRolling())
 		return;
 
 	FVector DirToMove = CharMovement->GetLastInputVector();
@@ -133,20 +128,5 @@ void AEncCharacter::Rolling()
 	SetActorRotation(DirToMove.Rotation(), ETeleportType::TeleportPhysics);
 
 	DirToMove.Normalize();
-	BeginRolling(DirToMove);
-}
-
-void AEncCharacter::BeginRolling(const FVector& Direction)
-{
-	bRolling = true;
-	RollingRemainTime = RollingDuration;
-	RollingDirection = Direction;
-}
-
-void AEncCharacter::EndRolling()
-{
-	bRolling = false;
-	RollingRemainTime = 0.0f;
-
-	LaunchCharacter(FVector::ZeroVector, true, false);
+	CharMovement->Rolling(DirToMove);
 }
