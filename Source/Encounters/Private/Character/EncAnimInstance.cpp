@@ -2,19 +2,23 @@
 
 
 #include "Character/EncAnimInstance.h"
+#include "Character/EncCharacter.h"
 
 UEncAnimInstance::UEncAnimInstance()
 {
 	CurrentPawnSpeed = 0.0f;
+	IsRolling = false;
 }
 
 void UEncAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
-	APawn* Pawn = TryGetPawnOwner();
-	if (!::IsValid(Pawn))
+	AEncCharacter* Char = Cast<AEncCharacter>(TryGetPawnOwner());
+	if (!::IsValid(Char))
 		return;
 
-	CurrentPawnSpeed = Pawn->GetVelocity().Size();
+	CurrentPawnSpeed = Char->GetVelocity().Size();
+	IsRolling = Char->IsRolling();
+	IsInAir = IsRolling ? false : Char->IsFalling();
 }

@@ -89,9 +89,19 @@ UEncCharacterMovementComponent* AEncCharacter::GetEncCharacterMovement() const
 	return EncCharacterMovement;
 }
 
+bool AEncCharacter::IsRolling() const
+{
+	return (EncCharacterMovement != nullptr && EncCharacterMovement->IsRolling());
+}
+
+bool AEncCharacter::IsFalling() const
+{
+	return (EncCharacterMovement != nullptr && EncCharacterMovement->IsFalling());
+}
+
 void AEncCharacter::MoveForward(float NewAxisValue)
 {
-	if (GetEncCharacterMovement()->IsRolling())
+	if (IsRolling())
 		return;
 
 	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::X), NewAxisValue);
@@ -99,7 +109,7 @@ void AEncCharacter::MoveForward(float NewAxisValue)
 
 void AEncCharacter::MoveRight(float NewAxisValue)
 {
-	if (GetEncCharacterMovement()->IsRolling())
+	if (IsRolling())
 		return;
 
 	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::Y), NewAxisValue);

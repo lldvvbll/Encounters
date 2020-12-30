@@ -6,7 +6,7 @@
 UEncCharacterMovementComponent::UEncCharacterMovementComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	RollingDuration = 0.15f;
+	RollingDuration = 0.3f;
 	RollingAfterDelay = 0.2f;
 	RollingForceScale = 4000000.0f;
 }
@@ -27,7 +27,7 @@ void UEncCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick T
 		}
 		else if (RollingRemainTime >= RollingAfterDelay)
 		{
-			float Scale = IsFalling() ? (RollingForceScale / 2.0f) : RollingForceScale;
+			float Scale = IsFalling() ? (RollingForceScale / 10.0f) : RollingForceScale;
 			AddForce(RollingDirection * Scale);
 		}
 		else

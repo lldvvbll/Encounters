@@ -32,6 +32,9 @@ public:
 
 	UEncCharacterMovementComponent* GetEncCharacterMovement() const;
 
+	bool IsRolling() const;
+	bool IsFalling() const;
+
 private:
 	void MoveForward(float NewAxisValue);
 	void MoveRight(float NewAxisValue);
