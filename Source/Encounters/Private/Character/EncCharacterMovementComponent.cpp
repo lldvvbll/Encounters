@@ -23,7 +23,7 @@ void UEncCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick T
 		RollingRemainTime -= DeltaTime;
 		if (RollingRemainTime < 0.0f || FMath::IsNearlyZero(RollingRemainTime))
 		{
-			EndRolling();
+			EndRoll();
 		}
 		else if (RollingRemainTime >= RollingAfterDelay)
 		{
@@ -50,14 +50,14 @@ bool UEncCharacterMovementComponent::IsRolling() const
 	return bRolling;
 }
 
-void UEncCharacterMovementComponent::Rolling(const FVector& Direction)
+void UEncCharacterMovementComponent::Roll(const FVector& Direction)
 {
 	bRolling = true;
 	RollingRemainTime = RollingDuration + RollingAfterDelay;
 	RollingDirection = Direction;
 }
 
-void UEncCharacterMovementComponent::EndRolling()
+void UEncCharacterMovementComponent::EndRoll()
 {
 	bRolling = false;
 	RollingRemainTime = 0.0f;

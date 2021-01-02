@@ -3,6 +3,7 @@
 
 #include "Character/EncCharacter.h"
 #include "Character/EncCharacterMovementComponent.h"
+#include "Character/EncAnimInstance.h"
 
 // Sets default values
 AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer)
@@ -13,6 +14,12 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer)
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINTARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
+	
+	IsAttacking = false;
+	CanSaveAttack = false;
+	bInputAttack = false;
+	CurrentCombo = 0;
+	MaxComboCount = 2;
 
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
@@ -73,8 +80,12 @@ void AEncCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &AEncCharacter::MoveForward);
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &AEncCharacter::MoveRight);
 	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &AEncCharacter::LookUp);
+	PlayerInputComponent->BindAxis(TEXT("LookUpRate"), this, &AEncCharacter::LookUp);
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &AEncCharacter::Turn);
-	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &AEncCharacter::Rolling);
+	PlayerInputComponent->BindAxis(TEXT("TurnRate"), this, &AEncCharacter::Turn);
+	
+	PlayerInputComponent->BindAction(TEXT("Roll"), EInputEvent::IE_Pressed, this, &AEncCharacter::Roll);
+	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &AEncCharacter::Attack);
 }
 
 void AEncCharacter::PostInitializeComponents()
@@ -82,6 +93,13 @@ void AEncCharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	EncCharacterMovement = Cast<UEncCharacterMovementComponent>(GetCharacterMovement());
+	EncAnim = Cast<UEncAnimInstance>(GetMesh()->GetAnimInstance());
+	if (EncAnim != nullptr)
+	{
+		EncAnim->OnMontageEnded.AddDynamic(this, &AEncCharacter::OnAttackMontageEnded);
+		EncAnim->OnComboEnable.AddUObject(this, &AEncCharacter::OnComboEnable);
+		EncAnim->OnComboCheck.AddUObject(this, &AEncCharacter::OnComboCheck);
+	}
 }
 
 UEncCharacterMovementComponent* AEncCharacter::GetEncCharacterMovement() const
@@ -125,7 +143,7 @@ void AEncCharacter::Turn(float NewAxisValue)
 	AddControllerYawInput(NewAxisValue);
 }
 
-void AEncCharacter::Rolling()
+void AEncCharacter::Roll()
 {
 	UEncCharacterMovementComponent* CharMovement = GetEncCharacterMovement();
 	if (!CharMovement->CanRolling())
@@ -138,5 +156,55 @@ void AEncCharacter::Rolling()
 	SetActorRotation(DirToMove.Rotation(), ETeleportType::TeleportPhysics);
 
 	DirToMove.Normalize();
-	CharMovement->Rolling(DirToMove);
+	CharMovement->Roll(DirToMove);
+}
+
+void AEncCharacter::Attack()
+{
+	if (IsAttacking)
+	{
+		if (CanSaveAttack)
+		{
+			bInputAttack = true;
+		}
+	}
+	else
+	{
+		CurrentCombo = 1;
+		bInputAttack = false;
+		IsAttacking = true;
+
+		EncAnim->PlayAttackMontage();
+		EncAnim->JumpToAttackMontageSection(CurrentCombo);		
+	}	
+}
+
+void AEncCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	CurrentCombo = 0;
+	bInputAttack = false;
+	IsAttacking = false;
+}
+
+void AEncCharacter::OnComboEnable()
+{
+	CanSaveAttack = true;
+}
+
+void AEncCharacter::OnComboCheck()
+{
+	CanSaveAttack = false;
+
+	if (bInputAttack)
+	{
+		bInputAttack = false;
+
+		++CurrentCombo;
+		if (CurrentCombo > MaxComboCount)
+		{
+			CurrentCombo = 1;
+		}
+
+		EncAnim->JumpToAttackMontageSection(CurrentCombo);
+	}
 }

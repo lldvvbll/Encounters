@@ -7,6 +7,7 @@
 #include "EncCharacter.generated.h"
 
 class UEncCharacterMovementComponent;
+class UEncAnimInstance;
 
 UCLASS()
 class ENCOUNTERS_API AEncCharacter : public ACharacter
@@ -40,7 +41,18 @@ private:
 	void MoveRight(float NewAxisValue);
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
-	void Rolling();
+
+	void Roll();
+	void Attack();
+
+	UFUNCTION()
+	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
+	UFUNCTION()
+	void OnComboEnable();
+
+	UFUNCTION()
+	void OnComboCheck();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera, Meta = (AllowPrivateAccess = true))
@@ -51,4 +63,22 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
 	UEncCharacterMovementComponent* EncCharacterMovement;
+
+	UPROPERTY()
+	UEncAnimInstance* EncAnim;
+
+	UPROPERTY(VisibleInstanceOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	bool IsAttacking;
+
+	UPROPERTY(VisibleInstanceOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	bool CanSaveAttack;
+
+	UPROPERTY(VisibleInstanceOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	bool bInputAttack;
+
+	UPROPERTY(VisibleInstanceOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	int32 CurrentCombo;
+
+	UPROPERTY(VisibleInstanceOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	int32 MaxComboCount;
 };

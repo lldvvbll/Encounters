@@ -21,8 +21,8 @@ public:
 
 	bool CanRolling() const;
 	bool IsRolling() const;
-	void Rolling(const FVector& Direction);
-	void EndRolling();
+	void Roll(const FVector& Direction);
+	void EndRoll();
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Character Movement: Rolling", Meta = (AllowPrivateAccess = true))
