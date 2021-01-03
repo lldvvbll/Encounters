@@ -81,4 +81,7 @@ private:
 
 	UPROPERTY(VisibleInstanceOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	int32 MaxComboCount;
+
+	UPROPERTY(EditAnywhere, Category = Attack, Meta = (AllowPrivateAccess = true))
+	float AttackSpeed;
 };

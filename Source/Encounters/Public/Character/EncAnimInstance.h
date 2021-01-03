@@ -22,7 +22,7 @@ public:
 	UEncAnimInstance();
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
-	void PlayAttackMontage();
+	void PlayAttackMontage(float PlayRate);
 	void JumpToAttackMontageSection(int32 NewSection);
 
 private:

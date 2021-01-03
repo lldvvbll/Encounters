@@ -30,9 +30,9 @@ void UEncAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	IsInAir = IsRolling ? false : Char->IsFalling();
 }
 
-void UEncAnimInstance::PlayAttackMontage()
+void UEncAnimInstance::PlayAttackMontage(float PlayRate)
 {
-	Montage_Play(AttackMontage, 1.0f);
+	Montage_Play(AttackMontage, PlayRate);
 }
 
 void UEncAnimInstance::JumpToAttackMontageSection(int32 NewSection)
@@ -56,7 +56,6 @@ void UEncAnimInstance::AnimNotify_ComboEnable()
 void UEncAnimInstance::AnimNotify_ComboCheck()
 {
 	OnComboCheck.Broadcast();
-	LOG_S(Warning);
 }
 
 FName UEncAnimInstance::GetAttackMontageSectionName(int32 Section)

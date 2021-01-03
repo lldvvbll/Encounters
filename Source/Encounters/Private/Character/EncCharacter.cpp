@@ -4,6 +4,7 @@
 #include "Character/EncCharacter.h"
 #include "Character/EncCharacterMovementComponent.h"
 #include "Character/EncAnimInstance.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer)
@@ -20,6 +21,7 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer)
 	bInputAttack = false;
 	CurrentCombo = 0;
 	MaxComboCount = 2;
+	AttackSpeed = 1.25f;
 
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
@@ -149,7 +151,7 @@ void AEncCharacter::Roll()
 	if (!CharMovement->CanRolling())
 		return;
 
-	FVector DirToMove = CharMovement->GetLastInputVector();
+	FVector DirToMove = GetLastMovementInputVector();
 	if (DirToMove.IsNearlyZero())
 		return;
 
@@ -174,7 +176,7 @@ void AEncCharacter::Attack()
 		bInputAttack = false;
 		IsAttacking = true;
 
-		EncAnim->PlayAttackMontage();
+		EncAnim->PlayAttackMontage(AttackSpeed);
 		EncAnim->JumpToAttackMontageSection(CurrentCombo);		
 	}	
 }
