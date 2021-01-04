@@ -23,6 +23,7 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	void PlayAttackMontage(float PlayRate);
+	void StopAttackMontage();
 	void JumpToAttackMontageSection(int32 NewSection);
 
 private:

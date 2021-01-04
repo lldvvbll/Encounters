@@ -35,6 +35,11 @@ void UEncAnimInstance::PlayAttackMontage(float PlayRate)
 	Montage_Play(AttackMontage, PlayRate);
 }
 
+void UEncAnimInstance::StopAttackMontage()
+{
+	Montage_Stop(0.1f, AttackMontage);
+}
+
 void UEncAnimInstance::JumpToAttackMontageSection(int32 NewSection)
 {
 	return_if(!Montage_IsPlaying(AttackMontage));

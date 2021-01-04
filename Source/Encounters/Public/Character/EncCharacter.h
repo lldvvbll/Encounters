@@ -84,4 +84,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Attack, Meta = (AllowPrivateAccess = true))
 	float AttackSpeed;
+
+	UPROPERTY(VisibleInstanceOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	FVector SavedInput;
 };

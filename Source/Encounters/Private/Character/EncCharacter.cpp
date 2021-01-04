@@ -22,6 +22,7 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer)
 	CurrentCombo = 0;
 	MaxComboCount = 2;
 	AttackSpeed = 1.25f;
+	SavedInput = FVector::ZeroVector;
 
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
@@ -121,16 +122,22 @@ bool AEncCharacter::IsFalling() const
 
 void AEncCharacter::MoveForward(float NewAxisValue)
 {
-	if (IsRolling())
+	if (IsAttacking || IsRolling())
+	{
+		SavedInput.X = NewAxisValue;
 		return;
+	}
 
 	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::X), NewAxisValue);
 }
 
 void AEncCharacter::MoveRight(float NewAxisValue)
 {
-	if (IsRolling())
+	if (IsAttacking || IsRolling())
+	{
+		SavedInput.Y = NewAxisValue;
 		return;
+	}
 
 	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::Y), NewAxisValue);
 }
@@ -147,11 +154,23 @@ void AEncCharacter::Turn(float NewAxisValue)
 
 void AEncCharacter::Roll()
 {
+	if (CanSaveAttack)
+		return;
+
 	UEncCharacterMovementComponent* CharMovement = GetEncCharacterMovement();
 	if (!CharMovement->CanRolling())
 		return;
 
-	FVector DirToMove = GetLastMovementInputVector();
+	FVector DirToMove = FVector::ZeroVector;
+	if (IsAttacking)
+	{
+		DirToMove = FRotator(0.0f, GetControlRotation().Yaw, 0.0f).RotateVector(SavedInput);
+	}
+	else
+	{
+		DirToMove = GetLastMovementInputVector();
+	}
+	
 	if (DirToMove.IsNearlyZero())
 		return;
 
@@ -159,10 +178,18 @@ void AEncCharacter::Roll()
 
 	DirToMove.Normalize();
 	CharMovement->Roll(DirToMove);
+
+	if (IsAttacking)
+	{
+		EncAnim->StopAttackMontage();
+	}
 }
 
 void AEncCharacter::Attack()
 {
+	if (IsRolling() || IsFalling())
+		return;
+
 	if (IsAttacking)
 	{
 		if (CanSaveAttack)
@@ -208,5 +235,10 @@ void AEncCharacter::OnComboCheck()
 		}
 
 		EncAnim->JumpToAttackMontageSection(CurrentCombo);
+		if (!SavedInput.IsNearlyZero())
+		{
+			FVector DirVec = FRotator(0.0f, GetControlRotation().Yaw, 0.0f).RotateVector(SavedInput);
+			SetActorRotation(DirVec.Rotation(), ETeleportType::TeleportPhysics);
+		}
 	}
 }
