@@ -5,6 +5,7 @@
 #include "Character/EncCharacterMovementComponent.h"
 #include "Character/EncAnimInstance.h"
 #include "DrawDebugHelpers.h"
+#include "Items/Weapon.h"
 
 // Sets default values
 AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer)
@@ -59,13 +60,20 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer)
 	{
 		SkeletalMeshComp->SetAnimInstanceClass(ENC_ANIM.Class);
 	}
+
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("EncCharacter"));
 }
 
 // Called when the game starts or when spawned
 void AEncCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+		
+	//auto CurWeapon = GetWorld()->SpawnActor<AWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
+	//if (CurWeapon != nullptr)
+	//{
+	//	CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName(TEXT("hand_rSocket")));
+	//}
 }
 
 // Called every frame
