@@ -8,6 +8,7 @@
 
 class UEncCharacterMovementComponent;
 class UEncAnimInstance;
+class AWeapon;
 
 UCLASS()
 class ENCOUNTERS_API AEncCharacter : public ACharacter
@@ -35,6 +36,9 @@ public:
 
 	bool IsRolling() const;
 	bool IsFalling() const;
+
+	bool CanSetWeapon() const;
+	void SetWeapon(AWeapon* Weapon);
 
 private:
 	void MoveForward(float NewAxisValue);
@@ -66,6 +70,12 @@ private:
 
 	UPROPERTY()
 	UEncAnimInstance* EncAnim;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon, Meta = (AllowPrivateAccess = true))
+	TSubclassOf<AWeapon> DefaultWeaponClass;
+
+	UPROPERTY(VisibleInstanceOnly, Category = Weapon, Meta = (AllowPrivateAccess = true))
+	AWeapon* CurWeapon;
 
 	UPROPERTY(VisibleInstanceOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	bool IsAttacking;

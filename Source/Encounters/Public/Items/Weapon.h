@@ -23,7 +23,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-private:
-	UPROPERTY(VisibleAnywhere, Category = Weapon, Meta = (AllowPrivateAccess = true))
+	FRotator GetAttachRotator() const;
+
+public:
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	USkeletalMeshComponent* SkMeshComp;
+
+private:
+	UPROPERTY(EditDefaultsOnly, Category = Transform, Meta = (AllowPrivateAccess = true))
+	FRotator AttachRotator;
 };

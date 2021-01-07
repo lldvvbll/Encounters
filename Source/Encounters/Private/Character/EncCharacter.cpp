@@ -62,18 +62,23 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer)
 	}
 
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("EncCharacter"));
+
+	static ConstructorHelpers::FClassFinder<AWeapon> WEAPON(TEXT("/Game/Encounters/Items/BP_Sword.BP_Sword_C"));
+	if (WEAPON.Succeeded())
+	{
+		DefaultWeaponClass = WEAPON.Class;
+	}
 }
 
 // Called when the game starts or when spawned
 void AEncCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-		
-	//auto CurWeapon = GetWorld()->SpawnActor<AWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
-	//if (CurWeapon != nullptr)
-	//{
-	//	CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName(TEXT("hand_rSocket")));
-	//}
+
+	if (CanSetWeapon())
+	{
+		SetWeapon(GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClass));
+	}
 }
 
 // Called every frame
@@ -126,6 +131,21 @@ bool AEncCharacter::IsRolling() const
 bool AEncCharacter::IsFalling() const
 {
 	return (EncCharacterMovement != nullptr && EncCharacterMovement->IsFalling());
+}
+
+bool AEncCharacter::CanSetWeapon() const
+{
+	return (CurWeapon == nullptr);
+}
+
+void AEncCharacter::SetWeapon(AWeapon* Weapon)
+{
+	Weapon->SetOwner(this);
+	Weapon->AttachToComponent(GetMesh(), 
+		FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName(TEXT("hand_rSocket")));
+	Weapon->SetActorRelativeRotation(Weapon->GetAttachRotator());
+
+	CurWeapon = Weapon;
 }
 
 void AEncCharacter::MoveForward(float NewAxisValue)

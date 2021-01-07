@@ -12,15 +12,9 @@ AWeapon::AWeapon()
 	SkMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MESH"));
 	RootComponent = SkMeshComp;
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_WEAPON(TEXT("/Game/Weapon_Pack/Skeletal_Mesh/SK_Sword.SK_Sword"));
-	if (SK_WEAPON.Succeeded())
-	{
-		SkMeshComp->SetSkeletalMesh(SK_WEAPON.Object);
-	}
-
 	SkMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
 
-	SetActorRelativeScale3D(FVector(0.75f, 0.75f, 0.75f));
+	AttachRotator = FRotator::ZeroRotator;
 }
 
 // Called when the game starts or when spawned
@@ -35,5 +29,10 @@ void AWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+FRotator AWeapon::GetAttachRotator() const
+{
+	return AttachRotator;
 }
 
