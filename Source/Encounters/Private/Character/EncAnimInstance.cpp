@@ -47,12 +47,6 @@ void UEncAnimInstance::JumpToAttackMontageSection(int32 NewSection)
 	Montage_JumpToSection(GetAttackMontageSectionName(NewSection));
 }
 
-void UEncAnimInstance::AnimNotify_AttackHitCheck()
-{
-	OnAttackHitCheck.Broadcast();
-	LOG(Warning, TEXT("Attack!!!!!"));
-}
-
 void UEncAnimInstance::AnimNotify_ComboEnable()
 {
 	OnComboEnable.Broadcast();

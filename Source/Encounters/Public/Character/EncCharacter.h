@@ -39,6 +39,7 @@ public:
 
 	bool CanSetWeapon() const;
 	void SetWeapon(AWeapon* Weapon);
+	AWeapon* GetCurrentWeapon() const;
 
 private:
 	void MoveForward(float NewAxisValue);

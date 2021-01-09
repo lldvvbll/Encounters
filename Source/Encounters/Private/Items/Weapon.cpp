@@ -2,6 +2,7 @@
 
 
 #include "Items/Weapon.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 AWeapon::AWeapon()
@@ -15,6 +16,10 @@ AWeapon::AWeapon()
 	SkMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
 
 	AttachRotator = FRotator::ZeroRotator;
+	AttackBoxHalfExtent = FVector::ZeroVector;
+	bShowAttackBox = false;
+	bShowAttackBoxInAttack = false;
+	DebugAttackBoxLifeTime = 0.5f;
 }
 
 // Called when the game starts or when spawned
@@ -34,5 +39,34 @@ void AWeapon::Tick(float DeltaTime)
 FRotator AWeapon::GetAttachRotator() const
 {
 	return AttachRotator;
+}
+
+FVector AWeapon::GetAttackBoxSocketPos() const
+{
+	static FName AttackBoxSocketName(TEXT("attackTrace"));
+	return SkMeshComp->GetSocketLocation(AttackBoxSocketName);
+}
+
+FVector AWeapon::GetAttackBoxHalfExtent() const
+{
+	return AttackBoxHalfExtent;
+}
+
+bool AWeapon::IsShowAttackBox() const
+{
+	return bShowAttackBox;
+}
+
+bool AWeapon::IsShowAttackBoxInAttack() const
+{
+	return bShowAttackBoxInAttack;
+}
+
+void AWeapon::DrawAttackBox() const
+{
+	FVector Pos = GetAttackBoxSocketPos();
+	FVector Extent = AttackBoxHalfExtent * 2.0f * GetActorScale();
+	FQuat Quat = GetActorRotation().Quaternion();
+	DrawDebugBox(GetWorld(), Pos, Extent, Quat, FColor::Red, false, DebugAttackBoxLifeTime);
 }
 

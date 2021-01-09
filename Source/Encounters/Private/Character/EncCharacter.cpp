@@ -4,8 +4,8 @@
 #include "Character/EncCharacter.h"
 #include "Character/EncCharacterMovementComponent.h"
 #include "Character/EncAnimInstance.h"
-#include "DrawDebugHelpers.h"
 #include "Items/Weapon.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer)
@@ -86,6 +86,12 @@ void AEncCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+#if ENABLE_DRAW_DEBUG
+	if (CurWeapon != nullptr && CurWeapon->IsShowAttackBox())
+	{
+		CurWeapon->DrawAttackBox();
+	}
+#endif
 }
 
 // Called to bind functionality to input
@@ -140,12 +146,19 @@ bool AEncCharacter::CanSetWeapon() const
 
 void AEncCharacter::SetWeapon(AWeapon* Weapon)
 {
+	return_if(Weapon == nullptr);
+
 	Weapon->SetOwner(this);
 	Weapon->AttachToComponent(GetMesh(), 
 		FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName(TEXT("hand_rSocket")));
 	Weapon->SetActorRelativeRotation(Weapon->GetAttachRotator());
 
 	CurWeapon = Weapon;
+}
+
+AWeapon* AEncCharacter::GetCurrentWeapon() const
+{
+	return CurWeapon;
 }
 
 void AEncCharacter::MoveForward(float NewAxisValue)

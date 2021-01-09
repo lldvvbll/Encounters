@@ -6,7 +6,6 @@
 #include "Animation/AnimInstance.h"
 #include "EncAnimInstance.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnAttackHitCheckDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnComboEnableDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnComboCheckDelegate);
 
@@ -28,9 +27,6 @@ public:
 
 private:
 	UFUNCTION()
-	void AnimNotify_AttackHitCheck();
-
-	UFUNCTION()
 	void AnimNotify_ComboEnable();
 
 	UFUNCTION()
@@ -39,7 +35,6 @@ private:
 	FName GetAttackMontageSectionName(int32 Section);
 
 public:
-	FOnAttackHitCheckDelegate OnAttackHitCheck;
 	FOnComboEnableDelegate OnComboEnable;
 	FOnComboCheckDelegate OnComboCheck;
 

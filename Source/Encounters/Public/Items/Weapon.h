@@ -24,12 +24,29 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	FRotator GetAttachRotator() const;
+	FVector GetAttackBoxSocketPos() const;
+	FVector GetAttackBoxHalfExtent() const;
 
-public:
-	UPROPERTY(VisibleAnywhere, Category = Weapon)
-	USkeletalMeshComponent* SkMeshComp;
+	bool IsShowAttackBox() const;
+	bool IsShowAttackBoxInAttack() const;
+	void DrawAttackBox() const;
 
 private:
+	UPROPERTY(VisibleAnywhere, Category = Mesh, Meta = (AllowPrivateAccess = true))
+	USkeletalMeshComponent* SkMeshComp;
+
 	UPROPERTY(EditDefaultsOnly, Category = Transform, Meta = (AllowPrivateAccess = true))
 	FRotator AttachRotator;
+
+	UPROPERTY(EditDefaultsOnly, Category = AttackTrace, Meta = (AllowPrivateAccess = true))
+	FVector AttackBoxHalfExtent;
+
+	UPROPERTY(EditDefaultsOnly, Category = Debug, Meta = (AllowPrivateAccess = true))
+	bool bShowAttackBox;
+
+	UPROPERTY(EditDefaultsOnly, Category = Debug, Meta = (AllowPrivateAccess = true))
+	bool bShowAttackBoxInAttack;
+
+	UPROPERTY(EditDefaultsOnly, Category = Debug, Meta = (AllowPrivateAccess = true))
+	float DebugAttackBoxLifeTime;
 };
