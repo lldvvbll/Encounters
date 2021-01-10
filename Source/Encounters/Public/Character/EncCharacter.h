@@ -17,7 +17,7 @@ class ENCOUNTERS_API AEncCharacter : public ACharacter
 
 public:
 	// Sets default values for this character's properties
-	AEncCharacter(const FObjectInitializer& ObjectInitializer);
+	AEncCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 protected:
 	// Called when the game starts or when spawned
@@ -32,6 +32,8 @@ public:
 
 	virtual void PostInitializeComponents() override;
 
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
 	UEncCharacterMovementComponent* GetEncCharacterMovement() const;
 
 	bool IsRolling() const;
@@ -40,6 +42,9 @@ public:
 	bool CanSetWeapon() const;
 	void SetWeapon(AWeapon* Weapon);
 	AWeapon* GetCurrentWeapon() const;
+
+	float GetAttackDamage() const;
+	void GiveAttackDamage(TWeakObjectPtr<AActor>& Target);
 
 private:
 	void MoveForward(float NewAxisValue);

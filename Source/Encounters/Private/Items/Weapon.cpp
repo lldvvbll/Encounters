@@ -20,6 +20,7 @@ AWeapon::AWeapon()
 	bShowAttackBox = false;
 	bShowAttackBoxInAttack = false;
 	DebugAttackBoxLifeTime = 0.5f;
+	DefaultDamage = 10.0f;
 }
 
 // Called when the game starts or when spawned
@@ -68,5 +69,10 @@ void AWeapon::DrawAttackBox() const
 	FVector Extent = AttackBoxHalfExtent * 2.0f * GetActorScale();
 	FQuat Quat = GetActorRotation().Quaternion();
 	DrawDebugBox(GetWorld(), Pos, Extent, Quat, FColor::Red, false, DebugAttackBoxLifeTime);
+}
+
+float AWeapon::GetAttackDamage() const
+{
+	return DefaultDamage;
 }
 

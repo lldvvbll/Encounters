@@ -31,6 +31,8 @@ public:
 	bool IsShowAttackBoxInAttack() const;
 	void DrawAttackBox() const;
 
+	float GetAttackDamage() const;
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = Mesh, Meta = (AllowPrivateAccess = true))
 	USkeletalMeshComponent* SkMeshComp;
@@ -49,4 +51,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = Debug, Meta = (AllowPrivateAccess = true))
 	float DebugAttackBoxLifeTime;
+
+	UPROPERTY(EditAnywhere, Category = Damage, Meta = (AllowPrivateAccess = true))
+	float DefaultDamage;
 };

@@ -37,13 +37,15 @@ void UAttackTracerAnimNotifyState::NotifyTick(USkeletalMeshComponent* MeshComp, 
 
 	for (auto& Result : HitResults)
 	{
-		AActor* HitActor = Result.GetActor();
-		if (HitActors.Contains(HitActor))
+		if (!Result.Actor.IsValid())
 			continue;
 
-		HitActors.Add(HitActor);
-		
-		//LOG(Warning, TEXT("Attack!! Actor: %s"), *HitActor->GetName());
+		if (HitActors.Contains(Result.Actor))
+			continue;
+
+		HitActors.Add(Result.Actor);
+
+		Player->GiveAttackDamage(Result.Actor);
 	}
 
 #if ENABLE_DRAW_DEBUG

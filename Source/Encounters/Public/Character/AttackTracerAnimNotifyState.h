@@ -26,6 +26,5 @@ private:
 	AEncCharacter* Player = nullptr;
 	AWeapon* Weapon = nullptr;
 	FVector LastAttackBoxPos = FVector::ZeroVector;
-	TArray<AActor*> HitActors;
-
+	TArray<TWeakObjectPtr<AActor>> HitActors;
 };

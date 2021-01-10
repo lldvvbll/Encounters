@@ -3,7 +3,7 @@
 
 #include "Character/EncCharacterMovementComponent.h"
 
-UEncCharacterMovementComponent::UEncCharacterMovementComponent(const FObjectInitializer& ObjectInitializer)
+UEncCharacterMovementComponent::UEncCharacterMovementComponent(const FObjectInitializer& ObjectInitializer/* = FObjectInitializer::Get()*/)
 	: Super(ObjectInitializer)
 {
 	RollingDuration = 0.3f;

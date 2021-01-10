@@ -8,7 +8,7 @@
 #include "DrawDebugHelpers.h"
 
 // Sets default values
-AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer)
+AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FObjectInitializer::Get()*/)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UEncCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -124,6 +124,15 @@ void AEncCharacter::PostInitializeComponents()
 	}
 }
 
+float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	LOG(Warning, TEXT("Actor: %s, Damage: %f"), *GetName(), FinalDamage);
+	
+	return FinalDamage;
+}
+
 UEncCharacterMovementComponent* AEncCharacter::GetEncCharacterMovement() const
 {
 	return EncCharacterMovement;
@@ -159,6 +168,23 @@ void AEncCharacter::SetWeapon(AWeapon* Weapon)
 AWeapon* AEncCharacter::GetCurrentWeapon() const
 {
 	return CurWeapon;
+}
+
+float AEncCharacter::GetAttackDamage() const
+{
+	if (CurWeapon == nullptr)
+		return 5.0f;
+
+	return CurWeapon->GetAttackDamage();
+}
+
+void AEncCharacter::GiveAttackDamage(TWeakObjectPtr<AActor>& TargetPtr)
+{
+	if (!TargetPtr.IsValid())
+		return;
+
+	FDamageEvent DamageEvent;
+	TargetPtr->TakeDamage(GetAttackDamage(), DamageEvent, GetController(), this);
 }
 
 void AEncCharacter::MoveForward(float NewAxisValue)
