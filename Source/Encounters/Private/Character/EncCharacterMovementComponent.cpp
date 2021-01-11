@@ -2,9 +2,9 @@
 
 
 #include "Character/EncCharacterMovementComponent.h"
+#include "Character/EncCharacter.h"
 
-UEncCharacterMovementComponent::UEncCharacterMovementComponent(const FObjectInitializer& ObjectInitializer/* = FObjectInitializer::Get()*/)
-	: Super(ObjectInitializer)
+UEncCharacterMovementComponent::UEncCharacterMovementComponent()
 {
 	RollingDuration = 0.3f;
 	RollingAfterDelay = 0.2f;
@@ -37,6 +37,20 @@ void UEncCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick T
 	}
 }
 
+void UEncCharacterMovementComponent::PostLoad()
+{
+	Super::PostLoad();
+
+	EncCharacterOwner = Cast<AEncCharacter>(CharacterOwner);
+}
+
+void UEncCharacterMovementComponent::SetUpdatedComponent(USceneComponent* NewUpdatedComponent)
+{
+	Super::SetUpdatedComponent(NewUpdatedComponent);
+
+	EncCharacterOwner = Cast<AEncCharacter>(CharacterOwner);
+}
+
 bool UEncCharacterMovementComponent::CanRolling() const
 {
 	if (bRolling || IsFalling())
@@ -62,4 +76,9 @@ void UEncCharacterMovementComponent::EndRoll()
 	bRolling = false;
 	RollingRemainTime = 0.0f;
 	RollingDirection = FVector::ZeroVector;
+}
+
+AEncCharacter* UEncCharacterMovementComponent::GetEncCharacterOwner()
+{
+	return EncCharacterOwner;
 }

@@ -24,6 +24,7 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 	MaxComboCount = 2;
 	AttackSpeed = 1.25f;
 	SavedInput = FVector::ZeroVector;
+	bRagdoll = false;
 
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
@@ -108,6 +109,7 @@ void AEncCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	
 	PlayerInputComponent->BindAction(TEXT("Roll"), EInputEvent::IE_Pressed, this, &AEncCharacter::Roll);
 	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &AEncCharacter::Attack);
+	PlayerInputComponent->BindAction(TEXT("Ragdoll"), EInputEvent::IE_Pressed, this, &AEncCharacter::StartRagdoll);
 }
 
 void AEncCharacter::PostInitializeComponents()
@@ -129,6 +131,7 @@ float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
 	LOG(Warning, TEXT("Actor: %s, Damage: %f"), *GetName(), FinalDamage);
+	StartRagdoll();
 	
 	return FinalDamage;
 }
@@ -146,6 +149,11 @@ bool AEncCharacter::IsRolling() const
 bool AEncCharacter::IsFalling() const
 {
 	return (EncCharacterMovement != nullptr && EncCharacterMovement->IsFalling());
+}
+
+bool AEncCharacter::IsRagdoll() const
+{
+	return bRagdoll;
 }
 
 bool AEncCharacter::CanSetWeapon() const
@@ -187,9 +195,27 @@ void AEncCharacter::GiveAttackDamage(TWeakObjectPtr<AActor>& TargetPtr)
 	TargetPtr->TakeDamage(GetAttackDamage(), DamageEvent, GetController(), this);
 }
 
+void AEncCharacter::StartRagdoll()
+{
+	if (bRagdoll)
+		return;
+
+	EncCharacterMovement->SetMovementMode(EMovementMode::MOVE_None);	
+	bRagdoll = true;
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	USkeletalMeshComponent* SkMesh = GetMesh();
+	SkMesh->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
+	SkMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	SkMesh->SetAllBodiesBelowSimulatePhysics(FName(TEXT("pelvis")), true, true);
+
+	EncAnim->StopAllMontages(0.2f);
+}
+
 void AEncCharacter::MoveForward(float NewAxisValue)
 {
-	if (IsAttacking || IsRolling())
+	if (IsAttacking || IsRolling() || bRagdoll)
 	{
 		SavedInput.X = NewAxisValue;
 		return;
@@ -200,7 +226,7 @@ void AEncCharacter::MoveForward(float NewAxisValue)
 
 void AEncCharacter::MoveRight(float NewAxisValue)
 {
-	if (IsAttacking || IsRolling())
+	if (IsAttacking || IsRolling() || bRagdoll)
 	{
 		SavedInput.Y = NewAxisValue;
 		return;
@@ -254,7 +280,7 @@ void AEncCharacter::Roll()
 
 void AEncCharacter::Attack()
 {
-	if (IsRolling() || IsFalling())
+	if (IsRolling() || IsFalling() || bRagdoll)
 		return;
 
 	if (IsAttacking)

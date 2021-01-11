@@ -6,6 +6,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "EncCharacterMovementComponent.generated.h"
 
+class AEncCharacter;
+
 /**
  * 
  */
@@ -15,14 +17,22 @@ class ENCOUNTERS_API UEncCharacterMovementComponent : public UCharacterMovementC
 	GENERATED_BODY()	
 
 public:
-	UEncCharacterMovementComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	UEncCharacterMovementComponent();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void PostLoad() override;
+	virtual void SetUpdatedComponent(USceneComponent* NewUpdatedComponent) override;
 
 	bool CanRolling() const;
 	bool IsRolling() const;
 	void Roll(const FVector& Direction);
 	void EndRoll();
+
+	AEncCharacter* GetEncCharacterOwner();
+
+protected:
+	UPROPERTY(Transient, DuplicateTransient)
+	AEncCharacter* EncCharacterOwner;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Character Movement: Rolling", Meta = (AllowPrivateAccess = true))

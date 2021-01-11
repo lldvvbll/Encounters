@@ -32,12 +32,13 @@ public:
 
 	virtual void PostInitializeComponents() override;
 
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	UEncCharacterMovementComponent* GetEncCharacterMovement() const;
 
 	bool IsRolling() const;
 	bool IsFalling() const;
+	bool IsRagdoll() const;
 
 	bool CanSetWeapon() const;
 	void SetWeapon(AWeapon* Weapon);
@@ -45,6 +46,8 @@ public:
 
 	float GetAttackDamage() const;
 	void GiveAttackDamage(TWeakObjectPtr<AActor>& Target);
+
+	void StartRagdoll();
 
 private:
 	void MoveForward(float NewAxisValue);
@@ -103,4 +106,7 @@ private:
 
 	UPROPERTY(VisibleInstanceOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	FVector SavedInput;
+
+	UPROPERTY(VisibleInstanceOnly, Category = Ragdoll, Meta = (AllowPrivateAccess = true))
+	bool bRagdoll;
 };
