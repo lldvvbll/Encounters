@@ -4,6 +4,7 @@
 #include "Character/EncCharacter.h"
 #include "Character/EncCharacterMovementComponent.h"
 #include "Character/EncAnimInstance.h"
+#include "Character/EncCharacterStateComponent.h"
 #include "Items/Weapon.h"
 #include "DrawDebugHelpers.h"
 
@@ -16,6 +17,7 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINTARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
+	CharacterState = CreateDefaultSubobject<UEncCharacterStateComponent>(TEXT("CHARACTERSTATE"));
 	
 	IsAttacking = false;
 	CanSaveAttack = false;
@@ -75,11 +77,6 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 void AEncCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (CanSetWeapon())
-	{
-		SetWeapon(GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClass));
-	}
 }
 
 // Called every frame
@@ -124,15 +121,20 @@ void AEncCharacter::PostInitializeComponents()
 		EncAnim->OnComboEnable.AddUObject(this, &AEncCharacter::OnComboEnable);
 		EncAnim->OnComboCheck.AddUObject(this, &AEncCharacter::OnComboCheck);
 	}
+
+	CharacterState->OnHpIsZero.AddUObject(this, &AEncCharacter::Dead);
+
+	if (CanSetWeapon())
+	{
+		SetWeapon(GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClass));
+	}
 }
 
 float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	LOG(Warning, TEXT("Actor: %s, Damage: %f"), *GetName(), FinalDamage);
-	StartRagdoll();
-	
+	CharacterState->SetDamage(FinalDamage);	
 	return FinalDamage;
 }
 
@@ -299,6 +301,11 @@ void AEncCharacter::Attack()
 		EncAnim->PlayAttackMontage(AttackSpeed);
 		EncAnim->JumpToAttackMontageSection(CurrentCombo);		
 	}	
+}
+
+void AEncCharacter::Dead()
+{
+	StartRagdoll();
 }
 
 void AEncCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)

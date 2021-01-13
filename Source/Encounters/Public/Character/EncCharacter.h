@@ -9,6 +9,7 @@
 class UEncCharacterMovementComponent;
 class UEncAnimInstance;
 class AWeapon;
+class UEncCharacterStateComponent;
 
 UCLASS()
 class ENCOUNTERS_API AEncCharacter : public ACharacter
@@ -57,6 +58,7 @@ private:
 
 	void Roll();
 	void Attack();
+	void Dead();
 
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
@@ -85,6 +87,9 @@ private:
 
 	UPROPERTY(VisibleInstanceOnly, Category = Weapon, Meta = (AllowPrivateAccess = true))
 	AWeapon* CurWeapon;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
+	UEncCharacterStateComponent* CharacterState;
 
 	UPROPERTY(VisibleInstanceOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	bool IsAttacking;
