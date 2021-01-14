@@ -27,6 +27,9 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 	AttackSpeed = 1.25f;
 	SavedInput = FVector::ZeroVector;
 	bRagdoll = false;
+	DefenseSpeed = 2.0f;
+	bDefense = false;
+	bGaurding = false;
 
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
@@ -107,6 +110,8 @@ void AEncCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction(TEXT("Roll"), EInputEvent::IE_Pressed, this, &AEncCharacter::Roll);
 	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &AEncCharacter::Attack);
 	PlayerInputComponent->BindAction(TEXT("Ragdoll"), EInputEvent::IE_Pressed, this, &AEncCharacter::StartRagdoll);
+	PlayerInputComponent->BindAction(TEXT("Defense"), EInputEvent::IE_Pressed, this, &AEncCharacter::DefenseUp);
+	PlayerInputComponent->BindAction(TEXT("Defense"), EInputEvent::IE_Released, this, &AEncCharacter::DefenseDown);
 }
 
 void AEncCharacter::PostInitializeComponents()
@@ -120,6 +125,9 @@ void AEncCharacter::PostInitializeComponents()
 		EncAnim->OnMontageEnded.AddDynamic(this, &AEncCharacter::OnAttackMontageEnded);
 		EncAnim->OnComboEnable.AddUObject(this, &AEncCharacter::OnComboEnable);
 		EncAnim->OnComboCheck.AddUObject(this, &AEncCharacter::OnComboCheck);
+		EncAnim->OnBeginGaurd.AddUObject(this, &AEncCharacter::OnBeginGaurd);
+
+		EncAnim->SetDefenseSpeed(DefenseSpeed);
 	}
 
 	CharacterState->OnHpIsZero.AddUObject(this, &AEncCharacter::Dead);
@@ -156,6 +164,11 @@ bool AEncCharacter::IsFalling() const
 bool AEncCharacter::IsRagdoll() const
 {
 	return bRagdoll;
+}
+
+bool AEncCharacter::IsDefending() const
+{
+	return bDefense;
 }
 
 bool AEncCharacter::CanSetWeapon() const
@@ -212,12 +225,18 @@ void AEncCharacter::StartRagdoll()
 	SkMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	SkMesh->SetAllBodiesBelowSimulatePhysics(FName(TEXT("pelvis")), true, true);
 
-	EncAnim->StopAllMontages(0.2f);
+	if (EncAnim != nullptr)
+	{
+		EncAnim->StopAllMontages(0.2f);
+	}
 }
 
 void AEncCharacter::MoveForward(float NewAxisValue)
 {
-	if (IsAttacking || IsRolling() || bRagdoll)
+	if (bRagdoll)
+		return;
+
+	if (IsAttacking || IsRolling())
 	{
 		SavedInput.X = NewAxisValue;
 		return;
@@ -228,7 +247,10 @@ void AEncCharacter::MoveForward(float NewAxisValue)
 
 void AEncCharacter::MoveRight(float NewAxisValue)
 {
-	if (IsAttacking || IsRolling() || bRagdoll)
+	if (bRagdoll)
+		return;
+
+	if (IsAttacking || IsRolling())
 	{
 		SavedInput.Y = NewAxisValue;
 		return;
@@ -249,7 +271,7 @@ void AEncCharacter::Turn(float NewAxisValue)
 
 void AEncCharacter::Roll()
 {
-	if (CanSaveAttack)
+	if (IsAttacking)
 		return;
 
 	UEncCharacterMovementComponent* CharMovement = GetEncCharacterMovement();
@@ -274,9 +296,9 @@ void AEncCharacter::Roll()
 	DirToMove.Normalize();
 	CharMovement->Roll(DirToMove);
 
-	if (IsAttacking)
+	if (IsAttacking && EncAnim != nullptr)
 	{
-		EncAnim->StopAttackMontage();
+		EncAnim->StopAllMontages(0.2f);
 	}
 }
 
@@ -298,18 +320,39 @@ void AEncCharacter::Attack()
 		bInputAttack = false;
 		IsAttacking = true;
 
-		EncAnim->PlayAttackMontage(AttackSpeed);
-		EncAnim->JumpToAttackMontageSection(CurrentCombo);		
+		if (EncAnim != nullptr)
+		{
+			EncAnim->PlayAttackMontage(AttackSpeed);
+			EncAnim->JumpToAttackMontageSection(CurrentCombo);
+		}		
 	}	
 }
 
 void AEncCharacter::Dead()
 {
 	StartRagdoll();
+	DefenseDown();
+}
+
+void AEncCharacter::DefenseUp()
+{
+	if (bRagdoll)
+		return;
+
+	bDefense = true;
+}
+
+void AEncCharacter::DefenseDown()
+{
+	bDefense = false;
+	bGaurding = false;
 }
 
 void AEncCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
+	if (EncAnim != nullptr && !EncAnim->IsAttackMontage(Montage))
+		return;
+
 	CurrentCombo = 0;
 	bInputAttack = false;
 	IsAttacking = false;
@@ -334,11 +377,20 @@ void AEncCharacter::OnComboCheck()
 			CurrentCombo = 1;
 		}
 
-		EncAnim->JumpToAttackMontageSection(CurrentCombo);
+		if (EncAnim != nullptr)
+		{
+			EncAnim->JumpToAttackMontageSection(CurrentCombo);
+		}
+
 		if (!SavedInput.IsNearlyZero())
 		{
 			FVector DirVec = FRotator(0.0f, GetControlRotation().Yaw, 0.0f).RotateVector(SavedInput);
 			SetActorRotation(DirVec.Rotation(), ETeleportType::TeleportPhysics);
 		}
 	}
+}
+
+void AEncCharacter::OnBeginGaurd()
+{
+	bGaurding = true;
 }

@@ -40,6 +40,7 @@ public:
 	bool IsRolling() const;
 	bool IsFalling() const;
 	bool IsRagdoll() const;
+	bool IsDefending() const;
 
 	bool CanSetWeapon() const;
 	void SetWeapon(AWeapon* Weapon);
@@ -59,6 +60,8 @@ private:
 	void Roll();
 	void Attack();
 	void Dead();
+	void DefenseUp();
+	void DefenseDown();
 
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
@@ -68,6 +71,9 @@ private:
 
 	UFUNCTION()
 	void OnComboCheck();
+
+	UFUNCTION()
+	void OnBeginGaurd();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera, Meta = (AllowPrivateAccess = true))
@@ -114,4 +120,13 @@ private:
 
 	UPROPERTY(VisibleInstanceOnly, Category = Ragdoll, Meta = (AllowPrivateAccess = true))
 	bool bRagdoll;
+
+	UPROPERTY(EditAnywhere, Category = Defense, Meta = (AllowPrivateAccess = true))
+	float DefenseSpeed;
+
+	UPROPERTY(VisibleInstanceOnly, Category = Defense, Meta = (AllowPrivateAccess = true))
+	bool bDefense;
+
+	UPROPERTY(VisibleInstanceOnly, Category = Defense, Meta = (AllowPrivateAccess = true))
+	bool bGaurding;
 };
