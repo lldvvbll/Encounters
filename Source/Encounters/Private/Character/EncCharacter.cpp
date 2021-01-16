@@ -2,15 +2,12 @@
 
 
 #include "Character/EncCharacter.h"
-#include "Character/EncCharacterMovementComponent.h"
 #include "Character/EncAnimInstance.h"
 #include "Character/EncCharacterStateComponent.h"
 #include "Items/Weapon.h"
 #include "DrawDebugHelpers.h"
 
-// Sets default values
-AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FObjectInitializer::Get()*/)
-	: Super(ObjectInitializer.SetDefaultSubobjectClass<UEncCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
+AEncCharacter::AEncCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -19,17 +16,11 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
 	CharacterState = CreateDefaultSubobject<UEncCharacterStateComponent>(TEXT("CHARACTERSTATE"));
 	
-	IsAttacking = false;
-	CanSaveAttack = false;
-	bInputAttack = false;
-	CurrentCombo = 0;
 	MaxComboCount = 2;
 	AttackSpeed = 1.25f;
-	SavedInput = FVector::ZeroVector;
-	bRagdoll = false;
+	RollingSpeed = 2.5f;
+	RollingForceScale = 1000000000.0f;
 	DefenseSpeed = 2.0f;
-	bDefense = false;
-	bGaurding = false;
 
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
@@ -118,11 +109,11 @@ void AEncCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	EncCharacterMovement = Cast<UEncCharacterMovementComponent>(GetCharacterMovement());
 	EncAnim = Cast<UEncAnimInstance>(GetMesh()->GetAnimInstance());
 	if (EncAnim != nullptr)
 	{
 		EncAnim->OnMontageEnded.AddDynamic(this, &AEncCharacter::OnAttackMontageEnded);
+		EncAnim->OnMontageEnded.AddDynamic(this, &AEncCharacter::OnRollingMontageEnded);
 		EncAnim->OnComboEnable.AddUObject(this, &AEncCharacter::OnComboEnable);
 		EncAnim->OnComboCheck.AddUObject(this, &AEncCharacter::OnComboCheck);
 		EncAnim->OnBeginGaurd.AddUObject(this, &AEncCharacter::OnBeginGaurd);
@@ -146,19 +137,14 @@ float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 	return FinalDamage;
 }
 
-UEncCharacterMovementComponent* AEncCharacter::GetEncCharacterMovement() const
-{
-	return EncCharacterMovement;
-}
-
 bool AEncCharacter::IsRolling() const
 {
-	return (EncCharacterMovement != nullptr && EncCharacterMovement->IsRolling());
+	return bRolling;
 }
 
 bool AEncCharacter::IsFalling() const
 {
-	return (EncCharacterMovement != nullptr && EncCharacterMovement->IsFalling());
+	return GetCharacterMovement()->IsFalling();
 }
 
 bool AEncCharacter::IsRagdoll() const
@@ -181,8 +167,7 @@ void AEncCharacter::SetWeapon(AWeapon* Weapon)
 	return_if(Weapon == nullptr);
 
 	Weapon->SetOwner(this);
-	Weapon->AttachToComponent(GetMesh(), 
-		FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName(TEXT("hand_rSocket")));
+	Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName(TEXT("hand_rSocket")));
 	Weapon->SetActorRelativeRotation(Weapon->GetAttachRotator());
 
 	CurWeapon = Weapon;
@@ -210,12 +195,22 @@ void AEncCharacter::GiveAttackDamage(TWeakObjectPtr<AActor>& TargetPtr)
 	TargetPtr->TakeDamage(GetAttackDamage(), DamageEvent, GetController(), this);
 }
 
+float AEncCharacter::GetRollingSpeed() const
+{
+	return RollingSpeed;
+}
+
+float AEncCharacter::GetRollingForceScale() const
+{
+	return RollingForceScale;
+}
+
 void AEncCharacter::StartRagdoll()
 {
 	if (bRagdoll)
 		return;
 
-	EncCharacterMovement->SetMovementMode(EMovementMode::MOVE_None);	
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);	
 	bRagdoll = true;
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -236,11 +231,14 @@ void AEncCharacter::MoveForward(float NewAxisValue)
 	if (bRagdoll)
 		return;
 
-	if (IsAttacking || IsRolling())
+	if (bAttacking)
 	{
 		SavedInput.X = NewAxisValue;
 		return;
 	}
+
+	if (bRolling)
+		return;
 
 	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::X), NewAxisValue);
 }
@@ -250,11 +248,14 @@ void AEncCharacter::MoveRight(float NewAxisValue)
 	if (bRagdoll)
 		return;
 
-	if (IsAttacking || IsRolling())
+	if (bAttacking)
 	{
 		SavedInput.Y = NewAxisValue;
 		return;
 	}
+
+	if (bRolling)
+		return;
 
 	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::Y), NewAxisValue);
 }
@@ -271,43 +272,29 @@ void AEncCharacter::Turn(float NewAxisValue)
 
 void AEncCharacter::Roll()
 {
-	if (IsAttacking)
+	if (bRolling || bAttacking || IsFalling())
 		return;
 
-	UEncCharacterMovementComponent* CharMovement = GetEncCharacterMovement();
-	if (!CharMovement->CanRolling())
-		return;
-
-	FVector DirToMove = FVector::ZeroVector;
-	if (IsAttacking)
-	{
-		DirToMove = FRotator(0.0f, GetControlRotation().Yaw, 0.0f).RotateVector(SavedInput);
-	}
-	else
-	{
-		DirToMove = GetLastMovementInputVector();
-	}
-	
+	FVector DirToMove = GetLastMovementInputVector();	
 	if (DirToMove.IsNearlyZero())
 		return;
 
 	SetActorRotation(DirToMove.Rotation(), ETeleportType::TeleportPhysics);
 
-	DirToMove.Normalize();
-	CharMovement->Roll(DirToMove);
-
-	if (IsAttacking && EncAnim != nullptr)
+	if (EncAnim != nullptr)
 	{
-		EncAnim->StopAllMontages(0.2f);
+		EncAnim->PlayRollingMontage(RollingSpeed);
 	}
+
+	bRolling = true;
 }
 
 void AEncCharacter::Attack()
 {
-	if (IsRolling() || IsFalling() || bRagdoll)
+	if (bRolling || IsFalling() || bRagdoll)
 		return;
 
-	if (IsAttacking)
+	if (bAttacking)
 	{
 		if (CanSaveAttack)
 		{
@@ -318,7 +305,7 @@ void AEncCharacter::Attack()
 	{
 		CurrentCombo = 1;
 		bInputAttack = false;
-		IsAttacking = true;
+		bAttacking = true;
 
 		if (EncAnim != nullptr)
 		{
@@ -355,7 +342,7 @@ void AEncCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupte
 
 	CurrentCombo = 0;
 	bInputAttack = false;
-	IsAttacking = false;
+	bAttacking = false;
 }
 
 void AEncCharacter::OnComboEnable()
@@ -388,6 +375,14 @@ void AEncCharacter::OnComboCheck()
 			SetActorRotation(DirVec.Rotation(), ETeleportType::TeleportPhysics);
 		}
 	}
+}
+
+void AEncCharacter::OnRollingMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	if (EncAnim != nullptr && !EncAnim->IsRollingMontage(Montage))
+		return;
+
+	bRolling = false;
 }
 
 void AEncCharacter::OnBeginGaurd()

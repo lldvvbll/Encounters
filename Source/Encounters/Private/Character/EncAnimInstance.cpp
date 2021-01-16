@@ -17,6 +17,13 @@ UEncAnimInstance::UEncAnimInstance()
 	{
 		AttackMontage = ATTACK_MONTAGE.Object;
 	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLLING_MONTAGE(
+		TEXT("/Game/Encounters/Characters/Animations/RollingAnimMontage.RollingAnimMontage"));
+	if (ROLLING_MONTAGE.Succeeded())
+	{
+		RollingMontage = ROLLING_MONTAGE.Object;
+	}
 }
 
 void UEncAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -53,6 +60,21 @@ void UEncAnimInstance::JumpToAttackMontageSection(int32 NewSection)
 bool UEncAnimInstance::IsAttackMontage(UAnimMontage* Montage)
 {
 	return (Montage != nullptr &&  Montage == AttackMontage);
+}
+
+void UEncAnimInstance::PlayRollingMontage(float PlayRate)
+{
+	Montage_Play(RollingMontage, PlayRate);
+}
+
+void UEncAnimInstance::StopRollingMontage()
+{
+	Montage_Stop(0.1f, RollingMontage);
+}
+
+bool UEncAnimInstance::IsRollingMontage(UAnimMontage* Montage)
+{
+	return (Montage != nullptr && Montage == RollingMontage);
 }
 
 void UEncAnimInstance::SetDefenseSpeed(float NewSpeed)

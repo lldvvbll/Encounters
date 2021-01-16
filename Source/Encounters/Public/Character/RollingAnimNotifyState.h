@@ -4,19 +4,18 @@
 
 #include "Encounters.h"
 #include "Animation/AnimNotifies/AnimNotifyState.h"
-#include "AttackTracerAnimNotifyState.generated.h"
+#include "RollingAnimNotifyState.generated.h"
 
 class AEncCharacter;
-class AWeapon;
 
 /**
  * 
  */
 UCLASS()
-class ENCOUNTERS_API UAttackTracerAnimNotifyState : public UAnimNotifyState
+class ENCOUNTERS_API URollingAnimNotifyState : public UAnimNotifyState
 {
 	GENERATED_BODY()
-	
+
 public:
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration) override;
 	virtual void NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime) override;
@@ -24,7 +23,8 @@ public:
 
 private:
 	AEncCharacter* EncChar = nullptr;
-	AWeapon* Weapon = nullptr;
-	FVector LastAttackBoxPos = FVector::ZeroVector;
-	TArray<TWeakObjectPtr<AActor>> HitActors;
+	FVector Direction = FVector::ZeroVector;
+	float RollingSpeed = 0.0f;
+	float RollingForceScale = 0.0f;
+	float RemainTime = 0.0f;
 };

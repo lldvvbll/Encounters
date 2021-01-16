@@ -12,10 +12,11 @@ void UAttackTracerAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp,
 
 	return_if(MeshComp == nullptr);
 
-	Player = MeshComp->GetOwner<AEncCharacter>();
-	return_if(Player == nullptr);
+	EncChar = MeshComp->GetOwner<AEncCharacter>();
+	if (EncChar == nullptr)
+		return;
 
-	Weapon = Player->GetCurrentWeapon();
+	Weapon = EncChar->GetCurrentWeapon();
 	return_if(Weapon == nullptr);
 
 	LastAttackBoxPos = Weapon->GetAttackBoxSocketPos();
@@ -25,14 +26,14 @@ void UAttackTracerAnimNotifyState::NotifyTick(USkeletalMeshComponent* MeshComp, 
 {
 	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime);
 
-	if (Player == nullptr || Weapon == nullptr)
+	if (EncChar == nullptr || Weapon == nullptr)
 		return;
 
 	FVector CurPos = Weapon->GetAttackBoxSocketPos();
 
 	TArray<FHitResult> HitResults;
-	FCollisionQueryParams Params(NAME_None, false, Player);
-	Player->GetWorld()->SweepMultiByChannel(HitResults, LastAttackBoxPos, CurPos, Weapon->GetActorRotation().Quaternion(),
+	FCollisionQueryParams Params(NAME_None, false, EncChar);
+	EncChar->GetWorld()->SweepMultiByChannel(HitResults, LastAttackBoxPos, CurPos, Weapon->GetActorRotation().Quaternion(),
 		ECollisionChannel::ECC_EngineTraceChannel2, FCollisionShape::MakeBox(Weapon->GetAttackBoxHalfExtent()), Params);
 
 	for (auto& Result : HitResults)
@@ -45,7 +46,7 @@ void UAttackTracerAnimNotifyState::NotifyTick(USkeletalMeshComponent* MeshComp, 
 
 		HitActors.Add(Result.Actor);
 
-		Player->GiveAttackDamage(Result.Actor);
+		EncChar->GiveAttackDamage(Result.Actor);
 	}
 
 #if ENABLE_DRAW_DEBUG

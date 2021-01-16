@@ -27,6 +27,10 @@ public:
 	void JumpToAttackMontageSection(int32 NewSection);
 	bool IsAttackMontage(UAnimMontage* Montage);
 
+	void PlayRollingMontage(float PlayRate);
+	void StopRollingMontage();
+	bool IsRollingMontage(UAnimMontage* Montage);
+
 	void SetDefenseSpeed(float NewSpeed);
 
 private:
@@ -62,6 +66,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
 	float DefenseSpeed;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Montage, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* AttackMontage;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Montage, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* RollingMontage;
 };

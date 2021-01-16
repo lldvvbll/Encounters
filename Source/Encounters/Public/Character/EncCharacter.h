@@ -6,7 +6,6 @@
 #include "GameFramework/Character.h"
 #include "EncCharacter.generated.h"
 
-class UEncCharacterMovementComponent;
 class UEncAnimInstance;
 class AWeapon;
 class UEncCharacterStateComponent;
@@ -18,7 +17,8 @@ class ENCOUNTERS_API AEncCharacter : public ACharacter
 
 public:
 	// Sets default values for this character's properties
-	AEncCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	//AEncCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	AEncCharacter();
 
 protected:
 	// Called when the game starts or when spawned
@@ -35,8 +35,6 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
-	UEncCharacterMovementComponent* GetEncCharacterMovement() const;
-
 	bool IsRolling() const;
 	bool IsFalling() const;
 	bool IsRagdoll() const;
@@ -48,6 +46,9 @@ public:
 
 	float GetAttackDamage() const;
 	void GiveAttackDamage(TWeakObjectPtr<AActor>& Target);
+
+	float GetRollingSpeed() const;
+	float GetRollingForceScale() const;
 
 	void StartRagdoll();
 
@@ -73,6 +74,9 @@ private:
 	void OnComboCheck();
 
 	UFUNCTION()
+	void OnRollingMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
+	UFUNCTION()
 	void OnBeginGaurd();
 
 private:
@@ -81,9 +85,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Camera, Meta = (AllowPrivateAccess = true))
 	UCameraComponent* Camera;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
-	UEncCharacterMovementComponent* EncCharacterMovement;
 
 	UPROPERTY()
 	UEncAnimInstance* EncAnim;
@@ -98,7 +99,7 @@ private:
 	UEncCharacterStateComponent* CharacterState;
 
 	UPROPERTY(VisibleInstanceOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	bool IsAttacking;
+	bool bAttacking;
 
 	UPROPERTY(VisibleInstanceOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	bool CanSaveAttack;
@@ -118,14 +119,23 @@ private:
 	UPROPERTY(VisibleInstanceOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	FVector SavedInput;
 
+	UPROPERTY(VisibleInstanceOnly, Category = Rolling, Meta = (AllowPrivateAccess = true))
+	bool bRolling;
+
+	UPROPERTY(VisibleInstanceOnly, Category = Rolling, Meta = (AllowPrivateAccess = true))
+	float RollingSpeed;
+
+	UPROPERTY(VisibleInstanceOnly, Category = Rolling, Meta = (AllowPrivateAccess = true))
+	float RollingForceScale;
+
 	UPROPERTY(VisibleInstanceOnly, Category = Ragdoll, Meta = (AllowPrivateAccess = true))
 	bool bRagdoll;
 
-	UPROPERTY(EditAnywhere, Category = Defense, Meta = (AllowPrivateAccess = true))
-	float DefenseSpeed;
-
 	UPROPERTY(VisibleInstanceOnly, Category = Defense, Meta = (AllowPrivateAccess = true))
 	bool bDefense;
+
+	UPROPERTY(EditAnywhere, Category = Defense, Meta = (AllowPrivateAccess = true))
+	float DefenseSpeed;
 
 	UPROPERTY(VisibleInstanceOnly, Category = Defense, Meta = (AllowPrivateAccess = true))
 	bool bGaurding;
