@@ -272,10 +272,19 @@ void AEncCharacter::Turn(float NewAxisValue)
 
 void AEncCharacter::Roll()
 {
-	if (bRolling || bAttacking || IsFalling())
+	if (bRolling || CanSaveAttack || IsFalling())
 		return;
 
-	FVector DirToMove = GetLastMovementInputVector();	
+	FVector DirToMove(FVector::ZeroVector);
+	if (bAttacking)
+	{
+		DirToMove = FRotator(0.0f, GetControlRotation().Yaw, 0.0f).RotateVector(SavedInput);
+	}
+	else
+	{
+		DirToMove = GetLastMovementInputVector();
+	}
+
 	if (DirToMove.IsNearlyZero())
 		return;
 
