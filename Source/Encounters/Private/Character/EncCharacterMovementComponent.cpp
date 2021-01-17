@@ -4,81 +4,17 @@
 #include "Character/EncCharacterMovementComponent.h"
 #include "Character/EncCharacter.h"
 
-UEncCharacterMovementComponent::UEncCharacterMovementComponent()
+FVector UEncCharacterMovementComponent::ConstrainAnimRootMotionVelocity(const FVector& RootMotionVelocity, const FVector& CurrentVelocity) const
 {
-	RollingDuration = 0.3f;
-	RollingAfterDelay = 0.2f;
-	RollingForceScale = 4000000.0f;
-}
+    FVector Result = Super::ConstrainAnimRootMotionVelocity(RootMotionVelocity, CurrentVelocity);
 
-void UEncCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	if (!HasValidData() || ShouldSkipUpdate(DeltaTime))
-		return;
+    AEncCharacter* Char = Cast<AEncCharacter>(GetCharacterOwner());
+    if (Char != nullptr)
+    {
+        float Rate = Char->GetCurrentRootMotionVelocityRate();
+        Result.X *= Rate;
+        Result.Y *= Rate;
+    }
 
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	if (bRolling)
-	{
-		RollingRemainTime -= DeltaTime;
-		if (RollingRemainTime < 0.0f || FMath::IsNearlyZero(RollingRemainTime))
-		{
-			EndRoll();
-		}
-		else if (RollingRemainTime >= RollingAfterDelay)
-		{
-			float Scale = IsFalling() ? (RollingForceScale / 10.0f) : RollingForceScale;
-			AddForce(RollingDirection * Scale);
-		}
-		else
-		{
-			Launch(FVector(0.0f, 0.0f, Velocity.Z));
-		}
-	}
-}
-
-void UEncCharacterMovementComponent::PostLoad()
-{
-	Super::PostLoad();
-
-	EncCharacterOwner = Cast<AEncCharacter>(CharacterOwner);
-}
-
-void UEncCharacterMovementComponent::SetUpdatedComponent(USceneComponent* NewUpdatedComponent)
-{
-	Super::SetUpdatedComponent(NewUpdatedComponent);
-
-	EncCharacterOwner = Cast<AEncCharacter>(CharacterOwner);
-}
-
-bool UEncCharacterMovementComponent::CanRolling() const
-{
-	if (bRolling || IsFalling())
-		return false;
-
-	return true;
-}
-
-bool UEncCharacterMovementComponent::IsRolling() const
-{
-	return bRolling;
-}
-
-void UEncCharacterMovementComponent::Roll(const FVector& Direction)
-{
-	bRolling = true;
-	RollingRemainTime = RollingDuration + RollingAfterDelay;
-	RollingDirection = Direction;
-}
-
-void UEncCharacterMovementComponent::EndRoll()
-{
-	bRolling = false;
-	RollingRemainTime = 0.0f;
-	RollingDirection = FVector::ZeroVector;
-}
-
-AEncCharacter* UEncCharacterMovementComponent::GetEncCharacterOwner()
-{
-	return EncCharacterOwner;
+    return Result;
 }

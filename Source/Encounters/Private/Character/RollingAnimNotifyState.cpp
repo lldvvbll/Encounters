@@ -17,7 +17,7 @@ void URollingAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAni
 
 	Direction = EncChar->GetActorForwardVector();
 	RollingSpeed = EncChar->GetRollingSpeed();
-	RollingForceScale = EncChar->GetRollingForceScale();
+	//RollingForceScale = EncChar->GetRollingForceScale();
 	RemainTime = TotalDuration / RollingSpeed;
 
 	//LOG(Warning, TEXT("TotalDuration: %f"), TotalDuration);
@@ -28,7 +28,7 @@ void URollingAnimNotifyState::NotifyTick(USkeletalMeshComponent* MeshComp, UAnim
 	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime);
 
 	RemainTime -= FrameDeltaTime;
-	//LOG(Warning, TEXT("RemainTime: %f"), RemainTime);
+	LOG(Warning, TEXT("RemainTime: %f"), RemainTime);
 
 	if (EncChar == nullptr)
 		return;

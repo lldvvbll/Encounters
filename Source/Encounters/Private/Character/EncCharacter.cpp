@@ -3,11 +3,13 @@
 
 #include "Character/EncCharacter.h"
 #include "Character/EncAnimInstance.h"
+#include "Character/EncCharacterMovementComponent.h"
 #include "Character/EncCharacterStateComponent.h"
 #include "Items/Weapon.h"
 #include "DrawDebugHelpers.h"
 
-AEncCharacter::AEncCharacter()
+AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FObjectInitializer::Get()*/)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UEncCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -19,7 +21,7 @@ AEncCharacter::AEncCharacter()
 	MaxComboCount = 2;
 	AttackSpeed = 1.25f;
 	RollingSpeed = 2.5f;
-	RollingForceScale = 1000000000.0f;
+	RollingVelocityRate = 1.5f;
 	DefenseSpeed = 2.0f;
 
 	SpringArm->SetupAttachment(GetCapsuleComponent());
@@ -200,11 +202,6 @@ float AEncCharacter::GetRollingSpeed() const
 	return RollingSpeed;
 }
 
-float AEncCharacter::GetRollingForceScale() const
-{
-	return RollingForceScale;
-}
-
 void AEncCharacter::StartRagdoll()
 {
 	if (bRagdoll)
@@ -224,6 +221,11 @@ void AEncCharacter::StartRagdoll()
 	{
 		EncAnim->StopAllMontages(0.2f);
 	}
+}
+
+float AEncCharacter::GetCurrentRootMotionVelocityRate() const
+{
+	return CurrentRootMotionVelocityRate;
 }
 
 void AEncCharacter::MoveForward(float NewAxisValue)
@@ -290,6 +292,7 @@ void AEncCharacter::Roll()
 
 	SetActorRotation(DirToMove.Rotation(), ETeleportType::TeleportPhysics);
 
+	CurrentRootMotionVelocityRate = RollingVelocityRate;
 	if (EncAnim != nullptr)
 	{
 		EncAnim->PlayRollingMontage(RollingSpeed);
@@ -391,6 +394,7 @@ void AEncCharacter::OnRollingMontageEnded(UAnimMontage* Montage, bool bInterrupt
 	if (EncAnim != nullptr && !EncAnim->IsRollingMontage(Montage))
 		return;
 
+	CurrentRootMotionVelocityRate = 1.0f;
 	bRolling = false;
 }
 

@@ -17,8 +17,7 @@ class ENCOUNTERS_API AEncCharacter : public ACharacter
 
 public:
 	// Sets default values for this character's properties
-	//AEncCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
-	AEncCharacter();
+	AEncCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 protected:
 	// Called when the game starts or when spawned
@@ -48,9 +47,10 @@ public:
 	void GiveAttackDamage(TWeakObjectPtr<AActor>& Target);
 
 	float GetRollingSpeed() const;
-	float GetRollingForceScale() const;
 
 	void StartRagdoll();
+
+	float GetCurrentRootMotionVelocityRate() const;
 
 private:
 	void MoveForward(float NewAxisValue);
@@ -126,7 +126,7 @@ private:
 	float RollingSpeed;
 
 	UPROPERTY(VisibleInstanceOnly, Category = Rolling, Meta = (AllowPrivateAccess = true))
-	float RollingForceScale;
+	float RollingVelocityRate;
 
 	UPROPERTY(VisibleInstanceOnly, Category = Ragdoll, Meta = (AllowPrivateAccess = true))
 	bool bRagdoll;
@@ -139,4 +139,6 @@ private:
 
 	UPROPERTY(VisibleInstanceOnly, Category = Defense, Meta = (AllowPrivateAccess = true))
 	bool bGaurding;
+
+	float CurrentRootMotionVelocityRate;
 };
