@@ -7,7 +7,9 @@
 #include "EncCharacter.generated.h"
 
 class UEncAnimInstance;
+class AEquipment;
 class AWeapon;
+class AShield;
 class UEncCharacterStateComponent;
 
 UCLASS()
@@ -43,6 +45,10 @@ public:
 	void SetWeapon(AWeapon* Weapon);
 	AWeapon* GetCurrentWeapon() const;
 
+	bool CanSetShield() const;
+	void SetShield(AShield* Shield);
+	AShield* GetCurrentShield() const;
+
 	float GetAttackDamage() const;
 	void GiveAttackDamage(TWeakObjectPtr<AActor>& Target);
 
@@ -63,6 +69,8 @@ private:
 	void Dead();
 	void DefenseUp();
 	void DefenseDown();
+
+	void SetEquipment(AEquipment* Equipment, const FName& SocketName);
 
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
@@ -89,11 +97,17 @@ private:
 	UPROPERTY()
 	UEncAnimInstance* EncAnim;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Equipment, Meta = (AllowPrivateAccess = true))
 	TSubclassOf<AWeapon> DefaultWeaponClass;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Weapon, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleInstanceOnly, Category = Equipment, Meta = (AllowPrivateAccess = true))
 	AWeapon* CurWeapon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Equipment, Meta = (AllowPrivateAccess = true))
+	TSubclassOf<AShield> DefaultShieldClass;
+
+	UPROPERTY(VisibleInstanceOnly, Category = Equipment, Meta = (AllowPrivateAccess = true))
+	AShield* CurShield;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
 	UEncCharacterStateComponent* CharacterState;

@@ -49,12 +49,10 @@ void UAttackTracerAnimNotifyState::NotifyTick(USkeletalMeshComponent* MeshComp, 
 		EncChar->GiveAttackDamage(Result.Actor);
 	}
 
-#if ENABLE_DRAW_DEBUG
 	if (Weapon->IsShowAttackBoxInAttack())
 	{
 		Weapon->DrawAttackBox();
 	}
-#endif
 
 	LastAttackBoxPos = CurPos;
 }

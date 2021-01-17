@@ -3,11 +3,11 @@
 #pragma once
 
 #include "Encounters.h"
-#include "GameFramework/Actor.h"
+#include "Items/Equipment.h"
 #include "Weapon.generated.h"
 
 UCLASS()
-class ENCOUNTERS_API AWeapon : public AActor
+class ENCOUNTERS_API AWeapon : public AEquipment
 {
 	GENERATED_BODY()
 	
@@ -23,7 +23,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	FRotator GetAttachRotator() const;
 	FVector GetAttackBoxSocketPos() const;
 	FVector GetAttackBoxHalfExtent() const;
 
@@ -34,12 +33,6 @@ public:
 	float GetAttackDamage() const;
 
 private:
-	UPROPERTY(VisibleAnywhere, Category = Mesh, Meta = (AllowPrivateAccess = true))
-	USkeletalMeshComponent* SkMeshComp;
-
-	UPROPERTY(EditDefaultsOnly, Category = Transform, Meta = (AllowPrivateAccess = true))
-	FRotator AttachRotator;
-
 	UPROPERTY(EditDefaultsOnly, Category = AttackTrace, Meta = (AllowPrivateAccess = true))
 	FVector AttackBoxHalfExtent;
 

@@ -4,21 +4,8 @@
 #include "Items/Weapon.h"
 #include "DrawDebugHelpers.h"
 
-// Sets default values
 AWeapon::AWeapon()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
-
-	SkMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MESH"));
-	RootComponent = SkMeshComp;
-
-	SkMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
-
-	AttachRotator = FRotator::ZeroRotator;
-	AttackBoxHalfExtent = FVector::ZeroVector;
-	bShowAttackBox = false;
-	bShowAttackBoxInAttack = false;
 	DebugAttackBoxLifeTime = 0.5f;
 	DefaultDamage = 10.0f;
 }
@@ -37,11 +24,6 @@ void AWeapon::Tick(float DeltaTime)
 
 }
 
-FRotator AWeapon::GetAttachRotator() const
-{
-	return AttachRotator;
-}
-
 FVector AWeapon::GetAttackBoxSocketPos() const
 {
 	static FName AttackBoxSocketName(TEXT("attackTrace"));
@@ -55,20 +37,30 @@ FVector AWeapon::GetAttackBoxHalfExtent() const
 
 bool AWeapon::IsShowAttackBox() const
 {
+#if ENABLE_DRAW_DEBUG
 	return bShowAttackBox;
+#else
+	return false;
+#endif
 }
 
 bool AWeapon::IsShowAttackBoxInAttack() const
 {
+#if ENABLE_DRAW_DEBUG
 	return bShowAttackBoxInAttack;
+#else
+	return false;
+#endif
 }
 
 void AWeapon::DrawAttackBox() const
 {
+#if ENABLE_DRAW_DEBUG
 	FVector Pos = GetAttackBoxSocketPos();
 	FVector Extent = AttackBoxHalfExtent * 2.0f * GetActorScale();
 	FQuat Quat = GetActorRotation().Quaternion();
 	DrawDebugBox(GetWorld(), Pos, Extent, Quat, FColor::Red, false, DebugAttackBoxLifeTime);
+#endif
 }
 
 float AWeapon::GetAttackDamage() const

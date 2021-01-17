@@ -5,8 +5,9 @@
 #include "Character/EncAnimInstance.h"
 #include "Character/EncCharacterMovementComponent.h"
 #include "Character/EncCharacterStateComponent.h"
+#include "Items/Equipment.h"
 #include "Items/Weapon.h"
-#include "DrawDebugHelpers.h"
+#include "Items/Shield.h"
 
 AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FObjectInitializer::Get()*/)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UEncCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
@@ -67,6 +68,12 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 	{
 		DefaultWeaponClass = WEAPON.Class;
 	}
+
+	static ConstructorHelpers::FClassFinder<AShield> SHIELD(TEXT("/Game/Encounters/Items/BP_Shield.BP_Shield_C"));
+	if (SHIELD.Succeeded())
+	{
+		DefaultShieldClass = SHIELD.Class;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -80,12 +87,10 @@ void AEncCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-#if ENABLE_DRAW_DEBUG
 	if (CurWeapon != nullptr && CurWeapon->IsShowAttackBox())
 	{
 		CurWeapon->DrawAttackBox();
 	}
-#endif
 }
 
 // Called to bind functionality to input
@@ -129,6 +134,11 @@ void AEncCharacter::PostInitializeComponents()
 	{
 		SetWeapon(GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClass));
 	}
+
+	if (CanSetShield())
+	{
+		SetShield(GetWorld()->SpawnActor<AShield>(DefaultShieldClass));
+	}
 }
 
 float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -166,11 +176,8 @@ bool AEncCharacter::CanSetWeapon() const
 
 void AEncCharacter::SetWeapon(AWeapon* Weapon)
 {
-	return_if(Weapon == nullptr);
-
-	Weapon->SetOwner(this);
-	Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName(TEXT("hand_rSocket")));
-	Weapon->SetActorRelativeRotation(Weapon->GetAttachRotator());
+	static FName SocketName(TEXT("hand_rSocket"));
+	SetEquipment(Weapon, SocketName);
 
 	CurWeapon = Weapon;
 }
@@ -178,6 +185,24 @@ void AEncCharacter::SetWeapon(AWeapon* Weapon)
 AWeapon* AEncCharacter::GetCurrentWeapon() const
 {
 	return CurWeapon;
+}
+
+bool AEncCharacter::CanSetShield() const
+{
+	return (CurShield == nullptr);
+}
+
+void AEncCharacter::SetShield(AShield* Shield)
+{
+	static FName SocketName(TEXT("lowerarm_twist_lSocket"));
+	SetEquipment(Shield, SocketName);
+
+	CurShield = Shield;
+}
+
+AShield* AEncCharacter::GetCurrentShield() const
+{
+	return nullptr;
 }
 
 float AEncCharacter::GetAttackDamage() const
@@ -345,6 +370,15 @@ void AEncCharacter::DefenseDown()
 {
 	bDefense = false;
 	bGaurding = false;
+}
+
+void AEncCharacter::SetEquipment(AEquipment* Equipment, const FName& SocketName)
+{
+	return_if(Equipment == nullptr);
+
+	Equipment->SetOwner(this);
+	Equipment->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+	Equipment->SetActorRelativeRotation(Equipment->GetAttachRotator());
 }
 
 void AEncCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
