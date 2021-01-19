@@ -8,6 +8,7 @@
 #include "Items/Equipment.h"
 #include "Items/Weapon.h"
 #include "Items/Shield.h"
+#include "DrawDebugHelpers.h"
 
 AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FObjectInitializer::Get()*/)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UEncCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
@@ -24,6 +25,9 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 	RollingSpeed = 2.5f;
 	RollingVelocityRate = 1.5f;
 	DefenseSpeed = 2.0f;
+	bShowAttackBox = false;
+	bShowAttackBoxInAttack = false;
+	bShowGaurdAngle = false;
 
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
@@ -87,9 +91,13 @@ void AEncCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (CurWeapon != nullptr && CurWeapon->IsShowAttackBox())
+	if (CurWeapon != nullptr && bShowAttackBox)
 	{
 		CurWeapon->DrawAttackBox();
+	}
+	if (CurShield != nullptr && bShowGaurdAngle)
+	{
+		CurShield->DrawGaurdAngle();
 	}
 }
 
@@ -143,6 +151,9 @@ void AEncCharacter::PostInitializeComponents()
 
 float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	if (CanGaurd(DamageCauser))
+		return 0.0f;
+
 	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
 	CharacterState->SetDamage(FinalDamage);	
@@ -222,6 +233,22 @@ void AEncCharacter::GiveAttackDamage(TWeakObjectPtr<AActor>& TargetPtr)
 	TargetPtr->TakeDamage(GetAttackDamage(), DamageEvent, GetController(), this);
 }
 
+bool AEncCharacter::CanGaurd(AActor* Attacker)
+{
+	return_if(Attacker == nullptr, true);
+
+	if (CurShield == nullptr)
+		return false;
+
+	FVector AttackerDir = Attacker->GetActorLocation() - GetActorLocation();
+	AttackerDir.Z = 0.0f;
+	AttackerDir.Normalize();
+
+	float Cosine = FVector::DotProduct(GetActorForwardVector(), AttackerDir);
+	
+	return (CurShield->GetGaurdAngleCosine() > Cosine);
+}
+
 float AEncCharacter::GetRollingSpeed() const
 {
 	return RollingSpeed;
@@ -251,6 +278,15 @@ void AEncCharacter::StartRagdoll()
 float AEncCharacter::GetCurrentRootMotionVelocityRate() const
 {
 	return CurrentRootMotionVelocityRate;
+}
+
+bool AEncCharacter::IsShowAttackBoxInAttack() const
+{
+#if ENABLE_DRAW_DEBUG
+	return bShowAttackBoxInAttack;
+#else
+	return false;
+#endif
 }
 
 void AEncCharacter::MoveForward(float NewAxisValue)

@@ -14,4 +14,18 @@ class ENCOUNTERS_API AShield : public AEquipment
 {
 	GENERATED_BODY()
 	
+public:
+	AShield();
+
+	virtual void PostInitializeComponents() override;
+
+	float GetGaurdAngleCosine() const;
+
+	void DrawGaurdAngle() const;
+
+private:
+	UPROPERTY(EditDefaultsOnly, Category = Gaurd, Meta = (AllowPrivateAccess = true))
+	float GaurdHalfAngle;
+
+	float GaurdAngleCosine = 0.0f;
 };

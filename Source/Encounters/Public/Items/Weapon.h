@@ -26,25 +26,17 @@ public:
 	FVector GetAttackBoxSocketPos() const;
 	FVector GetAttackBoxHalfExtent() const;
 
-	bool IsShowAttackBox() const;
-	bool IsShowAttackBoxInAttack() const;
-	void DrawAttackBox() const;
-
 	float GetAttackDamage() const;
+
+	void DrawAttackBox() const;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = AttackTrace, Meta = (AllowPrivateAccess = true))
 	FVector AttackBoxHalfExtent;
 
-	UPROPERTY(EditDefaultsOnly, Category = Debug, Meta = (AllowPrivateAccess = true))
-	bool bShowAttackBox;
-
-	UPROPERTY(EditDefaultsOnly, Category = Debug, Meta = (AllowPrivateAccess = true))
-	bool bShowAttackBoxInAttack;
+	UPROPERTY(EditAnywhere, Category = Damage, Meta = (AllowPrivateAccess = true))
+	float DefaultDamage;
 
 	UPROPERTY(EditDefaultsOnly, Category = Debug, Meta = (AllowPrivateAccess = true))
 	float DebugAttackBoxLifeTime;
-
-	UPROPERTY(EditAnywhere, Category = Damage, Meta = (AllowPrivateAccess = true))
-	float DefaultDamage;
 };

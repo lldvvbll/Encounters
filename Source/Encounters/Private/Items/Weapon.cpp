@@ -35,24 +35,6 @@ FVector AWeapon::GetAttackBoxHalfExtent() const
 	return AttackBoxHalfExtent;
 }
 
-bool AWeapon::IsShowAttackBox() const
-{
-#if ENABLE_DRAW_DEBUG
-	return bShowAttackBox;
-#else
-	return false;
-#endif
-}
-
-bool AWeapon::IsShowAttackBoxInAttack() const
-{
-#if ENABLE_DRAW_DEBUG
-	return bShowAttackBoxInAttack;
-#else
-	return false;
-#endif
-}
-
 void AWeapon::DrawAttackBox() const
 {
 #if ENABLE_DRAW_DEBUG

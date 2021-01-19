@@ -49,7 +49,7 @@ void UAttackTracerAnimNotifyState::NotifyTick(USkeletalMeshComponent* MeshComp, 
 		EncChar->GiveAttackDamage(Result.Actor);
 	}
 
-	if (Weapon->IsShowAttackBoxInAttack())
+	if (EncChar->IsShowAttackBoxInAttack())
 	{
 		Weapon->DrawAttackBox();
 	}

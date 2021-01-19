@@ -52,11 +52,15 @@ public:
 	float GetAttackDamage() const;
 	void GiveAttackDamage(TWeakObjectPtr<AActor>& Target);
 
+	bool CanGaurd(AActor* Attacker);
+
 	float GetRollingSpeed() const;
 
 	void StartRagdoll();
 
 	float GetCurrentRootMotionVelocityRate() const;
+
+	bool IsShowAttackBoxInAttack() const;
 
 private:
 	void MoveForward(float NewAxisValue);
@@ -154,5 +158,15 @@ private:
 	UPROPERTY(VisibleInstanceOnly, Category = Defense, Meta = (AllowPrivateAccess = true))
 	bool bGaurding;
 
-	float CurrentRootMotionVelocityRate;
+	UPROPERTY(EditAnywhere, Category = Debug, Meta = (AllowPrivateAccess = true))
+	bool bShowAttackBox;
+
+	UPROPERTY(EditAnywhere, Category = Debug, Meta = (AllowPrivateAccess = true))
+	bool bShowAttackBoxInAttack;
+
+	UPROPERTY(EditAnywhere, Category = Debug, Meta = (AllowPrivateAccess = true))
+	bool bShowGaurdAngle;
+
+	float CurrentRootMotionVelocityRate = 0.0f;
+	float GaurdAngleCosine = 0.0f;
 };
