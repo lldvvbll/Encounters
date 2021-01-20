@@ -62,17 +62,17 @@ public:
 
 	bool IsShowAttackBoxInAttack() const;
 
-private:
-	void MoveForward(float NewAxisValue);
-	void MoveRight(float NewAxisValue);
-	void LookUp(float NewAxisValue);
-	void Turn(float NewAxisValue);
-
 	void Roll();
 	void Attack();
 	void Dead();
 	void DefenseUp();
 	void DefenseDown();
+
+protected:
+	void MoveForward(float NewAxisValue);
+	void MoveRight(float NewAxisValue);
+	void LookUp(float NewAxisValue);
+	void Turn(float NewAxisValue);
 
 	void SetEquipment(AEquipment* Equipment, const FName& SocketName);
 
@@ -91,7 +91,7 @@ private:
 	UFUNCTION()
 	void OnBeginGaurd();
 
-private:
+protected:
 	UPROPERTY(VisibleAnywhere, Category = Camera, Meta = (AllowPrivateAccess = true))
 	USpringArmComponent* SpringArm;
 

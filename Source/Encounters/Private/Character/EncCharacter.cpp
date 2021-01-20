@@ -289,50 +289,6 @@ bool AEncCharacter::IsShowAttackBoxInAttack() const
 #endif
 }
 
-void AEncCharacter::MoveForward(float NewAxisValue)
-{
-	if (bRagdoll)
-		return;
-
-	if (bAttacking)
-	{
-		SavedInput.X = NewAxisValue;
-		return;
-	}
-
-	if (bRolling)
-		return;
-
-	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::X), NewAxisValue);
-}
-
-void AEncCharacter::MoveRight(float NewAxisValue)
-{
-	if (bRagdoll)
-		return;
-
-	if (bAttacking)
-	{
-		SavedInput.Y = NewAxisValue;
-		return;
-	}
-
-	if (bRolling)
-		return;
-
-	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::Y), NewAxisValue);
-}
-
-void AEncCharacter::LookUp(float NewAxisValue)
-{
-	AddControllerPitchInput(NewAxisValue);
-}
-
-void AEncCharacter::Turn(float NewAxisValue)
-{
-	AddControllerYawInput(NewAxisValue);
-}
-
 void AEncCharacter::Roll()
 {
 	if (bRolling || CanSaveAttack || IsFalling())
@@ -384,8 +340,8 @@ void AEncCharacter::Attack()
 		{
 			EncAnim->PlayAttackMontage(AttackSpeed);
 			EncAnim->JumpToAttackMontageSection(CurrentCombo);
-		}		
-	}	
+		}
+	}
 }
 
 void AEncCharacter::Dead()
@@ -406,6 +362,50 @@ void AEncCharacter::DefenseDown()
 {
 	bDefense = false;
 	bGaurding = false;
+}
+
+void AEncCharacter::MoveForward(float NewAxisValue)
+{
+	if (bRagdoll)
+		return;
+
+	if (bAttacking)
+	{
+		SavedInput.X = NewAxisValue;
+		return;
+	}
+
+	if (bRolling)
+		return;
+
+	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::X), NewAxisValue);
+}
+
+void AEncCharacter::MoveRight(float NewAxisValue)
+{
+	if (bRagdoll)
+		return;
+
+	if (bAttacking)
+	{
+		SavedInput.Y = NewAxisValue;
+		return;
+	}
+
+	if (bRolling)
+		return;
+
+	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::Y), NewAxisValue);
+}
+
+void AEncCharacter::LookUp(float NewAxisValue)
+{
+	AddControllerPitchInput(NewAxisValue);
+}
+
+void AEncCharacter::Turn(float NewAxisValue)
+{
+	AddControllerYawInput(NewAxisValue);
 }
 
 void AEncCharacter::SetEquipment(AEquipment* Equipment, const FName& SocketName)
