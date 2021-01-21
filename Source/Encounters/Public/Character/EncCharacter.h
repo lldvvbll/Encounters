@@ -68,6 +68,8 @@ public:
 	void DefenseUp();
 	void DefenseDown();
 
+	void DrawDebugGaurdSituation(AActor* DamageCauser);
+
 protected:
 	void MoveForward(float NewAxisValue);
 	void MoveRight(float NewAxisValue);
@@ -166,6 +168,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = Debug, Meta = (AllowPrivateAccess = true))
 	bool bShowGaurdAngle;
+	
+	UPROPERTY(EditAnywhere, Category = Debug, Meta = (AllowPrivateAccess = true))
+	bool bShowGaurdSituation;
 
 	float CurrentRootMotionVelocityRate = 0.0f;
 	float GaurdAngleCosine = 0.0f;

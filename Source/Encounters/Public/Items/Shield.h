@@ -21,7 +21,7 @@ public:
 
 	float GetGaurdAngleCosine() const;
 
-	void DrawGaurdAngle() const;
+	void DrawGaurdAngle(FColor Color = FColor::Red) const;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = Gaurd, Meta = (AllowPrivateAccess = true))

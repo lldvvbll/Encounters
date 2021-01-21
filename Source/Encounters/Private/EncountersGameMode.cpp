@@ -3,10 +3,10 @@
 
 #include "EncountersGameMode.h"
 #include "EncPlayerController.h"
-#include "Character/EncCharacter.h"
+#include "Character/PlayerCharacter.h"
 
 AEncountersGameMode::AEncountersGameMode()
 {
-	DefaultPawnClass = AEncCharacter::StaticClass();
+	DefaultPawnClass = APlayerCharacter::StaticClass();
 	PlayerControllerClass = AEncPlayerController::StaticClass();
 }

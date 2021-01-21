@@ -21,7 +21,7 @@ float AShield::GetGaurdAngleCosine() const
     return GaurdAngleCosine;
 }
 
-void AShield::DrawGaurdAngle() const
+void AShield::DrawGaurdAngle(FColor Color/* = FColor::Red*/) const
 {
 #if ENABLE_DRAW_DEBUG
     AActor* Char = GetOwner();
@@ -42,7 +42,7 @@ void AShield::DrawGaurdAngle() const
 
     for (int32 idx = 0; idx < Positions.Num() - 1; ++idx)
     {
-        DrawDebugLine(GetWorld(), Positions[idx], Positions[idx + 1], FColor::Red, false, 5.0f);
+        DrawDebugLine(GetWorld(), Positions[idx], Positions[idx + 1], Color, false, 5.0f);
     }
 #endif
 }

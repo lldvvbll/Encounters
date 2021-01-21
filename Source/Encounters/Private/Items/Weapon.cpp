@@ -6,7 +6,6 @@
 
 AWeapon::AWeapon()
 {
-	DebugAttackBoxLifeTime = 0.5f;
 	DefaultDamage = 10.0f;
 }
 
@@ -35,13 +34,13 @@ FVector AWeapon::GetAttackBoxHalfExtent() const
 	return AttackBoxHalfExtent;
 }
 
-void AWeapon::DrawAttackBox() const
+void AWeapon::DrawAttackBox(FColor Color/* = FColor::Red*/) const
 {
 #if ENABLE_DRAW_DEBUG
 	FVector Pos = GetAttackBoxSocketPos();
 	FVector Extent = AttackBoxHalfExtent * 2.0f * GetActorScale();
 	FQuat Quat = GetActorRotation().Quaternion();
-	DrawDebugBox(GetWorld(), Pos, Extent, Quat, FColor::Red, false, DebugAttackBoxLifeTime);
+	DrawDebugBox(GetWorld(), Pos, Extent, Quat, Color, false, 5.0f);
 #endif
 }
 

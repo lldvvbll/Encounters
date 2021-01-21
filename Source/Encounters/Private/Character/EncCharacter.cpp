@@ -16,8 +16,6 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINTARM"));
-	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
 	CharacterState = CreateDefaultSubobject<UEncCharacterStateComponent>(TEXT("CHARACTERSTATE"));
 	
 	MaxComboCount = 2;
@@ -28,17 +26,9 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 	bShowAttackBox = false;
 	bShowAttackBoxInAttack = false;
 	bShowGaurdAngle = false;
+	bShowGaurdSituation = false;
 
-	SpringArm->SetupAttachment(GetCapsuleComponent());
-	Camera->SetupAttachment(SpringArm);
-
-	SpringArm->TargetArmLength = 450.0f;
-	SpringArm->bUsePawnControlRotation = true;
-	SpringArm->bInheritPitch = true;
-	SpringArm->bInheritRoll = true;
-	SpringArm->bInheritYaw = true;
-	SpringArm->bDoCollisionTest = true;
-	bUseControllerRotationYaw = false;
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("EncCharacter"));
 
 	UCharacterMovementComponent* CharMovementComp = GetCharacterMovement();
 	CharMovementComp->bOrientRotationToMovement = true;
@@ -46,8 +36,7 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 	CharMovementComp->RotationRate = FRotator(0.0f, 720.0f, 0.0f);
 
 	USkeletalMeshComponent* SkeletalMeshComp = GetMesh();
-	SkeletalMeshComp->SetRelativeLocationAndRotation(
-		FVector(0.0f, 0.0f, -88.0f), FRotator(0.0f, -90.0f, 0.0f));
+	SkeletalMeshComp->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -88.0f), FRotator(0.0f, -90.0f, 0.0f));
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_DEFAULT(
 		TEXT("/Game/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin"));
@@ -64,8 +53,6 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 	{
 		SkeletalMeshComp->SetAnimInstanceClass(ENC_ANIM.Class);
 	}
-
-	GetCapsuleComponent()->SetCollisionProfileName(TEXT("EncCharacter"));
 
 	static ConstructorHelpers::FClassFinder<AWeapon> WEAPON(TEXT("/Game/Encounters/Items/BP_Sword.BP_Sword_C"));
 	if (WEAPON.Succeeded())
@@ -152,7 +139,10 @@ void AEncCharacter::PostInitializeComponents()
 float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	if (CanGaurd(DamageCauser))
+	{
+		DrawDebugGaurdSituation(DamageCauser);
 		return 0.0f;
+	}		
 
 	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
@@ -246,7 +236,7 @@ bool AEncCharacter::CanGaurd(AActor* Attacker)
 
 	float Cosine = FVector::DotProduct(GetActorForwardVector(), AttackerDir);
 	
-	return (CurShield->GetGaurdAngleCosine() > Cosine);
+	return (CurShield->GetGaurdAngleCosine() <= Cosine);
 }
 
 float AEncCharacter::GetRollingSpeed() const
@@ -362,6 +352,36 @@ void AEncCharacter::DefenseDown()
 {
 	bDefense = false;
 	bGaurding = false;
+}
+
+void AEncCharacter::DrawDebugGaurdSituation(AActor* DamageCauser)
+{
+#if ENABLE_DRAW_DEBUG
+	AEncCharacter* Attacker = Cast<AEncCharacter>(DamageCauser);
+	if (Attacker != nullptr)
+	{
+		AWeapon* Weapon = Attacker->GetCurrentWeapon();
+		if (Weapon != nullptr)
+		{
+			Weapon->DrawAttackBox(FColor::Red);
+		}
+	}
+	if (CurShield != nullptr)
+	{
+		CurShield->DrawGaurdAngle(FColor::Blue);
+	}
+
+	FVector MyPos = GetActorLocation();
+	FVector AttackerPos = MyPos;
+	if (Attacker != nullptr)
+	{
+		AttackerPos = Attacker->GetActorLocation();
+	}
+
+	DrawDebugPoint(GetWorld(), MyPos, 10.0f, FColor::Green, false, 5.0f);
+	DrawDebugPoint(GetWorld(), AttackerPos, 10.0f, FColor::Green, false, 5.0f);
+	DrawDebugLine(GetWorld(), MyPos, AttackerPos, FColor::Green, false, 5.0f);
+#endif // ENABLE_DRAW_DEBUG
 }
 
 void AEncCharacter::MoveForward(float NewAxisValue)

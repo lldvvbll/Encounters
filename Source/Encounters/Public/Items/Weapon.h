@@ -28,7 +28,7 @@ public:
 
 	float GetAttackDamage() const;
 
-	void DrawAttackBox() const;
+	void DrawAttackBox(FColor Color = FColor::Red) const;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = AttackTrace, Meta = (AllowPrivateAccess = true))
@@ -36,7 +36,4 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Damage, Meta = (AllowPrivateAccess = true))
 	float DefaultDamage;
-
-	UPROPERTY(EditDefaultsOnly, Category = Debug, Meta = (AllowPrivateAccess = true))
-	float DebugAttackBoxLifeTime;
 };
