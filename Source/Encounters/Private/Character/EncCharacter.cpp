@@ -81,7 +81,7 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 
 	LockOnMarker->SetupAttachment(CapsuleComp);
 	LockOnMarker->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
-	LockOnMarker->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
+	LockOnMarker->SetRelativeLocation(FVector(0.0f, 0.0f, 110.0f));
 	LockOnMarker->SetCastShadow(false);
 	LockOnMarker->SetVisibility(false);
 }
@@ -133,7 +133,11 @@ float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 {
 	if (CanGaurd(DamageCauser))
 	{
-		DrawDebugGaurdSituation(DamageCauser);
+		if (bShowGaurdSituation)
+		{
+			DrawDebugGaurdSituation(DamageCauser);
+		}
+		
 		return 0.0f;
 	}		
 

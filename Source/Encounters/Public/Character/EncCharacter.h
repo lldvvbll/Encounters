@@ -142,7 +142,7 @@ protected:
 	float GaurdAngleCosine;
 
 	UPROPERTY(VisibleAnywhere, Category = LockOn, Meta = (AllowPrivateAccess = true))
-	UStaticMeshComponent* LockOnMark;
+	UStaticMeshComponent* LockOnMarker;
 
 	UPROPERTY(EditAnywhere, Category = Debug, Meta = (AllowPrivateAccess = true))
 	bool bShowAttackBox;
