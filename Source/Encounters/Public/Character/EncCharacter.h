@@ -160,6 +160,9 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, Category = Defense, Meta = (AllowPrivateAccess = true))
 	bool bGaurding;
 
+	UPROPERTY(VisibleInstanceOnly, Category = Defense, Meta = (AllowPrivateAccess = true))
+	float GaurdAngleCosine;
+
 	UPROPERTY(EditAnywhere, Category = Debug, Meta = (AllowPrivateAccess = true))
 	bool bShowAttackBox;
 
@@ -172,6 +175,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Debug, Meta = (AllowPrivateAccess = true))
 	bool bShowGaurdSituation;
 
-	float CurrentRootMotionVelocityRate = 0.0f;
-	float GaurdAngleCosine = 0.0f;
+	UPROPERTY(VisibleInstanceOnly, Category = RootMotion, Meta = (AllowPrivateAccess = true))
+	float CurrentRootMotionVelocityRate;
 };

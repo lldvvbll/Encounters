@@ -34,7 +34,7 @@ void UAttackTracerAnimNotifyState::NotifyTick(USkeletalMeshComponent* MeshComp, 
 	TArray<FHitResult> HitResults;
 	FCollisionQueryParams Params(NAME_None, false, EncChar);
 	EncChar->GetWorld()->SweepMultiByChannel(HitResults, LastAttackBoxPos, CurPos, Weapon->GetActorRotation().Quaternion(),
-		ECollisionChannel::ECC_EngineTraceChannel2, FCollisionShape::MakeBox(Weapon->GetAttackBoxHalfExtent()), Params);
+		ECollisionChannel::ECC_GameTraceChannel2, FCollisionShape::MakeBox(Weapon->GetAttackBoxHalfExtent()), Params);
 
 	for (auto& Result : HitResults)
 	{

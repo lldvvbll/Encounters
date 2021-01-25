@@ -23,8 +23,15 @@ public:
 	virtual void NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
 
 private:
-	AEncCharacter* EncChar = nullptr;
-	AWeapon* Weapon = nullptr;
-	FVector LastAttackBoxPos = FVector::ZeroVector;
+	UPROPERTY()
+	AEncCharacter* EncChar;
+
+	UPROPERTY()
+	AWeapon* Weapon;
+
+	UPROPERTY()
+	FVector LastAttackBoxPos;
+
+	UPROPERTY()
 	TArray<TWeakObjectPtr<AActor>> HitActors;
 };

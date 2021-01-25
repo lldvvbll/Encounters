@@ -27,5 +27,6 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Gaurd, Meta = (AllowPrivateAccess = true))
 	float GaurdHalfAngle;
 
+	UPROPERTY(VisibleInstanceOnly, Category = Gaurd, Meta = (AllowPrivateAccess = true))
 	float GaurdAngleCosine = 0.0f;
 };

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "Encounters.h"
 #include "GameFramework/PlayerController.h"
 #include "EncPlayerController.generated.h"
 
