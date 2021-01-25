@@ -38,6 +38,7 @@ void AShield::DrawGaurdAngle(FColor Color/* = FColor::Red*/) const
     {
         Positions.Emplace(CharPos + CharForward.RotateAngleAxis(Angle, FVector::UpVector));
     }
+    Positions.Emplace(CharPos + CharForward.RotateAngleAxis(-GaurdHalfAngle, FVector::UpVector));
     Positions.Emplace(CharPos);
 
     for (int32 idx = 0; idx < Positions.Num() - 1; ++idx)

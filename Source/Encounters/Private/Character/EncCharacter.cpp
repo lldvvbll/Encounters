@@ -13,7 +13,6 @@
 AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FObjectInitializer::Get()*/)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UEncCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	CharacterState = CreateDefaultSubobject<UEncCharacterStateComponent>(TEXT("CHARACTERSTATE"));
@@ -67,13 +66,6 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 	}
 }
 
-// Called when the game starts or when spawned
-void AEncCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-// Called every frame
 void AEncCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -86,25 +78,6 @@ void AEncCharacter::Tick(float DeltaTime)
 	{
 		CurShield->DrawGaurdAngle();
 	}
-}
-
-// Called to bind functionality to input
-void AEncCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &AEncCharacter::MoveForward);
-	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &AEncCharacter::MoveRight);
-	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &AEncCharacter::LookUp);
-	PlayerInputComponent->BindAxis(TEXT("LookUpRate"), this, &AEncCharacter::LookUp);
-	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &AEncCharacter::Turn);
-	PlayerInputComponent->BindAxis(TEXT("TurnRate"), this, &AEncCharacter::Turn);
-	
-	PlayerInputComponent->BindAction(TEXT("Roll"), EInputEvent::IE_Pressed, this, &AEncCharacter::Roll);
-	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &AEncCharacter::Attack);
-	PlayerInputComponent->BindAction(TEXT("Ragdoll"), EInputEvent::IE_Pressed, this, &AEncCharacter::StartRagdoll);
-	PlayerInputComponent->BindAction(TEXT("Defense"), EInputEvent::IE_Pressed, this, &AEncCharacter::DefenseUp);
-	PlayerInputComponent->BindAction(TEXT("Defense"), EInputEvent::IE_Released, this, &AEncCharacter::DefenseDown);
 }
 
 void AEncCharacter::PostInitializeComponents()
@@ -382,50 +355,6 @@ void AEncCharacter::DrawDebugGaurdSituation(AActor* DamageCauser)
 	DrawDebugPoint(GetWorld(), AttackerPos, 10.0f, FColor::Green, false, 5.0f);
 	DrawDebugLine(GetWorld(), MyPos, AttackerPos, FColor::Green, false, 5.0f);
 #endif // ENABLE_DRAW_DEBUG
-}
-
-void AEncCharacter::MoveForward(float NewAxisValue)
-{
-	if (bRagdoll)
-		return;
-
-	if (bAttacking)
-	{
-		SavedInput.X = NewAxisValue;
-		return;
-	}
-
-	if (bRolling)
-		return;
-
-	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::X), NewAxisValue);
-}
-
-void AEncCharacter::MoveRight(float NewAxisValue)
-{
-	if (bRagdoll)
-		return;
-
-	if (bAttacking)
-	{
-		SavedInput.Y = NewAxisValue;
-		return;
-	}
-
-	if (bRolling)
-		return;
-
-	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::Y), NewAxisValue);
-}
-
-void AEncCharacter::LookUp(float NewAxisValue)
-{
-	AddControllerPitchInput(NewAxisValue);
-}
-
-void AEncCharacter::Turn(float NewAxisValue)
-{
-	AddControllerYawInput(NewAxisValue);
 }
 
 void AEncCharacter::SetEquipment(AEquipment* Equipment, const FName& SocketName)

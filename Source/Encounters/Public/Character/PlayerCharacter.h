@@ -17,4 +17,12 @@ class ENCOUNTERS_API APlayerCharacter : public AEncCharacter
 public:
 	APlayerCharacter();
 
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+protected:
+	void MoveForward(float NewAxisValue);
+	void MoveRight(float NewAxisValue);
+	void LookUp(float NewAxisValue);
+	void Turn(float NewAxisValue);
+
 };

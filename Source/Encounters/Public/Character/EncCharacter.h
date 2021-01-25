@@ -21,19 +21,8 @@ public:
 	// Sets default values for this character's properties
 	AEncCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 	virtual void PostInitializeComponents() override;
-
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	bool IsRolling() const;
@@ -71,11 +60,6 @@ public:
 	void DrawDebugGaurdSituation(AActor* DamageCauser);
 
 protected:
-	void MoveForward(float NewAxisValue);
-	void MoveRight(float NewAxisValue);
-	void LookUp(float NewAxisValue);
-	void Turn(float NewAxisValue);
-
 	void SetEquipment(AEquipment* Equipment, const FName& SocketName);
 
 	UFUNCTION()
