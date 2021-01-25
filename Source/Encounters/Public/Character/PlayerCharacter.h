@@ -25,4 +25,11 @@ protected:
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
 
+private:
+	UPROPERTY(VisibleAnywhere, Category = Camera, Meta = (AllowPrivateAccess = true))
+	USpringArmComponent* SpringArm;
+
+	UPROPERTY(VisibleAnywhere, Category = Camera, Meta = (AllowPrivateAccess = true))
+	UCameraComponent* Camera;
+
 };

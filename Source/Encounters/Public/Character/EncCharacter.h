@@ -78,12 +78,6 @@ protected:
 	void OnBeginGaurd();
 
 protected:
-	UPROPERTY(VisibleAnywhere, Category = Camera, Meta = (AllowPrivateAccess = true))
-	USpringArmComponent* SpringArm;
-
-	UPROPERTY(VisibleAnywhere, Category = Camera, Meta = (AllowPrivateAccess = true))
-	UCameraComponent* Camera;
-
 	UPROPERTY()
 	UEncAnimInstance* EncAnim;
 
@@ -146,6 +140,9 @@ protected:
 
 	UPROPERTY(VisibleInstanceOnly, Category = Defense, Meta = (AllowPrivateAccess = true))
 	float GaurdAngleCosine;
+
+	UPROPERTY(VisibleAnywhere, Category = LockOn, Meta = (AllowPrivateAccess = true))
+	UStaticMeshComponent* LockOnMark;
 
 	UPROPERTY(EditAnywhere, Category = Debug, Meta = (AllowPrivateAccess = true))
 	bool bShowAttackBox;
