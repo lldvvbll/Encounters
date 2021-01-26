@@ -34,10 +34,16 @@ void UEncAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (!::IsValid(Char))
 		return;
 
-	CurrentPawnSpeed = Char->GetVelocity().Size();
+	FVector CharVelocity = Char->GetVelocity();
+	CurrentPawnSpeed = CharVelocity.Size();
 	IsRolling = Char->IsRolling();
 	IsInAir = IsRolling ? false : Char->IsFalling();
 	IsDefending = Char->IsDefending();
+	IsLockOnTarget = Char->IsLockOnTarget();
+	if (IsLockOnTarget)
+	{
+		Direction = CalculateDirection(CharVelocity, Char->GetActorRotation());
+	}
 }
 
 void UEncAnimInstance::PlayAttackMontage(float PlayRate)

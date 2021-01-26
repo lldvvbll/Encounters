@@ -38,25 +38,29 @@ public:
 	void SetShield(AShield* Shield);
 	AShield* GetCurrentShield() const;
 
+	void Attack();
 	float GetAttackDamage() const;
 	void GiveAttackDamage(TWeakObjectPtr<AActor>& Target);
 
+	void DefenseUp();
+	void DefenseDown();
 	bool CanGaurd(AActor* Attacker);
 
+	void Roll();
 	float GetRollingSpeed() const;
 
+	void Dead();
+	bool IsDead() const;
 	void StartRagdoll();
+
+	virtual void LockOn() {}
+	virtual void ReleaseLockOn() {}
+	virtual bool IsLockOnTarget() const { return false; }
+	virtual TWeakObjectPtr<AEncCharacter> FindLockOnTarget() const { return TWeakObjectPtr<AEncCharacter>(); }
 
 	float GetCurrentRootMotionVelocityRate() const;
 
 	bool IsShowAttackBoxInAttack() const;
-
-	void Roll();
-	void Attack();
-	void Dead();
-	void DefenseUp();
-	void DefenseDown();
-
 	void DrawDebugGaurdSituation(AActor* DamageCauser);
 
 protected:
@@ -127,6 +131,9 @@ protected:
 	float RollingVelocityRate;
 
 	UPROPERTY(VisibleInstanceOnly, Category = Ragdoll, Meta = (AllowPrivateAccess = true))
+	bool bDead;
+
+	UPROPERTY(VisibleInstanceOnly, Category = Ragdoll, Meta = (AllowPrivateAccess = true))
 	bool bRagdoll;
 
 	UPROPERTY(VisibleInstanceOnly, Category = Defense, Meta = (AllowPrivateAccess = true))
@@ -140,6 +147,18 @@ protected:
 
 	UPROPERTY(VisibleInstanceOnly, Category = Defense, Meta = (AllowPrivateAccess = true))
 	float GaurdAngleCosine;
+
+	UPROPERTY(EditAnywhere, Category = LockOn, Meta = (AllowPrivateAccess = true))
+	float LockOnDistanceMax;
+
+	UPROPERTY()
+	float LockOnDistanceMaxSquared;
+
+	UPROPERTY(VisibleInstanceOnly, Category = LockOn, Meta = (AllowPrivateAccess = true))
+	TWeakObjectPtr<AEncCharacter> LockedOnTarget;
+
+	UPROPERTY(VisibleInstanceOnly, Category = LockOn, Meta = (AllowPrivateAccess = true))
+	bool bLockOnTarget;
 
 	UPROPERTY(EditAnywhere, Category = Debug, Meta = (AllowPrivateAccess = true))
 	bool bShowAttackBox;

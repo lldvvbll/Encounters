@@ -8,9 +8,6 @@ APlayerCharacter::APlayerCharacter()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINTARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
 
-	LockOnDistanceMax = 800.0f;
-	LockOnDistanceMaxSquared = LockOnDistanceMax * LockOnDistanceMax;
-
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
 
@@ -30,7 +27,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 
 	if (bLockOnTarget)
 	{
-		if (LockedOnTarget.IsValid())			
+		if (LockedOnTarget.IsValid() && !LockedOnTarget->IsDead())
 		{
 			FVector TargetPos = LockedOnTarget->GetActorLocation();
 			if ((TargetPos - GetActorLocation()).SizeSquared() < LockOnDistanceMaxSquared)
@@ -68,6 +65,11 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction(TEXT("Defense"), EInputEvent::IE_Pressed, this, &APlayerCharacter::DefenseUp);
 	PlayerInputComponent->BindAction(TEXT("Defense"), EInputEvent::IE_Released, this, &APlayerCharacter::DefenseDown);
 	PlayerInputComponent->BindAction(TEXT("LockOn"), EInputEvent::IE_Pressed, this, &APlayerCharacter::LockOn);
+}
+
+bool APlayerCharacter::IsLockOnTarget() const
+{
+	return bLockOnTarget;
 }
 
 void APlayerCharacter::MoveForward(float NewAxisValue)
@@ -136,7 +138,7 @@ void APlayerCharacter::LockOn()
 	{
 		AController* CharController = GetController();
 
-		TWeakObjectPtr<AActor> TargetPtr = FindLockOnTarget();
+		TWeakObjectPtr<AEncCharacter> TargetPtr = FindLockOnTarget();
 		if (TargetPtr.IsValid())
 		{
 			FVector Dir = TargetPtr->GetActorLocation() - GetCameraRotationPivot();
@@ -172,9 +174,9 @@ void APlayerCharacter::ReleaseLockOn()
 	CharMovement->bUseControllerDesiredRotation = false;
 }
 
-TWeakObjectPtr<AActor> APlayerCharacter::FindLockOnTarget() const
+TWeakObjectPtr<AEncCharacter> APlayerCharacter::FindLockOnTarget() const
 {
-	TWeakObjectPtr<AActor> TargetPtr;
+	TWeakObjectPtr<AEncCharacter> TargetPtr;
 
 	FVector CharPos = GetActorLocation();
 
@@ -194,9 +196,13 @@ TWeakObjectPtr<AActor> APlayerCharacter::FindLockOnTarget() const
 			if (!Result.Actor.IsValid())
 				continue;
 
+			AEncCharacter* Target = CastChecked<AEncCharacter>(Result.Actor);
+			if (Target == nullptr)
+				continue;
+
 			FLockOnCandidate Candidate;
 
-			FVector TargetPos = Result.Actor->GetActorLocation();
+			FVector TargetPos = Target->GetActorLocation();
 
 			FVector DirCharToTarget = TargetPos - CharPos;
 			Candidate.DistanceSquared = DirCharToTarget.SizeSquared();
@@ -208,7 +214,7 @@ TWeakObjectPtr<AActor> APlayerCharacter::FindLockOnTarget() const
 			DirCamToTarget.Normalize();
 			Candidate.bFrontOfCam = (FVector::DotProduct(CamForward, DirCamToTarget) > KINDA_SMALL_NUMBER);
 
-			Candidate.TargetPtr = Result.Actor;
+			Candidate.TargetPtr = Target;
 
 			Candidates.Emplace(Candidate);
 		}

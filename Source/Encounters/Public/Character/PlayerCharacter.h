@@ -21,7 +21,7 @@ struct FLockOnCandidate
 	float DistanceSquared;
 
 	UPROPERTY()
-	TWeakObjectPtr<AActor> TargetPtr;
+	TWeakObjectPtr<AEncCharacter> TargetPtr;
 };
 
 UCLASS()
@@ -35,6 +35,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void LockOn() override;
+	virtual void ReleaseLockOn() override;
+	virtual bool IsLockOnTarget() const override;
+	virtual TWeakObjectPtr<AEncCharacter> FindLockOnTarget() const override;
+
 protected:
 	void MoveForward(float NewAxisValue);
 	void MoveRight(float NewAxisValue);
@@ -43,26 +48,10 @@ protected:
 	
 	FVector GetCameraRotationPivot() const;
 
-	void LockOn();
-	void ReleaseLockOn();
-	TWeakObjectPtr<AActor> FindLockOnTarget() const;
-
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera, Meta = (AllowPrivateAccess = true))
 	USpringArmComponent* SpringArm;
 
 	UPROPERTY(VisibleAnywhere, Category = Camera, Meta = (AllowPrivateAccess = true))
 	UCameraComponent* Camera;
-
-	UPROPERTY(EditAnywhere, Category = LockOn, Meta = (AllowPrivateAccess = true))
-	float LockOnDistanceMax;
-
-	UPROPERTY()
-	float LockOnDistanceMaxSquared;
-
-	UPROPERTY(VisibleInstanceOnly, Category = LockOn, Meta = (AllowPrivateAccess = true))
-	TWeakObjectPtr<AActor> LockedOnTarget;
-
-	UPROPERTY(VisibleInstanceOnly, Category = LockOn, Meta = (AllowPrivateAccess = true))
-	bool bLockOnTarget;
 };

@@ -22,6 +22,9 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 	RollingSpeed = 2.5f;
 	RollingVelocityRate = 1.5f;
 	DefenseSpeed = 2.0f;
+	LockOnDistanceMax = 800.0f;
+	LockOnDistanceMaxSquared = LockOnDistanceMax * LockOnDistanceMax;
+	
 	bShowAttackBox = false;
 	bShowAttackBoxInAttack = false;
 	bShowGaurdAngle = false;
@@ -184,6 +187,32 @@ AShield* AEncCharacter::GetCurrentShield() const
 	return nullptr;
 }
 
+void AEncCharacter::Attack()
+{
+	if (bRolling || IsFalling() || bRagdoll)
+		return;
+
+	if (bAttacking)
+	{
+		if (CanSaveAttack)
+		{
+			bInputAttack = true;
+		}
+	}
+	else
+	{
+		CurrentCombo = 1;
+		bInputAttack = false;
+		bAttacking = true;
+
+		if (EncAnim != nullptr)
+		{
+			EncAnim->PlayAttackMontage(AttackSpeed);
+			EncAnim->JumpToAttackMontageSection(CurrentCombo);
+		}
+	}
+}
+
 float AEncCharacter::GetAttackDamage() const
 {
 	if (CurWeapon == nullptr)
@@ -201,6 +230,20 @@ void AEncCharacter::GiveAttackDamage(TWeakObjectPtr<AActor>& TargetPtr)
 	TargetPtr->TakeDamage(GetAttackDamage(), DamageEvent, GetController(), this);
 }
 
+void AEncCharacter::DefenseUp()
+{
+	if (bRagdoll)
+		return;
+
+	bDefense = true;
+}
+
+void AEncCharacter::DefenseDown()
+{
+	bDefense = false;
+	bGaurding = false;
+}
+
 bool AEncCharacter::CanGaurd(AActor* Attacker)
 {
 	return_if(Attacker == nullptr, true);
@@ -216,9 +259,50 @@ bool AEncCharacter::CanGaurd(AActor* Attacker)
 	return (CurShield->GetGaurdAngleCosine() <= Cosine);
 }
 
+void AEncCharacter::Roll()
+{
+	if (bRolling || CanSaveAttack || IsFalling())
+		return;
+
+	FVector DirToMove(FVector::ZeroVector);
+	if (bAttacking)
+	{
+		DirToMove = FRotator(0.0f, GetControlRotation().Yaw, 0.0f).RotateVector(SavedInput);
+	}
+	else
+	{
+		DirToMove = GetLastMovementInputVector();
+	}
+
+	if (DirToMove.IsNearlyZero())
+		return;
+
+	SetActorRotation(DirToMove.Rotation(), ETeleportType::TeleportPhysics);
+
+	CurrentRootMotionVelocityRate = RollingVelocityRate;
+	if (EncAnim != nullptr)
+	{
+		EncAnim->PlayRollingMontage(RollingSpeed);
+	}
+
+	bRolling = true;
+}
+
 float AEncCharacter::GetRollingSpeed() const
 {
 	return RollingSpeed;
+}
+
+void AEncCharacter::Dead()
+{
+	StartRagdoll();
+	DefenseDown();
+	bDead = true;
+}
+
+bool AEncCharacter::IsDead() const
+{
+	return bDead;
 }
 
 void AEncCharacter::StartRagdoll()
@@ -254,81 +338,6 @@ bool AEncCharacter::IsShowAttackBoxInAttack() const
 #else
 	return false;
 #endif
-}
-
-void AEncCharacter::Roll()
-{
-	if (bRolling || CanSaveAttack || IsFalling())
-		return;
-
-	FVector DirToMove(FVector::ZeroVector);
-	if (bAttacking)
-	{
-		DirToMove = FRotator(0.0f, GetControlRotation().Yaw, 0.0f).RotateVector(SavedInput);
-	}
-	else
-	{
-		DirToMove = GetLastMovementInputVector();
-	}
-
-	if (DirToMove.IsNearlyZero())
-		return;
-
-	SetActorRotation(DirToMove.Rotation(), ETeleportType::TeleportPhysics);
-
-	CurrentRootMotionVelocityRate = RollingVelocityRate;
-	if (EncAnim != nullptr)
-	{
-		EncAnim->PlayRollingMontage(RollingSpeed);
-	}
-
-	bRolling = true;
-}
-
-void AEncCharacter::Attack()
-{
-	if (bRolling || IsFalling() || bRagdoll)
-		return;
-
-	if (bAttacking)
-	{
-		if (CanSaveAttack)
-		{
-			bInputAttack = true;
-		}
-	}
-	else
-	{
-		CurrentCombo = 1;
-		bInputAttack = false;
-		bAttacking = true;
-
-		if (EncAnim != nullptr)
-		{
-			EncAnim->PlayAttackMontage(AttackSpeed);
-			EncAnim->JumpToAttackMontageSection(CurrentCombo);
-		}
-	}
-}
-
-void AEncCharacter::Dead()
-{
-	StartRagdoll();
-	DefenseDown();
-}
-
-void AEncCharacter::DefenseUp()
-{
-	if (bRagdoll)
-		return;
-
-	bDefense = true;
-}
-
-void AEncCharacter::DefenseDown()
-{
-	bDefense = false;
-	bGaurding = false;
 }
 
 void AEncCharacter::DrawDebugGaurdSituation(AActor* DamageCauser)
