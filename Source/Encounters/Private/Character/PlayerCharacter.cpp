@@ -8,10 +8,13 @@ APlayerCharacter::APlayerCharacter()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINTARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
 
+	LockOnDistanceMax = 800.0f;
+	LockOnDistanceMaxSquared = LockOnDistanceMax * LockOnDistanceMax;
+
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
 
-	SpringArm->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
+	SpringArm->SetRelativeLocation(FVector(0.0f, 0.0f, 110.0f));
 	SpringArm->TargetArmLength = 400.0f;
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->bInheritPitch = true;
@@ -19,6 +22,33 @@ APlayerCharacter::APlayerCharacter()
 	SpringArm->bInheritYaw = true;
 	SpringArm->bDoCollisionTest = true;
 	bUseControllerRotationYaw = false;
+}
+
+void APlayerCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (bLockOnTarget)
+	{
+		if (LockedOnTarget.IsValid())			
+		{
+			FVector TargetPos = LockedOnTarget->GetActorLocation();
+			if ((TargetPos - GetActorLocation()).SizeSquared() < LockOnDistanceMaxSquared)
+			{
+				FVector Dir = TargetPos - GetCameraRotationPivot();
+				Dir.Normalize();
+				GetController()->SetControlRotation(Dir.Rotation());
+			}			
+			else
+			{
+				ReleaseLockOn();
+			}
+		}
+		else
+		{
+			ReleaseLockOn();
+		}		
+	}
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -37,6 +67,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction(TEXT("Ragdoll"), EInputEvent::IE_Pressed, this, &APlayerCharacter::StartRagdoll);
 	PlayerInputComponent->BindAction(TEXT("Defense"), EInputEvent::IE_Pressed, this, &APlayerCharacter::DefenseUp);
 	PlayerInputComponent->BindAction(TEXT("Defense"), EInputEvent::IE_Released, this, &APlayerCharacter::DefenseDown);
+	PlayerInputComponent->BindAction(TEXT("LockOn"), EInputEvent::IE_Pressed, this, &APlayerCharacter::LockOn);
 }
 
 void APlayerCharacter::MoveForward(float NewAxisValue)
@@ -75,10 +106,147 @@ void APlayerCharacter::MoveRight(float NewAxisValue)
 
 void APlayerCharacter::LookUp(float NewAxisValue)
 {
-	AddControllerPitchInput(NewAxisValue);
+	if (!bLockOnTarget)
+	{
+		AddControllerPitchInput(NewAxisValue);
+	}	
 }
 
 void APlayerCharacter::Turn(float NewAxisValue)
 {
-	AddControllerYawInput(NewAxisValue);
+	if (!bLockOnTarget)
+	{
+		AddControllerYawInput(NewAxisValue);
+	}	
+}
+
+FVector APlayerCharacter::GetCameraRotationPivot() const
+{
+	// 스프링암의 원점을 카메라 회전 중심으로 하자.
+	return SpringArm->GetComponentLocation();
+}
+
+void APlayerCharacter::LockOn()
+{
+	if (bLockOnTarget)
+	{
+		ReleaseLockOn();
+	}
+	else
+	{
+		AController* CharController = GetController();
+
+		TWeakObjectPtr<AActor> TargetPtr = FindLockOnTarget();
+		if (TargetPtr.IsValid())
+		{
+			FVector Dir = TargetPtr->GetActorLocation() - GetCameraRotationPivot();
+			Dir.Normalize();
+
+			FRotator Rot = Dir.Rotation();
+			Rot.Pitch = 0.0f;
+			SetActorRotation(Rot);
+
+			bLockOnTarget = true;
+			LockedOnTarget = TargetPtr; 
+
+			UCharacterMovementComponent* CharMovement = GetCharacterMovement();
+			CharMovement->bOrientRotationToMovement = false;
+			CharMovement->bUseControllerDesiredRotation = true;
+		}
+		else
+		{
+			FRotator CharRot = GetActorRotation();
+			CharRot.Pitch = CharController->GetControlRotation().Pitch;
+			CharController->SetControlRotation(CharRot);
+		}
+	}
+}
+
+void APlayerCharacter::ReleaseLockOn()
+{
+	bLockOnTarget = false;
+	LockedOnTarget.Reset();
+
+	UCharacterMovementComponent* CharMovement = GetCharacterMovement();
+	CharMovement->bOrientRotationToMovement = true;
+	CharMovement->bUseControllerDesiredRotation = false;
+}
+
+TWeakObjectPtr<AActor> APlayerCharacter::FindLockOnTarget() const
+{
+	TWeakObjectPtr<AActor> TargetPtr;
+
+	FVector CharPos = GetActorLocation();
+
+	TArray<FOverlapResult> OverlapResults;
+	FCollisionQueryParams CollisionQueryParam(NAME_None, false, this);
+	if (GetWorld()->OverlapMultiByChannel(OverlapResults, CharPos, FQuat::Identity, 
+		ECollisionChannel::ECC_GameTraceChannel2, FCollisionShape::MakeSphere(LockOnDistanceMax), CollisionQueryParam))
+	{
+		FVector CharForward = GetActorForwardVector();
+		FVector CamPos = Camera->GetComponentLocation();
+		FVector CamForward = Camera->GetForwardVector();
+
+		TArray<FLockOnCandidate> Candidates;
+		Candidates.Empty(OverlapResults.Num());
+		for (auto& Result : OverlapResults)
+		{
+			if (!Result.Actor.IsValid())
+				continue;
+
+			FLockOnCandidate Candidate;
+
+			FVector TargetPos = Result.Actor->GetActorLocation();
+
+			FVector DirCharToTarget = TargetPos - CharPos;
+			Candidate.DistanceSquared = DirCharToTarget.SizeSquared();
+
+			DirCharToTarget.Normalize();
+			Candidate.bFrontOfChar = (FVector::DotProduct(CharForward, DirCharToTarget) > KINDA_SMALL_NUMBER);
+
+			FVector DirCamToTarget = TargetPos - CamPos;
+			DirCamToTarget.Normalize();
+			Candidate.bFrontOfCam = (FVector::DotProduct(CamForward, DirCamToTarget) > KINDA_SMALL_NUMBER);
+
+			Candidate.TargetPtr = Result.Actor;
+
+			Candidates.Emplace(Candidate);
+		}
+
+		if (Candidates.Num() > 0)
+		{
+			Candidates.Sort(
+				[](const FLockOnCandidate& Left, const FLockOnCandidate& Right)
+				{
+					if (Left.bFrontOfChar)
+					{
+						if (!Right.bFrontOfChar)
+							return true;	// Left는 캐릭터 전방인데 Right는 후방이다. Left 우선
+					}
+					else
+					{
+						if (Right.bFrontOfChar)
+							return false;	// Left는 캐릭터 후방인데 Right는 전방이다. Right 우선
+					}
+
+					if (Left.bFrontOfCam)
+					{
+						if (!Right.bFrontOfCam)
+							return true;	// Left는 카메라 전방인데 Right는 후방이다. Left 우선
+					}
+					else
+					{
+						if (!Right.bFrontOfCam)
+							return false;	// Left는 카메라 후방인데 Right는 전방이다. Right 우선
+					}
+
+					// 거리가 가까운게 우선
+					return Left.DistanceSquared < Right.DistanceSquared;
+				});
+		}
+
+		TargetPtr = Candidates[0].TargetPtr;
+	}
+
+	return TargetPtr;
 }

@@ -209,7 +209,6 @@ bool AEncCharacter::CanGaurd(AActor* Attacker)
 		return false;
 
 	FVector AttackerDir = Attacker->GetActorLocation() - GetActorLocation();
-	AttackerDir.Z = 0.0f;
 	AttackerDir.Normalize();
 
 	float Cosine = FVector::DotProduct(GetActorForwardVector(), AttackerDir);
