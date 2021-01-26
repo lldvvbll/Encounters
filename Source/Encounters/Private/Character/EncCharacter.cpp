@@ -16,8 +16,7 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 	PrimaryActorTick.bCanEverTick = true;
 
 	CharacterState = CreateDefaultSubobject<UEncCharacterStateComponent>(TEXT("CHARACTERSTATE"));
-	LockOnMarker = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LOCKONMARK"));
-	
+
 	MaxComboCount = 2;
 	AttackSpeed = 1.25f;
 	RollingSpeed = 2.5f;
@@ -66,24 +65,6 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 	{
 		DefaultShieldClass = SHIELD.Class;
 	}
-
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM_MARK(TEXT("/Engine/BasicShapes/Sphere.Sphere"));
-	if (SM_MARK.Succeeded())
-	{
-		LockOnMarker->SetStaticMesh(SM_MARK.Object);
-	}
-
-	static ConstructorHelpers::FObjectFinder<UMaterial> MAT_MARK(TEXT("/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial"));
-	if (MAT_MARK.Succeeded())
-	{
-		LockOnMarker->SetMaterial(0, MAT_MARK.Object);
-	}
-
-	LockOnMarker->SetupAttachment(CapsuleComp);
-	LockOnMarker->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
-	LockOnMarker->SetRelativeLocation(FVector(0.0f, 0.0f, 110.0f));
-	LockOnMarker->SetCastShadow(false);
-	LockOnMarker->SetVisibility(false);
 }
 
 void AEncCharacter::Tick(float DeltaTime)

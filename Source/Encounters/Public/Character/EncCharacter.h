@@ -11,6 +11,7 @@ class AEquipment;
 class AWeapon;
 class AShield;
 class UEncCharacterStateComponent;
+class UWidgetComponent;
 
 UCLASS()
 class ENCOUNTERS_API AEncCharacter : public ACharacter
@@ -140,9 +141,6 @@ protected:
 
 	UPROPERTY(VisibleInstanceOnly, Category = Defense, Meta = (AllowPrivateAccess = true))
 	float GaurdAngleCosine;
-
-	UPROPERTY(VisibleAnywhere, Category = LockOn, Meta = (AllowPrivateAccess = true))
-	UStaticMeshComponent* LockOnMarker;
 
 	UPROPERTY(EditAnywhere, Category = Debug, Meta = (AllowPrivateAccess = true))
 	bool bShowAttackBox;

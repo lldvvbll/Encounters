@@ -16,4 +16,9 @@ class ENCOUNTERS_API ANpcCharacter : public AEncCharacter
 	
 public:
 	ANpcCharacter();
+
+private:
+	UPROPERTY(VisibleAnywhere, Category = UI, Meta = (AllowPrivateAccess = true))
+	UWidgetComponent* HpBarWidget;
+
 };

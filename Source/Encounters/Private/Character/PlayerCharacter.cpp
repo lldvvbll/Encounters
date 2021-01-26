@@ -8,9 +8,10 @@ APlayerCharacter::APlayerCharacter()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINTARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
 
-	SpringArm->SetupAttachment(LockOnMarker);
+	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
 
+	SpringArm->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
 	SpringArm->TargetArmLength = 400.0f;
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->bInheritPitch = true;
