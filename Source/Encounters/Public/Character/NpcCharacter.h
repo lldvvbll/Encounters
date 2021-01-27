@@ -6,9 +6,6 @@
 #include "Character/EncCharacter.h"
 #include "NpcCharacter.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class ENCOUNTERS_API ANpcCharacter : public AEncCharacter
 {
@@ -17,8 +14,12 @@ class ENCOUNTERS_API ANpcCharacter : public AEncCharacter
 public:
 	ANpcCharacter();
 
+	virtual void BeginPlay() override;
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+	virtual void Dead() override;
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = UI, Meta = (AllowPrivateAccess = true))
 	UWidgetComponent* HpBarWidget;
-
 };

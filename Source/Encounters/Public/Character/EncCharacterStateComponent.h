@@ -6,7 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "EncCharacterStateComponent.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FonHpIsZeroDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnHpIsZeroDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnHpChangedDelegate);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ENCOUNTERS_API UEncCharacterStateComponent : public UActorComponent
@@ -14,23 +15,20 @@ class ENCOUNTERS_API UEncCharacterStateComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
 	UEncCharacterStateComponent();
 
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+public:
+	void SetDamage(float NewDamage);
+	void SetHP(float NewHP);
+	float GetHpRatio() const;
 
+protected:
+	virtual void BeginPlay() override;
 	virtual void InitializeComponent() override;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	void SetDamage(float NewDamage);
-
 public:
-	FonHpIsZeroDelegate OnHpIsZero;
+	FOnHpIsZeroDelegate OnHpIsZero;
+	FOnHpChangedDelegate OnHpChanged;
 
 private:
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = State, Meta = (AllowPrivateAccess = true))

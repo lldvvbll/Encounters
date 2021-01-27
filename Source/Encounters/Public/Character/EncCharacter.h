@@ -49,7 +49,7 @@ public:
 	void Roll();
 	float GetRollingSpeed() const;
 
-	void Dead();
+	virtual void Dead();
 	bool IsDead() const;
 	void StartRagdoll();
 
