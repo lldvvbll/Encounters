@@ -126,8 +126,8 @@ float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 	}		
 
 	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	CharacterState->ModifyHP(-FinalDamage);
 
-	CharacterState->SetDamage(FinalDamage);	
 	return FinalDamage;
 }
 
@@ -329,6 +329,11 @@ void AEncCharacter::StartRagdoll()
 float AEncCharacter::GetCurrentRootMotionVelocityRate() const
 {
 	return CurrentRootMotionVelocityRate;
+}
+
+UEncCharacterStateComponent* AEncCharacter::GetCharacterStateComponent() const
+{
+	return CharacterState;
 }
 
 bool AEncCharacter::IsShowAttackBoxInAttack() const

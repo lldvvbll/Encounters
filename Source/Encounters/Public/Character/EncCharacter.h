@@ -60,6 +60,8 @@ public:
 
 	float GetCurrentRootMotionVelocityRate() const;
 
+	UEncCharacterStateComponent* GetCharacterStateComponent() const;
+
 	bool IsShowAttackBoxInAttack() const;
 	void DrawDebugGaurdSituation(AActor* DamageCauser);
 
@@ -160,6 +162,9 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, Category = LockOn, Meta = (AllowPrivateAccess = true))
 	bool bLockOnTarget;
 
+	UPROPERTY(VisibleInstanceOnly, Category = RootMotion, Meta = (AllowPrivateAccess = true))
+	float CurrentRootMotionVelocityRate;
+
 	UPROPERTY(EditAnywhere, Category = Debug, Meta = (AllowPrivateAccess = true))
 	bool bShowAttackBox;
 
@@ -171,7 +176,4 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = Debug, Meta = (AllowPrivateAccess = true))
 	bool bShowGaurdSituation;
-
-	UPROPERTY(VisibleInstanceOnly, Category = RootMotion, Meta = (AllowPrivateAccess = true))
-	float CurrentRootMotionVelocityRate;
 };
