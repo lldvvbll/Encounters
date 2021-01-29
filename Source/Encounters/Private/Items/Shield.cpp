@@ -6,14 +6,13 @@
 
 AShield::AShield()
 {
+    SkMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MESH"));
+
     GaurdHalfAngle = 60.0f;
-}
-
-void AShield::PostInitializeComponents()
-{
-    Super::PostInitializeComponents();
-
     GaurdAngleCosine = FVector::ForwardVector.RotateAngleAxis(GaurdHalfAngle, FVector::UpVector) | FVector::ForwardVector;
+   
+    RootComponent = SkMeshComp;
+    SkMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
 }
 
 float AShield::GetGaurdAngleCosine() const

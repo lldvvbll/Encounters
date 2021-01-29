@@ -10,6 +10,7 @@ class UEncAnimInstance;
 class AEquipment;
 class AWeapon;
 class AShield;
+class AArmor;
 class UEncCharacterStateComponent;
 class UWidgetComponent;
 
@@ -37,6 +38,10 @@ public:
 	bool CanSetShield() const;
 	void SetShield(AShield* Shield);
 	AShield* GetCurrentShield() const;
+
+	bool CanSetArmor() const;
+	void SetArmor(AArmor* Armor);
+	AArmor* GetCurrentArmor() const;
 
 	void Attack();
 	float GetAttackDamage() const;
@@ -87,93 +92,99 @@ protected:
 	UPROPERTY()
 	UEncAnimInstance* EncAnim;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Equipment, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Equipment)
 	TSubclassOf<AWeapon> DefaultWeaponClass;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Equipment, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleInstanceOnly, Category = Equipment)
 	AWeapon* CurWeapon;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Equipment, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Equipment)
 	TSubclassOf<AShield> DefaultShieldClass;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Equipment, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleInstanceOnly, Category = Equipment)
 	AShield* CurShield;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Equipment)
+	TSubclassOf<AArmor> DefaultArmorClass;
+
+	UPROPERTY(VisibleInstanceOnly, Category = Equipment)
+	AArmor* CurArmor;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State)
 	UEncCharacterStateComponent* CharacterState;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleInstanceOnly, Category = Attack)
 	bool bAttacking;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleInstanceOnly, Category = Attack)
 	bool CanSaveAttack;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleInstanceOnly, Category = Attack)
 	bool bInputAttack;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleInstanceOnly, Category = Attack)
 	int32 CurrentCombo;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleInstanceOnly, Category = Attack)
 	int32 MaxComboCount;
 
-	UPROPERTY(EditAnywhere, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, Category = Attack)
 	float AttackSpeed;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleInstanceOnly, Category = Attack)
 	FVector SavedInput;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Rolling, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleInstanceOnly, Category = Rolling)
 	bool bRolling;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Rolling, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleInstanceOnly, Category = Rolling)
 	float RollingSpeed;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Rolling, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleInstanceOnly, Category = Rolling)
 	float RollingVelocityRate;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Ragdoll, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleInstanceOnly, Category = Ragdoll)
 	bool bDead;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Ragdoll, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleInstanceOnly, Category = Ragdoll)
 	bool bRagdoll;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Defense, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleInstanceOnly, Category = Defense)
 	bool bDefense;
 
-	UPROPERTY(EditAnywhere, Category = Defense, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, Category = Defense)
 	float DefenseSpeed;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Defense, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleInstanceOnly, Category = Defense)
 	bool bGaurding;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Defense, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleInstanceOnly, Category = Defense)
 	float GaurdAngleCosine;
 
-	UPROPERTY(EditAnywhere, Category = LockOn, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, Category = LockOn)
 	float LockOnDistanceMax;
 
 	UPROPERTY()
 	float LockOnDistanceMaxSquared;
 
-	UPROPERTY(VisibleInstanceOnly, Category = LockOn, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleInstanceOnly, Category = LockOn)
 	TWeakObjectPtr<AEncCharacter> LockedOnTarget;
 
-	UPROPERTY(VisibleInstanceOnly, Category = LockOn, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleInstanceOnly, Category = LockOn)
 	bool bLockOnTarget;
 
-	UPROPERTY(VisibleInstanceOnly, Category = RootMotion, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleInstanceOnly, Category = RootMotion)
 	float CurrentRootMotionVelocityRate;
 
-	UPROPERTY(EditAnywhere, Category = Debug, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, Category = Debug)
 	bool bShowAttackBox;
 
-	UPROPERTY(EditAnywhere, Category = Debug, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, Category = Debug)
 	bool bShowAttackBoxInAttack;
 
-	UPROPERTY(EditAnywhere, Category = Debug, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, Category = Debug)
 	bool bShowGaurdAngle;
 	
-	UPROPERTY(EditAnywhere, Category = Debug, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, Category = Debug)
 	bool bShowGaurdSituation;
 };

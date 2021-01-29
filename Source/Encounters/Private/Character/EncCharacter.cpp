@@ -8,6 +8,7 @@
 #include "Items/Equipment.h"
 #include "Items/Weapon.h"
 #include "Items/Shield.h"
+#include "Items/Armor.h"
 #include "DrawDebugHelpers.h"
 
 AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FObjectInitializer::Get()*/)
@@ -28,7 +29,7 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 	bShowAttackBox = false;
 	bShowAttackBoxInAttack = false;
 	bShowGaurdAngle = false;
-	bShowGaurdSituation = false;
+	bShowGaurdSituation = true;
 
 	UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
 	CapsuleComp->SetCollisionProfileName(TEXT("EncCharacter"));
@@ -68,6 +69,12 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 	{
 		DefaultShieldClass = SHIELD.Class;
 	}
+
+	static ConstructorHelpers::FClassFinder<AArmor> ARMOR(TEXT("/Game/Encounters/Items/BP_Armor.BP_Armor_C"));
+	if (ARMOR.Succeeded())
+	{
+		DefaultArmorClass = ARMOR.Class;
+	}
 }
 
 void AEncCharacter::Tick(float DeltaTime)
@@ -102,14 +109,20 @@ void AEncCharacter::PostInitializeComponents()
 
 	CharacterState->OnHpIsZero.AddUObject(this, &AEncCharacter::Dead);
 
+	UWorld* World = GetWorld();
 	if (CanSetWeapon())
 	{
-		SetWeapon(GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClass));
+		SetWeapon(World->SpawnActor<AWeapon>(DefaultWeaponClass));
 	}
 
 	if (CanSetShield())
 	{
-		SetShield(GetWorld()->SpawnActor<AShield>(DefaultShieldClass));
+		SetShield(World->SpawnActor<AShield>(DefaultShieldClass));
+	}
+
+	if (CanSetArmor())
+	{
+		SetArmor(World->SpawnActor<AArmor>(DefaultArmorClass));
 	}
 }
 
@@ -184,7 +197,25 @@ void AEncCharacter::SetShield(AShield* Shield)
 
 AShield* AEncCharacter::GetCurrentShield() const
 {
-	return nullptr;
+	return CurShield;
+}
+
+bool AEncCharacter::CanSetArmor() const
+{
+	return (CurArmor == nullptr);
+}
+
+void AEncCharacter::SetArmor(AArmor* Armor)
+{
+	static FName SocketName(TEXT("body_Socket"));
+	SetEquipment(Armor, SocketName);
+
+	CurArmor = Armor;
+}
+
+AArmor* AEncCharacter::GetCurrentArmor() const
+{
+	return CurArmor;
 }
 
 void AEncCharacter::Attack()
@@ -381,6 +412,7 @@ void AEncCharacter::SetEquipment(AEquipment* Equipment, const FName& SocketName)
 
 	Equipment->SetOwner(this);
 	Equipment->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+	Equipment->SetActorRelativeLocation(Equipment->GetAttachOffset());
 	Equipment->SetActorRelativeRotation(Equipment->GetAttachRotator());
 }
 

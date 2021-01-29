@@ -11,24 +11,16 @@ class ENCOUNTERS_API AEquipment : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
-	// Sets default values for this actor's properties
+public:
 	AEquipment();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
+	FVector GetAttachOffset() const;
 	FRotator GetAttachRotator() const;
 
 protected:
-	UPROPERTY(VisibleAnywhere, Category = Mesh, Meta = (AllowPrivateAccess = true))
-	USkeletalMeshComponent* SkMeshComp;
+	UPROPERTY(EditDefaultsOnly, Category = Transform)
+	FVector AttachOffset;
 
-	UPROPERTY(EditDefaultsOnly, Category = Transform, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, Category = Transform)
 	FRotator AttachRotator;
 };

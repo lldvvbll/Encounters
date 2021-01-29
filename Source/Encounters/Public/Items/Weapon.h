@@ -12,28 +12,21 @@ class ENCOUNTERS_API AWeapon : public AEquipment
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	AWeapon();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
+	float GetAttackDamage() const;
 	FVector GetAttackBoxSocketPos() const;
 	FVector GetAttackBoxHalfExtent() const;
 
-	float GetAttackDamage() const;
-
 	void DrawAttackBox(FColor Color = FColor::Red) const;
 
-private:
-	UPROPERTY(EditDefaultsOnly, Category = AttackTrace, Meta = (AllowPrivateAccess = true))
+protected:
+	UPROPERTY(VisibleAnywhere, Category = Mesh)
+	USkeletalMeshComponent* SkMeshComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = AttackTrace)
 	FVector AttackBoxHalfExtent;
 
-	UPROPERTY(EditAnywhere, Category = Damage, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, Category = Damage)
 	float DefaultDamage;
 };

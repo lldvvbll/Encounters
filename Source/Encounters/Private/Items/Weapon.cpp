@@ -6,21 +6,17 @@
 
 AWeapon::AWeapon()
 {
+	SkMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MESH"));
+
 	DefaultDamage = 10.0f;
+
+	RootComponent = SkMeshComp;
+	SkMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
 }
 
-// Called when the game starts or when spawned
-void AWeapon::BeginPlay()
+float AWeapon::GetAttackDamage() const
 {
-	Super::BeginPlay();
-
-}
-
-// Called every frame
-void AWeapon::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
+	return DefaultDamage;
 }
 
 FVector AWeapon::GetAttackBoxSocketPos() const
@@ -43,9 +39,3 @@ void AWeapon::DrawAttackBox(FColor Color/* = FColor::Red*/) const
 	DrawDebugBox(GetWorld(), Pos, Extent, Quat, Color, false, 5.0f);
 #endif
 }
-
-float AWeapon::GetAttackDamage() const
-{
-	return DefaultDamage;
-}
-
