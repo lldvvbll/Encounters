@@ -35,6 +35,11 @@ public:
 	float GetMaxStamina() const;
 	float GetStaminaRatio() const;
 
+	void SetRollingSpeed(float NewRollingSpeed);
+	float GetRolligSpeed() const;
+	void SetRollingVelocityRate(float NewRate);
+	float GetRollingVelocityRate() const;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void InitializeComponent() override;
@@ -53,9 +58,15 @@ private:
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = State, Meta = (AllowPrivateAccess = true))
 	float CurrentStamina;
 
-	UPROPERTY(EditAnywhere, Category = State, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = State, Meta = (AllowPrivateAccess = true))
 	float MaxHP;
 
-	UPROPERTY(EditAnywhere, Category = State, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = State, Meta = (AllowPrivateAccess = true))
 	float MaxStamina;
+
+	UPROPERTY()
+	float RollingSpeed;
+
+	UPROPERTY()
+	float RollingVelocityRate;
 };

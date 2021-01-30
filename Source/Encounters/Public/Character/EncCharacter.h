@@ -52,7 +52,6 @@ public:
 	bool CanGaurd(AActor* Attacker);
 
 	void Roll();
-	float GetRollingSpeed() const;
 
 	virtual void Dead();
 	bool IsDead() const;
@@ -136,12 +135,6 @@ protected:
 
 	UPROPERTY(VisibleInstanceOnly, Category = Rolling)
 	bool bRolling;
-
-	UPROPERTY(VisibleInstanceOnly, Category = Rolling)
-	float RollingSpeed;
-
-	UPROPERTY(VisibleInstanceOnly, Category = Rolling)
-	float RollingVelocityRate;
 
 	UPROPERTY(VisibleInstanceOnly, Category = Ragdoll)
 	bool bDead;

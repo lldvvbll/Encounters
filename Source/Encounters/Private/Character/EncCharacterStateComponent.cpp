@@ -8,8 +8,10 @@ UEncCharacterStateComponent::UEncCharacterStateComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 	bWantsInitializeComponent = true;
 
-	MaxHP = 100.0f;
-	MaxStamina = 30.0f;
+	MaxHP = 1.0f;
+	MaxStamina = 1.0f;
+	RollingSpeed = 1.0f;
+	RollingVelocityRate = 1.0f;
 }
 
 void UEncCharacterStateComponent::SetHP(float NewHP)
@@ -78,6 +80,26 @@ float UEncCharacterStateComponent::GetMaxStamina() const
 float UEncCharacterStateComponent::GetStaminaRatio() const
 {
 	return CurrentStamina / MaxStamina;
+}
+
+void UEncCharacterStateComponent::SetRollingSpeed(float NewRollingSpeed)
+{
+	RollingSpeed = NewRollingSpeed;
+}
+
+float UEncCharacterStateComponent::GetRolligSpeed() const
+{
+	return RollingSpeed;
+}
+
+void UEncCharacterStateComponent::SetRollingVelocityRate(float NewRate)
+{
+	RollingVelocityRate = NewRate;
+}
+
+float UEncCharacterStateComponent::GetRollingVelocityRate() const
+{
+	return RollingVelocityRate;
 }
 
 void UEncCharacterStateComponent::BeginPlay()

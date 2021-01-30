@@ -20,8 +20,6 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 
 	MaxComboCount = 2;
 	AttackSpeed = 1.25f;
-	RollingSpeed = 2.5f;
-	RollingVelocityRate = 1.5f;
 	DefenseSpeed = 2.0f;
 	LockOnDistanceMax = 800.0f;
 	LockOnDistanceMaxSquared = LockOnDistanceMax * LockOnDistanceMax;
@@ -310,18 +308,13 @@ void AEncCharacter::Roll()
 
 	SetActorRotation(DirToMove.Rotation(), ETeleportType::TeleportPhysics);
 
-	CurrentRootMotionVelocityRate = RollingVelocityRate;
+	CurrentRootMotionVelocityRate = CharacterState->GetRollingVelocityRate();
 	if (EncAnim != nullptr)
 	{
-		EncAnim->PlayRollingMontage(RollingSpeed);
+		EncAnim->PlayRollingMontage(CharacterState->GetRolligSpeed());
 	}
 
 	bRolling = true;
-}
-
-float AEncCharacter::GetRollingSpeed() const
-{
-	return RollingSpeed;
 }
 
 void AEncCharacter::Dead()

@@ -16,7 +16,7 @@ void URollingAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAni
 		return;
 
 	Direction = EncChar->GetActorForwardVector();
-	RollingSpeed = EncChar->GetRollingSpeed();
+	//RollingSpeed = EncChar->GetRollingSpeed();
 	//RollingForceScale = EncChar->GetRollingForceScale();
 	RemainTime = TotalDuration / RollingSpeed;
 
