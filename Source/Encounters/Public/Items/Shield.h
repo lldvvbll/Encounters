@@ -17,17 +17,17 @@ class ENCOUNTERS_API AShield : public AEquipment
 public:
 	AShield();
 
-	float GetGaurdAngleCosine() const;
+	float GetGuardAngleCosine() const;
 
-	void DrawGaurdAngle(FColor Color = FColor::Red) const;
+	void DrawGuardAngle(FColor Color = FColor::Red) const;
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category = Mesh)
 	USkeletalMeshComponent* SkMeshComp;
 
-	UPROPERTY(EditDefaultsOnly, Category = Gaurd)
-	float GaurdHalfAngle;
+	UPROPERTY(EditDefaultsOnly, Category = Guard)
+	float GuardHalfAngle;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Gaurd)
-	float GaurdAngleCosine = 0.0f;
+	UPROPERTY(VisibleInstanceOnly, Category = Guard)
+	float GuardAngleCosine;
 };

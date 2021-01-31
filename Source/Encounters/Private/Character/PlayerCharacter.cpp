@@ -83,8 +83,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction(TEXT("Roll"), EInputEvent::IE_Pressed, this, &APlayerCharacter::Roll);
 	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &APlayerCharacter::Attack);
 	PlayerInputComponent->BindAction(TEXT("Ragdoll"), EInputEvent::IE_Pressed, this, &APlayerCharacter::StartRagdoll);
-	PlayerInputComponent->BindAction(TEXT("Defense"), EInputEvent::IE_Pressed, this, &APlayerCharacter::DefenseUp);
-	PlayerInputComponent->BindAction(TEXT("Defense"), EInputEvent::IE_Released, this, &APlayerCharacter::DefenseDown);
+	PlayerInputComponent->BindAction(TEXT("Guard"), EInputEvent::IE_Pressed, this, &APlayerCharacter::Guard);
+	PlayerInputComponent->BindAction(TEXT("Guard"), EInputEvent::IE_Released, this, &APlayerCharacter::GuardDown);
 	PlayerInputComponent->BindAction(TEXT("LockOn"), EInputEvent::IE_Pressed, this, &APlayerCharacter::LockOn);
 }
 

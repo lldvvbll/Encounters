@@ -8,19 +8,19 @@ AShield::AShield()
 {
     SkMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MESH"));
 
-    GaurdHalfAngle = 60.0f;
-    GaurdAngleCosine = FVector::ForwardVector.RotateAngleAxis(GaurdHalfAngle, FVector::UpVector) | FVector::ForwardVector;
+    GuardHalfAngle = 60.0f;
+    GuardAngleCosine = FVector::ForwardVector.RotateAngleAxis(GuardHalfAngle, FVector::UpVector) | FVector::ForwardVector;
    
     RootComponent = SkMeshComp;
     SkMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
 }
 
-float AShield::GetGaurdAngleCosine() const
+float AShield::GetGuardAngleCosine() const
 {
-    return GaurdAngleCosine;
+    return GuardAngleCosine;
 }
 
-void AShield::DrawGaurdAngle(FColor Color/* = FColor::Red*/) const
+void AShield::DrawGuardAngle(FColor Color/* = FColor::Red*/) const
 {
 #if ENABLE_DRAW_DEBUG
     AActor* Char = GetOwner();
@@ -33,11 +33,11 @@ void AShield::DrawGaurdAngle(FColor Color/* = FColor::Red*/) const
     static TArray<FVector> Positions;
     Positions.Reset();
     Positions.Emplace(CharPos);
-    for (float Angle = GaurdHalfAngle; Angle >= -GaurdHalfAngle; Angle -= 10.0f)
+    for (float Angle = GuardHalfAngle; Angle >= -GuardHalfAngle; Angle -= 10.0f)
     {
         Positions.Emplace(CharPos + CharForward.RotateAngleAxis(Angle, FVector::UpVector));
     }
-    Positions.Emplace(CharPos + CharForward.RotateAngleAxis(-GaurdHalfAngle, FVector::UpVector));
+    Positions.Emplace(CharPos + CharForward.RotateAngleAxis(-GuardHalfAngle, FVector::UpVector));
     Positions.Emplace(CharPos);
 
     for (int32 idx = 0; idx < Positions.Num() - 1; ++idx)

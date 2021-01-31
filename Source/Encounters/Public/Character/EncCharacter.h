@@ -29,7 +29,6 @@ public:
 	bool IsRolling() const;
 	bool IsFalling() const;
 	bool IsRagdoll() const;
-	bool IsDefending() const;
 
 	bool CanSetWeapon() const;
 	void SetWeapon(AWeapon* Weapon);
@@ -47,9 +46,10 @@ public:
 	float GetAttackDamage() const;
 	void GiveAttackDamage(TWeakObjectPtr<AActor>& Target);
 
-	void DefenseUp();
-	void DefenseDown();
-	bool CanGaurd(AActor* Attacker);
+	void Guard();
+	void GuardDown();
+	bool CanGuardByShield(AActor* Attacker);
+	bool IsGuarding() const;
 
 	void Roll();
 
@@ -67,7 +67,7 @@ public:
 	UEncCharacterStateComponent* GetCharacterStateComponent() const;
 
 	bool IsShowAttackBoxInAttack() const;
-	void DrawDebugGaurdSituation(AActor* DamageCauser);
+	void DrawDebugGuardSituation(AActor* DamageCauser);
 
 protected:
 	void SetEquipment(AEquipment* Equipment, const FName& SocketName);
@@ -85,7 +85,7 @@ protected:
 	void OnRollingMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
 	UFUNCTION()
-	void OnBeginGaurd();
+	void OnGuardUp();
 
 protected:
 	UPROPERTY()
@@ -142,17 +142,14 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, Category = Ragdoll)
 	bool bRagdoll;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Defense)
-	bool bDefense;
+	UPROPERTY(VisibleInstanceOnly, Category = Guard)
+	bool bGuard;
 
-	UPROPERTY(EditAnywhere, Category = Defense)
-	float DefenseSpeed;
+	UPROPERTY(EditAnywhere, Category = Guard)
+	float GuardSpeed;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Defense)
-	bool bGaurding;
-
-	UPROPERTY(VisibleInstanceOnly, Category = Defense)
-	float GaurdAngleCosine;
+	UPROPERTY(VisibleInstanceOnly, Category = Guard)
+	bool bGuardUp;
 
 	UPROPERTY(EditAnywhere, Category = LockOn)
 	float LockOnDistanceMax;
@@ -176,8 +173,8 @@ protected:
 	bool bShowAttackBoxInAttack;
 
 	UPROPERTY(EditAnywhere, Category = Debug)
-	bool bShowGaurdAngle;
+	bool bShowGuardAngle;
 	
 	UPROPERTY(EditAnywhere, Category = Debug)
-	bool bShowGaurdSituation;
+	bool bShowGuardSituation;
 };

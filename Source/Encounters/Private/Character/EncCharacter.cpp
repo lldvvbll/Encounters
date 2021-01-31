@@ -20,14 +20,14 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 
 	MaxComboCount = 2;
 	AttackSpeed = 1.25f;
-	DefenseSpeed = 2.0f;
+	GuardSpeed = 2.0f;
 	LockOnDistanceMax = 800.0f;
 	LockOnDistanceMaxSquared = LockOnDistanceMax * LockOnDistanceMax;
 	
 	bShowAttackBox = false;
 	bShowAttackBoxInAttack = false;
-	bShowGaurdAngle = false;
-	bShowGaurdSituation = true;
+	bShowGuardAngle = false;
+	bShowGuardSituation = true;
 
 	UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
 	CapsuleComp->SetCollisionProfileName(TEXT("EncCharacter"));
@@ -83,9 +83,9 @@ void AEncCharacter::Tick(float DeltaTime)
 	{
 		CurWeapon->DrawAttackBox();
 	}
-	if (CurShield != nullptr && bShowGaurdAngle)
+	if (CurShield != nullptr && bShowGuardAngle)
 	{
-		CurShield->DrawGaurdAngle();
+		CurShield->DrawGuardAngle();
 	}
 }
 
@@ -100,9 +100,9 @@ void AEncCharacter::PostInitializeComponents()
 		EncAnim->OnMontageEnded.AddDynamic(this, &AEncCharacter::OnRollingMontageEnded);
 		EncAnim->OnComboEnable.AddUObject(this, &AEncCharacter::OnComboEnable);
 		EncAnim->OnComboCheck.AddUObject(this, &AEncCharacter::OnComboCheck);
-		EncAnim->OnBeginGaurd.AddUObject(this, &AEncCharacter::OnBeginGaurd);
+		EncAnim->OnGuardUp.AddUObject(this, &AEncCharacter::OnGuardUp);
 
-		EncAnim->SetDefenseSpeed(DefenseSpeed);
+		EncAnim->SetGuardSpeed(GuardSpeed);
 	}
 
 	CharacterState->OnHpIsZero.AddUObject(this, &AEncCharacter::Dead);
@@ -126,11 +126,11 @@ void AEncCharacter::PostInitializeComponents()
 
 float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if (CanGaurd(DamageCauser))
+	if (CanGuardByShield(DamageCauser))
 	{
-		if (bShowGaurdSituation)
+		if (bShowGuardSituation)
 		{
-			DrawDebugGaurdSituation(DamageCauser);
+			DrawDebugGuardSituation(DamageCauser);
 		}
 		
 		return 0.0f;
@@ -155,11 +155,6 @@ bool AEncCharacter::IsFalling() const
 bool AEncCharacter::IsRagdoll() const
 {
 	return bRagdoll;
-}
-
-bool AEncCharacter::IsDefending() const
-{
-	return bDefense;
 }
 
 bool AEncCharacter::CanSetWeapon() const
@@ -261,25 +256,28 @@ void AEncCharacter::GiveAttackDamage(TWeakObjectPtr<AActor>& TargetPtr)
 	TargetPtr->TakeDamage(GetAttackDamage(), DamageEvent, GetController(), this);
 }
 
-void AEncCharacter::DefenseUp()
+void AEncCharacter::Guard()
 {
 	if (bRagdoll)
 		return;
 
-	bDefense = true;
+	bGuard = true;
 }
 
-void AEncCharacter::DefenseDown()
+void AEncCharacter::GuardDown()
 {
-	bDefense = false;
-	bGaurding = false;
+	bGuard = false;
+	bGuardUp = false;
 }
 
-bool AEncCharacter::CanGaurd(AActor* Attacker)
+bool AEncCharacter::CanGuardByShield(AActor* Attacker)
 {
 	return_if(Attacker == nullptr, true);
 
 	if (CurShield == nullptr)
+		return false;
+
+	if (!bGuardUp)
 		return false;
 
 	FVector AttackerDir = Attacker->GetActorLocation() - GetActorLocation();
@@ -287,7 +285,12 @@ bool AEncCharacter::CanGaurd(AActor* Attacker)
 
 	float Cosine = FVector::DotProduct(GetActorForwardVector(), AttackerDir);
 	
-	return (CurShield->GetGaurdAngleCosine() <= Cosine);
+	return (CurShield->GetGuardAngleCosine() <= Cosine);
+}
+
+bool AEncCharacter::IsGuarding() const
+{
+	return bGuard;
 }
 
 void AEncCharacter::Roll()
@@ -322,7 +325,7 @@ void AEncCharacter::Roll()
 void AEncCharacter::Dead()
 {
 	StartRagdoll();
-	DefenseDown();
+	GuardDown();
 	bDead = true;
 }
 
@@ -371,7 +374,7 @@ bool AEncCharacter::IsShowAttackBoxInAttack() const
 #endif
 }
 
-void AEncCharacter::DrawDebugGaurdSituation(AActor* DamageCauser)
+void AEncCharacter::DrawDebugGuardSituation(AActor* DamageCauser)
 {
 #if ENABLE_DRAW_DEBUG
 	AEncCharacter* Attacker = Cast<AEncCharacter>(DamageCauser);
@@ -385,7 +388,7 @@ void AEncCharacter::DrawDebugGaurdSituation(AActor* DamageCauser)
 	}
 	if (CurShield != nullptr)
 	{
-		CurShield->DrawGaurdAngle(FColor::Blue);
+		CurShield->DrawGuardAngle(FColor::Blue);
 	}
 
 	FVector MyPos = GetActorLocation();
@@ -462,7 +465,7 @@ void AEncCharacter::OnRollingMontageEnded(UAnimMontage* Montage, bool bInterrupt
 	bRolling = false;
 }
 
-void AEncCharacter::OnBeginGaurd()
+void AEncCharacter::OnGuardUp()
 {
-	bGaurding = true;
+	bGuardUp = true;
 }

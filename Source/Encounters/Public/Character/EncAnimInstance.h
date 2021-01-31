@@ -8,7 +8,7 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnComboEnableDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnComboCheckDelegate);
-DECLARE_MULTICAST_DELEGATE(FOnBeginGaurdDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnGuardUpDelegate);
 
 /**
  * 
@@ -31,7 +31,7 @@ public:
 	void StopRollingMontage();
 	bool IsRollingMontage(UAnimMontage* Montage);
 
-	void SetDefenseSpeed(float NewSpeed);
+	void SetGuardSpeed(float NewSpeed);
 
 private:
 	UFUNCTION()
@@ -43,12 +43,12 @@ private:
 	FName GetAttackMontageSectionName(int32 Section);
 
 	UFUNCTION()
-	void AnimNotify_BeginGaurd();
+	void AnimNotify_GuardUp();
 
 public:
 	FOnComboEnableDelegate OnComboEnable;
 	FOnComboCheckDelegate OnComboCheck;
-	FOnBeginGaurdDelegate OnBeginGaurd;
+	FOnGuardUpDelegate OnGuardUp;
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
@@ -61,10 +61,10 @@ private:
 	bool IsInAir;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
-	bool IsDefending;
+	bool IsGuarding;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
-	float DefenseSpeed;
+	float GuardSpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
 	bool IsLockOnTarget;

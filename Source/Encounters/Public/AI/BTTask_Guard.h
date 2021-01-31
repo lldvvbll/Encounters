@@ -4,13 +4,13 @@
 
 #include "Encounters.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "BTTask_Defense.generated.h"
+#include "BTTask_Guard.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ENCOUNTERS_API UBTTask_Defense : public UBTTaskNode
+class ENCOUNTERS_API UBTTask_Guard : public UBTTaskNode
 {
 	GENERATED_BODY()
 	

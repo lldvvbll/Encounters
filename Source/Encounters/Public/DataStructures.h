@@ -37,3 +37,48 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Point")
 	int32 Point;
 };
+
+USTRUCT(BlueprintType)
+struct FWeaponData : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Option")
+	float Damage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Option")
+	float AttackSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Option")
+	float Stamina;
+};
+
+USTRUCT(BlueprintType)
+struct FShieldData : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Option")
+	float DamageReduction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Option")
+	float GuardSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Option")
+	float Stamina;
+};
+
+USTRUCT(BlueprintType)
+struct FArmorData : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Option")
+	float Defense;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Option")
+	float Stamina;
+};
