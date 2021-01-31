@@ -6,6 +6,9 @@
 #include "Engine/GameInstance.h"
 #include "EncGameInstance.generated.h"
 
+class UDataTable;
+struct FCharacterAbilityData;
+
 UCLASS()
 class ENCOUNTERS_API UEncGameInstance : public UGameInstance
 {
@@ -13,4 +16,10 @@ class ENCOUNTERS_API UEncGameInstance : public UGameInstance
 	
 public:
 	UEncGameInstance();
+
+	FCharacterAbilityData* GetCharacterAbilityData(int32 Point) const;
+
+private:
+	UPROPERTY()
+	UDataTable* CharacterAbilityTable;
 };

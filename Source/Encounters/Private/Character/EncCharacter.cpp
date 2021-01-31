@@ -244,10 +244,12 @@ void AEncCharacter::Attack()
 
 float AEncCharacter::GetAttackDamage() const
 {
-	if (CurWeapon == nullptr)
-		return 5.0f;
+	float AttackPower = CharacterState->GetAttackPower();
 
-	return CurWeapon->GetAttackDamage();
+	if (CurWeapon == nullptr)
+		return AttackPower;
+
+	return AttackPower + CurWeapon->GetAttackDamage();
 }
 
 void AEncCharacter::GiveAttackDamage(TWeakObjectPtr<AActor>& TargetPtr)

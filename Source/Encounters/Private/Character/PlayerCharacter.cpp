@@ -2,6 +2,7 @@
 
 
 #include "Character/PlayerCharacter.h"
+#include "EncPlayerState.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -45,6 +46,26 @@ void APlayerCharacter::Tick(float DeltaTime)
 		{
 			ReleaseLockOn();
 		}		
+	}
+}
+
+void APlayerCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	if (AEncPlayerState* EncPlayerState = GetPlayerStateChecked<AEncPlayerState>())
+	{
+		EncPlayerState->SetCharacterState(CharacterState);
+	}
+}
+
+void APlayerCharacter::UnPossessed()
+{
+	Super::UnPossessed();
+
+	if (AEncPlayerState* EncPlayerState = GetPlayerState<AEncPlayerState>())
+	{
+		EncPlayerState->SetCharacterState(nullptr);
 	}
 }
 

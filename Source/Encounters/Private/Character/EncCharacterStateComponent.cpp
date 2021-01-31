@@ -14,6 +14,16 @@ UEncCharacterStateComponent::UEncCharacterStateComponent()
 	RollingVelocityRate = 1.0f;
 }
 
+void UEncCharacterStateComponent::SetAttackPower(float NewAttackPower)
+{
+	AttackPower = NewAttackPower;
+}
+
+float UEncCharacterStateComponent::GetAttackPower() const
+{
+	return AttackPower;
+}
+
 void UEncCharacterStateComponent::SetHP(float NewHP)
 {
 	CurrentHP = NewHP;

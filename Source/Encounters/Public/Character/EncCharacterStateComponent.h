@@ -21,6 +21,9 @@ public:
 	UEncCharacterStateComponent();
 
 public:
+	void SetAttackPower(float NewAttackPower);
+	float GetAttackPower() const;
+
 	void SetHP(float NewHP);
 	void ModifyHP(float Amount);
 	float GetHP() const;
@@ -52,6 +55,9 @@ public:
 	FOnMaxStaminaChangedDelegate OnMaxStaminaChanged;
 
 private:
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = State, Meta = (AllowPrivateAccess = true))
+	float AttackPower;
+
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = State, Meta = (AllowPrivateAccess = true))
 	float CurrentHP;
 

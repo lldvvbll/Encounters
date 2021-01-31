@@ -6,7 +6,8 @@
 #include "GameFramework/PlayerState.h"
 #include "EncPlayerState.generated.h"
 
-class APlayerCharacter;
+class UEncCharacterStateComponent;
+struct FCharacterAbilityData;
 
 UCLASS()
 class ENCOUNTERS_API AEncPlayerState : public APlayerState
@@ -37,6 +38,11 @@ public:
 
 	void InitPlayerData();
 
+	void SetCharacterState(UEncCharacterStateComponent* NewState);
+
+private:
+	FCharacterAbilityData* FindCharacterAbilityData(int32 AbilityPoint) const;
+
 protected:
 	UPROPERTY(Transient)
 	int32 Level;
@@ -55,4 +61,7 @@ protected:
 
 	UPROPERTY(Transient)
 	int32 Endurance;
+
+	UPROPERTY(Transient)
+	TWeakObjectPtr<UEncCharacterStateComponent> CharacterState;
 };
