@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Equipment.generated.h"
 
-UCLASS()
+UCLASS(Abstract)
 class ENCOUNTERS_API AEquipment : public AActor
 {
 	GENERATED_BODY()

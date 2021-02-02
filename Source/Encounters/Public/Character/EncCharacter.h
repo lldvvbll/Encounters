@@ -143,7 +143,7 @@ protected:
 	bool bRagdoll;
 
 	UPROPERTY(VisibleInstanceOnly, Category = Guard)
-	bool bGuard;
+	bool bGuarding;
 
 	UPROPERTY(EditAnywhere, Category = Guard)
 	float GuardSpeed;
@@ -165,6 +165,9 @@ protected:
 
 	UPROPERTY(VisibleInstanceOnly, Category = RootMotion)
 	float CurrentRootMotionVelocityRate;
+
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Inventory)
+	//TMap<FPrimaryAssetId, FRPGItemData> DefaultInventory;
 
 	UPROPERTY(EditAnywhere, Category = Debug)
 	bool bShowAttackBox;

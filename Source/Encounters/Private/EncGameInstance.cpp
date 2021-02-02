@@ -13,6 +13,13 @@ UEncGameInstance::UEncGameInstance()
 
 	CharacterAbilityTable = DT_CHARABILITY.Object;
 	return_if(CharacterAbilityTable->GetRowMap().Num() <= 0);
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_LEVELUPPOINT(
+		TEXT("/Game/Encounters/Data/DT_LevelUpPoint.DT_LevelUpPoint"));
+	return_if(!DT_LEVELUPPOINT.Succeeded());
+
+	LevelUpPointTable = DT_LEVELUPPOINT.Object;
+	return_if(LevelUpPointTable->GetRowMap().Num() <= 0);
 }
 
 FCharacterAbilityData* UEncGameInstance::GetCharacterAbilityData(int32 Point) const

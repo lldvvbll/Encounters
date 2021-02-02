@@ -3,7 +3,7 @@
 
 #include "Character/AttackTracerAnimNotifyState.h"
 #include "Character/EncCharacter.h"
-#include "Items/Weapon.h"
+#include "Items/Actors/Weapon.h"
 #include "DrawDebugHelpers.h"
 
 void UAttackTracerAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)

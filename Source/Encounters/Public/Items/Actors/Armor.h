@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Encounters.h"
-#include "Items/Equipment.h"
+#include "Items/Actors/Equipment.h"
 #include "Armor.generated.h"
 
 UCLASS()

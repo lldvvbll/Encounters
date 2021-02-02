@@ -5,10 +5,11 @@
 #include "Character/EncAnimInstance.h"
 #include "Character/EncCharacterMovementComponent.h"
 #include "Character/EncCharacterStateComponent.h"
-#include "Items/Equipment.h"
-#include "Items/Weapon.h"
-#include "Items/Shield.h"
-#include "Items/Armor.h"
+#include "Items/Actors/Equipment.h"
+#include "Items/Actors/Weapon.h"
+#include "Items/Actors/Shield.h"
+#include "Items/Actors/Armor.h"
+#include "EncAssetManager.h"
 #include "DrawDebugHelpers.h"
 
 AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FObjectInitializer::Get()*/)
@@ -261,12 +262,12 @@ void AEncCharacter::Guard()
 	if (bRagdoll)
 		return;
 
-	bGuard = true;
+	bGuarding = true;
 }
 
 void AEncCharacter::GuardDown()
 {
-	bGuard = false;
+	bGuarding = false;
 	bGuardUp = false;
 }
 
@@ -290,7 +291,7 @@ bool AEncCharacter::CanGuardByShield(AActor* Attacker)
 
 bool AEncCharacter::IsGuarding() const
 {
-	return bGuard;
+	return bGuarding;
 }
 
 void AEncCharacter::Roll()
@@ -325,8 +326,10 @@ void AEncCharacter::Roll()
 void AEncCharacter::Dead()
 {
 	StartRagdoll();
+	
 	GuardDown();
 	bDead = true;
+	SetCanBeDamaged(false);
 }
 
 bool AEncCharacter::IsDead() const

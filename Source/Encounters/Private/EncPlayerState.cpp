@@ -110,7 +110,6 @@ void AEncPlayerState::SetEndurance(int32 NewEndurance)
 
 void AEncPlayerState::InitPlayerData()
 {
-	LOG_S(Warning);
 	SetLevel(1);
 	SetPoint(0);
 	SetStrength(1);

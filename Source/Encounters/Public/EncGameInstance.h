@@ -8,6 +8,10 @@
 
 class UDataTable;
 struct FCharacterAbilityData;
+struct FLevelUpPointData;
+struct FWeaponData;
+struct FShieldData;
+struct FArmorData;
 
 UCLASS()
 class ENCOUNTERS_API UEncGameInstance : public UGameInstance
@@ -22,4 +26,7 @@ public:
 private:
 	UPROPERTY()
 	UDataTable* CharacterAbilityTable;
+
+	UPROPERTY()
+	UDataTable* LevelUpPointTable;
 };

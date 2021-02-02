@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Items/Shield.h"
+#include "Items/Actors/Shield.h"
 #include "DrawDebugHelpers.h"
 
 AShield::AShield()

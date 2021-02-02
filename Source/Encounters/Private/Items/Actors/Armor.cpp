@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Items/Armor.h"
+#include "Items/Actors/Armor.h"
 
 AArmor::AArmor()
 {
