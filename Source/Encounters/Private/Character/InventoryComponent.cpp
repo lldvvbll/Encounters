@@ -10,17 +10,17 @@ FPocket::FPocket(EPocketType NewPocketType, int32 NewMaxCount)
 	MaxCount = NewMaxCount;
 }
 
-void FPocket::AddItem(UEncItem* NewItem)
+bool FPocket::AddItem(UEncItem* NewItem)
 {
 	if (MaxCount > 0 && GetItemCount() >= MaxCount)
-		return;
+		return false;
 
-	ItemSet.Emplace(NewItem);
+	return ItemSet.Emplace(NewItem).IsValidId();
 }
 
-void FPocket::RemoveItem(UEncItem* Item)
+bool FPocket::RemoveItem(UEncItem* Item)
 {
-	ItemSet.Remove(Item);
+	return (ItemSet.Remove(Item) > 0);
 }
 
 int32 FPocket::GetItemCount() const
@@ -31,6 +31,11 @@ int32 FPocket::GetItemCount() const
 bool FPocket::Contains(UEncItem* Item) const
 {
 	return ItemSet.Contains(Item);
+}
+
+EPocketType FPocket::GetPocketType() const
+{
+	return PocketType;
 }
 
 UInventoryComponent::UInventoryComponent()
@@ -52,9 +57,10 @@ void UInventoryComponent::AddItem(UEncItem* Item, EPocketType PocketType/* = EPo
 	if (Pocket == nullptr)
 		return;
 
-	Pocket->AddItem(Item);
-
-	OnAddItem.Broadcast(PocketType, Item);
+	if (Pocket->AddItem(Item))
+	{
+		OnAddItem.Broadcast(PocketType, Item);
+	}	
 }
 
 void UInventoryComponent::RemoveItemInPocket(UEncItem* Item, EPocketType PocketType)
@@ -65,9 +71,10 @@ void UInventoryComponent::RemoveItemInPocket(UEncItem* Item, EPocketType PocketT
 	if (Pocket == nullptr)
 		return;
 
-	Pocket->RemoveItem(Item);
-
-	OnRemoveItem.Broadcast(PocketType, Item);
+	if (Pocket->RemoveItem(Item))
+	{
+		OnRemoveItem.Broadcast(PocketType, Item);
+	}	
 }
 
 void UInventoryComponent::RemoveItem(UEncItem* Item)
@@ -77,7 +84,10 @@ void UInventoryComponent::RemoveItem(UEncItem* Item)
 		FPocket& Pocket = PocketPair.Value;
 		if (Pocket.Contains(Item))
 		{
-			Pocket.RemoveItem(Item);
+			if (Pocket.RemoveItem(Item))
+			{
+				OnRemoveItem.Broadcast(Pocket.GetPocketType(), Item);
+			}			
 			break;
 		}
 	}

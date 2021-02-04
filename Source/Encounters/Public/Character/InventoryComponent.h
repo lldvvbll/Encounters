@@ -18,16 +18,15 @@ class FPocket
 public:
 	FPocket(EPocketType NewPocketType, int32 NewMaxCount);
 
-	void AddItem(UEncItem* NewItem);
-	void RemoveItem(UEncItem* Item);
+	bool AddItem(UEncItem* NewItem);
+	bool RemoveItem(UEncItem* Item);
 	int32 GetItemCount() const;
 	bool Contains(UEncItem* Item) const;
+	EPocketType GetPocketType() const;
 
 private:
 	EPocketType PocketType;
-
 	int32 MaxCount;
-
 	TSet<UEncItem*> ItemSet;
 };
 
