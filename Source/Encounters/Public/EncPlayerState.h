@@ -4,11 +4,12 @@
 
 #include "Encounters.h"
 #include "GameFramework/PlayerState.h"
+#include "EncStructures.h"
 #include "EncPlayerState.generated.h"
 
-class UEncCharacterStateComponent;
 class UEncSaveGame;
-struct FCharacterAbilityData;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStateChangedDelegate, EPlayerStateAttribute);
 
 UCLASS()
 class ENCOUNTERS_API AEncPlayerState : public APlayerState
@@ -38,12 +39,11 @@ public:
 	void SetEndurance(int32 NewEndurance);
 
 	void InitPlayerState();
-	void LoadPlayerState(UEncSaveGame* SaveGame);
+	void LoadPlayerState(const UEncSaveGame* SaveGame);
+	void SavePlayerState(UEncSaveGame* SaveGame);
 
-	void SetCharacterState(UEncCharacterStateComponent* NewState);
-
-private:
-	FCharacterAbilityData* FindCharacterAbilityData(int32 AbilityPoint) const;
+public:
+	FOnPlayerStateChangedDelegate OnPlayerStateChanged;
 
 protected:
 	UPROPERTY(Transient)
@@ -63,7 +63,4 @@ protected:
 
 	UPROPERTY(Transient)
 	int32 Endurance;
-
-	UPROPERTY(Transient)
-	TWeakObjectPtr<UEncCharacterStateComponent> CharacterState;
 };

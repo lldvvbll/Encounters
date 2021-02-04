@@ -9,45 +9,6 @@
 #include "EncGameInstance.generated.h"
 
 class UDataTable;
-class UEncItem;
-
-USTRUCT(BlueprintType)
-struct FDefaultItem
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FPrimaryAssetId AssetId;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	EPocketType PocketType;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32 Count;
-};
-
-USTRUCT(BlueprintType)
-struct FDefaultPlayerState
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32 Level;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32 Strength;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32 Agility;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32 Vitality;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32 Endurance;
-};
 
 UCLASS()
 class ENCOUNTERS_API UEncGameInstance : public UGameInstance
@@ -59,15 +20,15 @@ public:
 
 	FCharacterAbilityData* GetCharacterAbilityData(int32 Point) const;
 
-	const TArray<FDefaultItem>& GetDefaultItems() const;
-	const FDefaultPlayerState& GetDefaultPlayerState() const;
+	const TArray<FSaveItemData>& GetDefaultItems() const;
+	const FSavePlayerStateData& GetDefaultPlayerState() const;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = DefaultSetting)
-	TArray<FDefaultItem> DefaultItems;
+	TArray<FSaveItemData> DefaultItems;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = DefaultSetting)
-	FDefaultPlayerState DefaultPlayerState;
+	FSavePlayerStateData DefaultPlayerState;
 
 private:
 	UPROPERTY()

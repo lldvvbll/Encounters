@@ -28,12 +28,12 @@ FCharacterAbilityData* UEncGameInstance::GetCharacterAbilityData(int32 Point) co
 	return CharacterAbilityTable->FindRow<FCharacterAbilityData>(*FString::FromInt(Point), TEXT(""));
 }
 
-const TArray<FDefaultItem>& UEncGameInstance::GetDefaultItems() const
+const TArray<FSaveItemData>& UEncGameInstance::GetDefaultItems() const
 {
 	return DefaultItems;
 }
 
-const FDefaultPlayerState& UEncGameInstance::GetDefaultPlayerState() const
+const FSavePlayerStateData& UEncGameInstance::GetDefaultPlayerState() const
 {
 	return DefaultPlayerState;
 }

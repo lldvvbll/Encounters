@@ -15,7 +15,7 @@ class ENCOUNTERS_API UEncItem : public UObject
 public:
 	void Init(const FPrimaryAssetId& NewDataAssetId, int32 NewCount);
 
-	const FPrimaryAssetId& GetId() const;
+	const FPrimaryAssetId& GetDataAssetId() const;
 	UItemDataAsset* GetDataAsset() const;
 	int32 GetCount() const;
 

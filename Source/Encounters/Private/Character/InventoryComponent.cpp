@@ -3,6 +3,7 @@
 
 #include "Character/InventoryComponent.h"
 #include "Items/EncItem.h"
+#include "EncSaveGame.h"
 
 FPocket::FPocket(EPocketType NewPocketType, int32 NewMaxCount)
 {
@@ -63,6 +64,27 @@ void UInventoryComponent::AddItem(UEncItem* Item, EPocketType PocketType/* = EPo
 	}	
 }
 
+void UInventoryComponent::AddItemFromSaveItemData(const FSaveItemData& SaveItemData)
+{
+	UEncItem* NewItem = NewObject<UEncItem>(this);
+	if (NewItem == nullptr)
+	{
+		LOG(Warning, TEXT("Fail to Add Item. %s"), *(SaveItemData.AssetId.ToString()));
+		return;
+	}
+	NewItem->Init(SaveItemData.AssetId, SaveItemData.Count);
+
+	AddItem(NewItem, SaveItemData.PocketType);
+}
+
+void UInventoryComponent::AddItemFromSaveItemDatas(const TArray<FSaveItemData>& SaveItemDatas)
+{
+	for (auto& ItemData : SaveItemDatas)
+	{
+		AddItemFromSaveItemData(ItemData);
+	}
+}
+
 void UInventoryComponent::RemoveItemInPocket(UEncItem* Item, EPocketType PocketType)
 {
 	return_if(Item == nullptr);
@@ -113,23 +135,26 @@ int32 UInventoryComponent::GetItemCountAll() const
 	return Count;
 }
 
-void UInventoryComponent::LoadInventory(UEncSaveGame* SaveGame)
+void UInventoryComponent::LoadInventory(const UEncSaveGame* SaveGame)
 {
 	return_if(SaveGame == nullptr);
 
-
+	AddItemFromSaveItemDatas(SaveGame->Items);
 }
 
-void UInventoryComponent::BeginPlay()
+void UInventoryComponent::SaveInventory(UEncSaveGame* SaveGame)
 {
-	Super::BeginPlay();
+	return_if(SaveGame == nullptr);
 
+	for (auto& PocketPair : PocketMap)
+	{
+		FPocket& Pocket = PocketPair.Value;
+		Pocket.ForEachItem(
+			[&SaveGame, &Pocket](UEncItem* Item)
+			{
+				return_if(Item == nullptr);
 
-}
-
-void UInventoryComponent::InitializeComponent()
-{
-	Super::InitializeComponent();
-
-
+				SaveGame->Items.Emplace(Item->GetDataAssetId(), Pocket.GetPocketType(), Item->GetCount());
+			});
+	}
 }

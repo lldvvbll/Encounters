@@ -4,6 +4,7 @@
 
 #include "Encounters.h"
 #include "GameFramework/SaveGame.h"
+#include "EncStructures.h"
 #include "EncSaveGame.generated.h"
 
 UCLASS()
@@ -15,20 +16,8 @@ public:
 	UEncSaveGame();
 
 	UPROPERTY()
-	int32 Level;
+	FSavePlayerStateData PlayerState;
 
 	UPROPERTY()
-	int32 Point;
-
-	UPROPERTY()
-	int32 Strength;
-
-	UPROPERTY()
-	int32 Agility;
-
-	UPROPERTY()
-	int32 Vitality;
-
-	UPROPERTY()
-	int32 Endurance;
+	TArray<FSaveItemData> Items;
 };

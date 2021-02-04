@@ -4,6 +4,7 @@
 
 #include "Encounters.h"
 #include "Character/EncCharacter.h"
+#include "EncStructures.h"
 #include "PlayerCharacter.generated.h"
 
 class UEncSaveGame;
@@ -45,7 +46,8 @@ public:
 	virtual TWeakObjectPtr<AEncCharacter> FindLockOnTarget() const override;
 
 	void InitCharacterData();
-	void LoadCharacter(UEncSaveGame* SaveGame);
+	void LoadCharacter(const UEncSaveGame* SaveGame);
+	void SaveCharacter(UEncSaveGame* SaveGame);
 
 protected:
 	void MoveForward(float NewAxisValue);
@@ -55,10 +57,14 @@ protected:
 	
 	FVector GetCameraRotationPivot() const;
 
+	void OnPlayerStateChanged(EPlayerStateAttribute Attribute);
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera, Meta = (AllowPrivateAccess = true))
 	USpringArmComponent* SpringArm;
 
 	UPROPERTY(VisibleAnywhere, Category = Camera, Meta = (AllowPrivateAccess = true))
 	UCameraComponent* Camera;
+
+	FDelegateHandle OnPlayerStateChangedDelegetHandle;
 };

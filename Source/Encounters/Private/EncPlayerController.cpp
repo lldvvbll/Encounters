@@ -5,6 +5,7 @@
 #include "UI/HudWidget.h"
 #include "Character/PlayerCharacter.h"
 #include "Character/EncCharacterStateComponent.h"
+#include "Character/InventoryComponent.h"
 #include "EncSaveGame.h"
 #include "EncPlayerState.h"
 #include "EncGameInstance.h"
@@ -55,9 +56,70 @@ bool AEncPlayerController::LoadOrCreateSaveGame()
 		}
 
 		PlayerCharacter->InitCharacterData();
+
+		SaveGame();
 	}
 
 	return false;
+}
+
+void AEncPlayerController::SaveGame()
+{
+	static FString SlotName = TEXT("Default");
+	static int32 UserIndex = 0;
+
+	UEncSaveGame* NewSaveGame = NewObject<UEncSaveGame>();
+	return_if(NewSaveGame == nullptr);
+
+	AEncPlayerState* EncPlayerState = GetPlayerState<AEncPlayerState>();
+	if (EncPlayerState != nullptr)
+	{
+		EncPlayerState->SavePlayerState(NewSaveGame);
+	}
+
+	PlayerCharacter->SaveCharacter(NewSaveGame);
+
+	if (!UGameplayStatics::SaveGameToSlot(NewSaveGame, SlotName, UserIndex))
+	{
+		LOG(Error, TEXT("SaveGame Error"));
+	}
+}
+
+void AEncPlayerController::BindCharacterIneventory(UInventoryComponent* Inventory)
+{
+	return_if(Inventory == nullptr);
+
+	OnAddItemDelegateHandle = Inventory->OnAddItem.AddUObject(this, &AEncPlayerController::OnItemAdded);
+	OnRemoveItemDelegateHandle = Inventory->OnRemoveItem.AddUObject(this, &AEncPlayerController::OnItemRemoved);
+}
+
+void AEncPlayerController::UnbindCharacterInventory(UInventoryComponent* Inventory)
+{
+	return_if(Inventory == nullptr);
+	
+	Inventory->OnAddItem.Remove(OnAddItemDelegateHandle);
+	Inventory->OnRemoveItem.Remove(OnRemoveItemDelegateHandle);
+}
+
+void AEncPlayerController::OnPossess(APawn* aPawn)
+{
+	Super::OnPossess(aPawn);
+
+	if (auto EncPlayerState = Cast<AEncPlayerState>(PlayerState))
+	{
+		OnPlayerStateChangedDelegateHandle = 
+			EncPlayerState->OnPlayerStateChanged.AddUObject(this, &AEncPlayerController::OnPlayerStateChanged);
+	}
+}
+
+void AEncPlayerController::OnUnPossess()
+{
+	Super::OnUnPossess();
+
+	if (auto EncPlayerState = Cast<AEncPlayerState>(PlayerState))
+	{
+		EncPlayerState->OnPlayerStateChanged.Remove(OnPlayerStateChangedDelegateHandle);
+	}
 }
 
 void AEncPlayerController::BeginPlay()
@@ -71,4 +133,19 @@ void AEncPlayerController::BeginPlay()
 	{
 		HudWidget->BindCharacterState(PlayerCharacter->GetCharacterStateComponent());
 	}
+}
+
+void AEncPlayerController::OnItemAdded(EPocketType PocketType, UEncItem* ChangedItem)
+{
+	SaveGame();
+}
+
+void AEncPlayerController::OnItemRemoved(EPocketType PocketType, UEncItem* RemovedItem)
+{
+	SaveGame();
+}
+
+void AEncPlayerController::OnPlayerStateChanged(EPlayerStateAttribute Attribute)
+{
+	SaveGame();
 }

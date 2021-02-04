@@ -24,6 +24,15 @@ public:
 	bool Contains(UEncItem* Item) const;
 	EPocketType GetPocketType() const;
 
+	template <typename ForEachFunc>
+	void ForEachItem(ForEachFunc Func)
+	{
+		for (auto& Item : ItemSet)
+		{
+			Func(Item);
+		}
+	}
+
 private:
 	EPocketType PocketType;
 	int32 MaxCount;
@@ -39,16 +48,15 @@ public:
 	UInventoryComponent();
 
 	void AddItem(UEncItem* Item, EPocketType PocketType = EPocketType::Default);
+	void AddItemFromSaveItemData(const FSaveItemData& SaveItemData);
+	void AddItemFromSaveItemDatas(const TArray<FSaveItemData>& SaveItemDatas);
 	void RemoveItemInPocket(UEncItem* Item, EPocketType PocketType);
 	void RemoveItem(UEncItem* Item);
 	int32 GetItemCount(EPocketType PocketType) const;
 	int32 GetItemCountAll() const;
 
-	void LoadInventory(UEncSaveGame* SaveGame);
-
-protected:
-	virtual void BeginPlay() override;
-	virtual void InitializeComponent() override;
+	void LoadInventory(const UEncSaveGame* SaveGame);
+	void SaveInventory(UEncSaveGame* SaveGame);
 
 public:
 	FOnAddItemDelegate OnAddItem;

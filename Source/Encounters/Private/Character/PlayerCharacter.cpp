@@ -3,8 +3,11 @@
 
 #include "Character/PlayerCharacter.h"
 #include "Character/InventoryComponent.h"
+#include "Character/EncCharacterStateComponent.h"
+#include "EncPlayerController.h"
 #include "EncPlayerState.h"
 #include "EncGameInstance.h"
+#include "EncStructures.h"
 #include "Items/EncItem.h"
 
 APlayerCharacter::APlayerCharacter()
@@ -56,9 +59,15 @@ void APlayerCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	if (AEncPlayerState* EncPlayerState = GetPlayerStateChecked<AEncPlayerState>())
+	if (auto EncPlayerState = GetPlayerStateChecked<AEncPlayerState>())
 	{
-		EncPlayerState->SetCharacterState(CharacterState);
+		OnPlayerStateChangedDelegetHandle = 
+			EncPlayerState->OnPlayerStateChanged.AddUObject(this, &APlayerCharacter::OnPlayerStateChanged);
+	}
+
+	if (auto PlayerController = Cast<AEncPlayerController>(NewController))
+	{
+		PlayerController->BindCharacterIneventory(Inventory);
 	}
 }
 
@@ -66,9 +75,14 @@ void APlayerCharacter::UnPossessed()
 {
 	Super::UnPossessed();
 
-	if (AEncPlayerState* EncPlayerState = GetPlayerState<AEncPlayerState>())
+	if (auto EncPlayerState = GetPlayerState<AEncPlayerState>())
 	{
-		EncPlayerState->SetCharacterState(nullptr);
+		EncPlayerState->OnPlayerStateChanged.Remove(OnPlayerStateChangedDelegetHandle);
+	}
+
+	if (auto PlayerController = GetController<AEncPlayerController>())
+	{
+		PlayerController->UnbindCharacterInventory(Inventory);
 	}
 }
 
@@ -230,23 +244,17 @@ void APlayerCharacter::InitCharacterData()
 	UEncGameInstance* EncGameInstance = GetGameInstance<UEncGameInstance>();
 	return_if(EncGameInstance == nullptr);
 
-	for (auto& ItemDesc : EncGameInstance->GetDefaultItems())
-	{
-		UEncItem* NewItem = NewObject<UEncItem>(Inventory);
-		if (NewItem == nullptr)
-		{
-			LOG(Warning, TEXT("Fail to New Item. %s"), *(ItemDesc.AssetId.ToString()));
-			continue;
-		}
-		NewItem->Init(ItemDesc.AssetId, ItemDesc.Count);
-
-		Inventory->AddItem(NewItem, ItemDesc.PocketType);
-	}
+	Inventory->AddItemFromSaveItemDatas(EncGameInstance->GetDefaultItems());
 }
 
-void APlayerCharacter::LoadCharacter(UEncSaveGame* SaveGame)
+void APlayerCharacter::LoadCharacter(const UEncSaveGame* SaveGame)
 {
 	Inventory->LoadInventory(SaveGame);
+}
+
+void APlayerCharacter::SaveCharacter(UEncSaveGame* SaveGame)
+{
+	Inventory->SaveInventory(SaveGame);
 }
 
 void APlayerCharacter::MoveForward(float NewAxisValue)
@@ -303,4 +311,48 @@ FVector APlayerCharacter::GetCameraRotationPivot() const
 {
 	// 스프링암의 원점을 카메라 회전 중심으로 하자.
 	return SpringArm->GetComponentLocation();
+}
+
+void APlayerCharacter::OnPlayerStateChanged(EPlayerStateAttribute Attribute)
+{
+	UEncGameInstance* EncGameInstance = GetGameInstance<UEncGameInstance>();
+	return_if(EncGameInstance == nullptr);
+
+	auto EncPlayerState = GetPlayerState<AEncPlayerState>();
+	return_if(EncPlayerState == nullptr);
+
+	LOG(Warning, TEXT("EPlayerStateAttribute: %d"), Attribute);
+
+	switch (Attribute)
+	{
+	case EPlayerStateAttribute::Strength:
+		if (FCharacterAbilityData* Data = EncGameInstance->GetCharacterAbilityData(EncPlayerState->GetStrength()))
+		{
+			CharacterState->SetAttackPower(Data->AttackPower);
+		}
+		break;
+	case EPlayerStateAttribute::Agility:
+		if (FCharacterAbilityData* Data = EncGameInstance->GetCharacterAbilityData(EncPlayerState->GetAgility()))
+		{
+			CharacterState->SetRollingSpeed(Data->RollingSpeed);
+			CharacterState->SetRollingVelocityRate(Data->RollingVelocityRate);
+		}
+		break;
+	case EPlayerStateAttribute::Vitality:
+		if (FCharacterAbilityData* Data = EncGameInstance->GetCharacterAbilityData(EncPlayerState->GetVitality()))
+		{
+			CharacterState->SetMaxHP(Data->HP);
+			CharacterState->SetHP(Data->HP);
+		}
+		break;
+	case EPlayerStateAttribute::Endurance:
+		if (FCharacterAbilityData* Data = EncGameInstance->GetCharacterAbilityData(EncPlayerState->GetEndurance()))
+		{
+			CharacterState->SetMaxStamina(Data->Stamina);
+			CharacterState->SetStamina(Data->Stamina);
+		}
+		break;
+	default:
+		break;
+	}
 }

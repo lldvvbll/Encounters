@@ -5,10 +5,10 @@
 
 UEncSaveGame::UEncSaveGame()
 {
-	Level = 1;
-	Point = 0;
-	Strength = 1;	
-	Agility = 1;
-	Vitality = 1;
-	Endurance = 1;
+	PlayerState.Level = 1;
+	PlayerState.Point = 0;
+	PlayerState.Strength = 1;
+	PlayerState.Agility = 1;
+	PlayerState.Vitality = 1;
+	PlayerState.Endurance = 1;
 }

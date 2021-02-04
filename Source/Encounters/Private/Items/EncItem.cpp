@@ -11,7 +11,7 @@ void UEncItem::Init(const FPrimaryAssetId& NewDataAssetId, int32 NewCount)
 	Count = NewCount;
 }
 
-const FPrimaryAssetId& UEncItem::GetId() const
+const FPrimaryAssetId& UEncItem::GetDataAssetId() const
 {
 	return DataAssetId;
 }

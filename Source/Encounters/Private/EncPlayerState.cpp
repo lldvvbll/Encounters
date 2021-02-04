@@ -2,11 +2,10 @@
 
 
 #include "EncPlayerState.h"
-#include "EncGameInstance.h"
-#include "DataStructures.h"
 #include "Character/PlayerCharacter.h"
-#include "Character/EncCharacterStateComponent.h"
 #include "EncSaveGame.h"
+#include "EncStructures.h"
+#include "EncGameInstance.h"
 
 AEncPlayerState::AEncPlayerState()
 {
@@ -26,6 +25,7 @@ int32 AEncPlayerState::GetLevel() const
 void AEncPlayerState::SetLevel(int32 NewLevel)
 {
 	Level = NewLevel;
+	OnPlayerStateChanged.Broadcast(EPlayerStateAttribute::Level);
 }
 
 int32 AEncPlayerState::GetPoint() const
@@ -36,6 +36,7 @@ int32 AEncPlayerState::GetPoint() const
 void AEncPlayerState::SetPoint(int32 NewPoint)
 {
 	Point = NewPoint;
+	OnPlayerStateChanged.Broadcast(EPlayerStateAttribute::Point);
 }
 
 void AEncPlayerState::ModifyPoint(int32 Amount)
@@ -51,11 +52,7 @@ int32 AEncPlayerState::GetStrength() const
 void AEncPlayerState::SetStrength(int32 NewStrength)
 {
 	Strength = NewStrength;
-
-	FCharacterAbilityData* Data = FindCharacterAbilityData(Strength);
-	if (Data == nullptr)
-		return;
-
+	OnPlayerStateChanged.Broadcast(EPlayerStateAttribute::Strength);
 }
 
 int32 AEncPlayerState::GetAgility() const
@@ -66,13 +63,7 @@ int32 AEncPlayerState::GetAgility() const
 void AEncPlayerState::SetAgility(int32 NewAgility)
 {
 	Agility = NewAgility;
-
-	FCharacterAbilityData* Data = FindCharacterAbilityData(Agility);
-	if (Data == nullptr)
-		return;
-
-	CharacterState->SetRollingSpeed(Data->RollingSpeed);
-	CharacterState->SetRollingVelocityRate(Data->RollingVelocityRate);
+	OnPlayerStateChanged.Broadcast(EPlayerStateAttribute::Agility);
 }
 
 int32 AEncPlayerState::GetVitality() const
@@ -83,13 +74,7 @@ int32 AEncPlayerState::GetVitality() const
 void AEncPlayerState::SetVitality(int32 NewVitality)
 {
 	Vitality = NewVitality;
-
-	FCharacterAbilityData* Data = FindCharacterAbilityData(Strength);
-	if (Data == nullptr)
-		return;
-
-	CharacterState->SetMaxHP(Data->HP);
-	CharacterState->SetHP(Data->HP);
+	OnPlayerStateChanged.Broadcast(EPlayerStateAttribute::Vitality);
 }
 
 int32 AEncPlayerState::GetEndurance() const
@@ -100,13 +85,7 @@ int32 AEncPlayerState::GetEndurance() const
 void AEncPlayerState::SetEndurance(int32 NewEndurance)
 {
 	Endurance = NewEndurance;
-
-	FCharacterAbilityData* Data = FindCharacterAbilityData(Strength);
-	if (Data == nullptr)
-		return;
-
-	CharacterState->SetMaxStamina(Data->Stamina);
-	CharacterState->SetStamina(Data->Stamina);
+	OnPlayerStateChanged.Broadcast(EPlayerStateAttribute::Endurance);
 }
 
 void AEncPlayerState::InitPlayerState()
@@ -114,46 +93,40 @@ void AEncPlayerState::InitPlayerState()
 	UEncGameInstance* EncGameInstance = GetGameInstance<UEncGameInstance>();
 	return_if(EncGameInstance == nullptr);
 
-	const FDefaultPlayerState& DefaultState = EncGameInstance->GetDefaultPlayerState();
+	const FSavePlayerStateData& DefaultState = EncGameInstance->GetDefaultPlayerState();
 
 	SetLevel(DefaultState.Level);
-	SetPoint(0);
+	SetPoint(DefaultState.Point);
 	SetStrength(DefaultState.Strength);
 	SetAgility(DefaultState.Agility);
 	SetVitality(DefaultState.Vitality);
 	SetEndurance(DefaultState.Endurance);
 }
 
-void AEncPlayerState::LoadPlayerState(UEncSaveGame* SaveGame)
+void AEncPlayerState::LoadPlayerState(const UEncSaveGame* SaveGame)
 {
 	return_if(SaveGame == nullptr);
 
-	SetLevel(SaveGame->Level);
-	SetPoint(SaveGame->Point);
-	SetStrength(SaveGame->Strength);
-	SetAgility(SaveGame->Agility);
-	SetVitality(SaveGame->Vitality);
-	SetEndurance(SaveGame->Endurance);
+	const FSavePlayerStateData& PlayerState = SaveGame->PlayerState;
+
+	SetLevel(PlayerState.Level);
+	SetPoint(PlayerState.Point);
+	SetStrength(PlayerState.Strength);
+	SetAgility(PlayerState.Agility);
+	SetVitality(PlayerState.Vitality);
+	SetEndurance(PlayerState.Endurance);
 }
 
-void AEncPlayerState::SetCharacterState(UEncCharacterStateComponent* NewState)
+void AEncPlayerState::SavePlayerState(UEncSaveGame* SaveGame)
 {
-	if (NewState != nullptr)
-	{
-		CharacterState = NewState;
-	}
-	else
-	{
-		CharacterState.Reset();
-	}
-}
+	return_if(SaveGame == nullptr);
 
-FCharacterAbilityData* AEncPlayerState::FindCharacterAbilityData(int32 AbilityPoint) const
-{
-	UEncGameInstance* EncGameInstance = GetGameInstance<UEncGameInstance>();
-	return_if(EncGameInstance == nullptr, nullptr);
-	
-	return_if(!CharacterState.IsValid(), nullptr);
+	FSavePlayerStateData& PlayerState = SaveGame->PlayerState;
 
-	return EncGameInstance->GetCharacterAbilityData(AbilityPoint);
+	PlayerState.Level = Level;
+	PlayerState.Point = Point;
+	PlayerState.Strength = Strength;
+	PlayerState.Agility = Agility;
+	PlayerState.Vitality = Vitality;
+	PlayerState.Endurance = Endurance;
 }
