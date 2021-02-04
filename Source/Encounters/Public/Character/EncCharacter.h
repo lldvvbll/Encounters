@@ -16,6 +16,9 @@ class UEncCharacterStateComponent;
 class UWidgetComponent;
 class UInventoryComponent;
 class UEncItem;
+class UWeaponDataAsset;
+class UShieldDataAsset;
+class UArmorDataAsset;
 
 UCLASS()
 class ENCOUNTERS_API AEncCharacter : public ACharacter
@@ -35,16 +38,19 @@ public:
 
 	bool CanSetWeapon() const;
 	void SetWeapon(AWeapon* Weapon);
+	void SetWeapon(UWeaponDataAsset* DataAsset);
 	AWeapon* GetCurrentWeapon() const;
 	void RemoveWeapon();
 
 	bool CanSetShield() const;
 	void SetShield(AShield* Shield);
+	void SetShield(UShieldDataAsset* DataAsset);
 	AShield* GetCurrentShield() const;
 	void RemoveShield();
 
 	bool CanSetArmor() const;
 	void SetArmor(AArmor* Armor);
+	void SetArmor(UArmorDataAsset* DataAsset);
 	AArmor* GetCurrentArmor() const;
 	void RemoveArmor();
 

@@ -5,13 +5,28 @@
 
 UEncCharacterStateComponent::UEncCharacterStateComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
-	bWantsInitializeComponent = true;
+	PrimaryComponentTick.bCanEverTick = true;
 
 	MaxHP = 1.0f;
 	MaxStamina = 1.0f;
+	StaminaRecoverySpeed = 1.0f;
 	RollingSpeed = 1.0f;
 	RollingVelocityRate = 1.0f;
+}
+
+void UEncCharacterStateComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (HpRecoverySpeed > KINDA_SMALL_NUMBER && CurrentHP < MaxHP)
+	{
+		SetHP(FMath::FInterpConstantTo(CurrentHP, MaxHP, DeltaTime, HpRecoverySpeed));
+	}
+
+	if (StaminaRecoverySpeed > KINDA_SMALL_NUMBER && CurrentStamina < MaxStamina)
+	{
+		SetStamina(FMath::FInterpConstantTo(CurrentStamina, MaxStamina, DeltaTime, StaminaRecoverySpeed));
+	}
 }
 
 void UEncCharacterStateComponent::SetAttackPower(float NewAttackPower)
@@ -117,12 +132,4 @@ void UEncCharacterStateComponent::BeginPlay()
 	Super::BeginPlay();
 
 	OnHpChanged.Broadcast();
-}
-
-void UEncCharacterStateComponent::InitializeComponent()
-{
-	Super::InitializeComponent();
-
-	SetHP(MaxHP);
-	SetStamina(MaxStamina);
 }

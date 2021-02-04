@@ -18,6 +18,8 @@ public:
 	FVector GetAttackBoxSocketPos() const;
 	FVector GetAttackBoxHalfExtent() const;
 
+	float GetUseStaminaOnAttack() const;
+
 	void DrawAttackBox(FColor Color = FColor::Red) const;
 
 protected:

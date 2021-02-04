@@ -18,3 +18,13 @@ FRotator AEquipment::GetAttachRotator() const
 {
 	return AttachRotator;
 }
+
+void AEquipment::SetItemDataAsset(const TWeakObjectPtr<UItemDataAsset>& DataAsset)
+{
+	ItemDataAsset = DataAsset;
+}
+
+const TWeakObjectPtr<UItemDataAsset>& AEquipment::GetItemDataAsset() const
+{
+	return ItemDataAsset;
+}

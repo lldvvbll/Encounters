@@ -2,6 +2,7 @@
 
 
 #include "Items/Actors/Weapon.h"
+#include "Items/DataAssets/WeaponDataAsset.h"
 #include "DrawDebugHelpers.h"
 
 AWeapon::AWeapon()
@@ -28,6 +29,15 @@ FVector AWeapon::GetAttackBoxSocketPos() const
 FVector AWeapon::GetAttackBoxHalfExtent() const
 {
 	return AttackBoxHalfExtent;
+}
+
+float AWeapon::GetUseStaminaOnAttack() const
+{
+	TWeakObjectPtr<UWeaponDataAsset> DataAsset = Cast<UWeaponDataAsset>(ItemDataAsset);
+	if (!DataAsset.IsValid())
+		return -1.0;
+
+	return DataAsset->Stamina;
 }
 
 void AWeapon::DrawAttackBox(FColor Color/* = FColor::Red*/) const

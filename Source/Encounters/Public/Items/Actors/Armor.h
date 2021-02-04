@@ -14,6 +14,8 @@ class ENCOUNTERS_API AArmor : public AEquipment
 public:
 	AArmor();
 
+	float GetUseStaminaOnRolling() const;
+
 protected:
 	UPROPERTY(VisibleAnywhere, Category = Mesh)
 	UStaticMeshComponent* StMeshComp;

@@ -2,6 +2,7 @@
 
 
 #include "Items/Actors/Shield.h"
+#include "Items/DataAssets/ShieldDataAsset.h"
 #include "DrawDebugHelpers.h"
 
 AShield::AShield()
@@ -18,6 +19,15 @@ AShield::AShield()
 float AShield::GetGuardAngleCosine() const
 {
     return GuardAngleCosine;
+}
+
+float AShield::GetUseStaminaOnGuard() const
+{
+    TWeakObjectPtr<UShieldDataAsset> DataAsset = Cast<UShieldDataAsset>(ItemDataAsset);
+    if (!DataAsset.IsValid())
+        return -1.0;
+
+    return DataAsset->Stamina;
 }
 
 void AShield::DrawGuardAngle(FColor Color/* = FColor::Red*/) const

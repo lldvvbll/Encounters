@@ -20,7 +20,8 @@ class ENCOUNTERS_API UEncCharacterStateComponent : public UActorComponent
 public:	
 	UEncCharacterStateComponent();
 
-public:
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 	void SetAttackPower(float NewAttackPower);
 	float GetAttackPower() const;
 
@@ -45,7 +46,6 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	virtual void InitializeComponent() override;
 
 public:
 	FOnHpIsZeroDelegate OnHpIsZero;
@@ -68,11 +68,17 @@ private:
 	float MaxHP;
 
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = State, Meta = (AllowPrivateAccess = true))
+	float HpRecoverySpeed;
+
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = State, Meta = (AllowPrivateAccess = true))
 	float MaxStamina;
 
-	UPROPERTY()
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = State, Meta = (AllowPrivateAccess = true))
+	float StaminaRecoverySpeed;
+
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = State, Meta = (AllowPrivateAccess = true))
 	float RollingSpeed;
 
-	UPROPERTY()
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = State, Meta = (AllowPrivateAccess = true))
 	float RollingVelocityRate;
 };

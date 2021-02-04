@@ -6,9 +6,6 @@
 #include "Items/Actors/Equipment.h"
 #include "Shield.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class ENCOUNTERS_API AShield : public AEquipment
 {
@@ -18,6 +15,8 @@ public:
 	AShield();
 
 	float GetGuardAngleCosine() const;
+
+	float GetUseStaminaOnGuard() const;
 
 	void DrawGuardAngle(FColor Color = FColor::Red) const;
 

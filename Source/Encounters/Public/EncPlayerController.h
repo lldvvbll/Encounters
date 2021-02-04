@@ -26,17 +26,8 @@ public:
 	bool LoadOrCreateSaveGame();
 	void SaveGame();
 
-	void BindCharacterIneventory(UInventoryComponent* Inventory);
-	void UnbindCharacterInventory(UInventoryComponent* Inventory);
-
 protected:
-	virtual void OnPossess(APawn* aPawn) override;
-	virtual void OnUnPossess() override;
 	virtual void BeginPlay() override;
-
-	void OnItemAdded(EPocketType PocketType, UEncItem* AddedItem);
-	void OnItemRemoved(EPocketType PocketType, UEncItem* RemovedItem);
-	void OnPlayerStateChanged(EPlayerStateAttribute Attribute);
 
 private:
 	UPROPERTY()

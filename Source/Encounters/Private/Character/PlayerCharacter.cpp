@@ -7,7 +7,6 @@
 #include "EncPlayerController.h"
 #include "EncPlayerState.h"
 #include "EncGameInstance.h"
-#include "EncStructures.h"
 #include "Items/EncItem.h"
 
 APlayerCharacter::APlayerCharacter()
@@ -64,11 +63,6 @@ void APlayerCharacter::PossessedBy(AController* NewController)
 		OnPlayerStateChangedDelegetHandle = 
 			EncPlayerState->OnPlayerStateChanged.AddUObject(this, &APlayerCharacter::OnPlayerStateChanged);
 	}
-
-	if (auto PlayerController = Cast<AEncPlayerController>(NewController))
-	{
-		PlayerController->BindCharacterIneventory(Inventory);
-	}
 }
 
 void APlayerCharacter::UnPossessed()
@@ -78,11 +72,6 @@ void APlayerCharacter::UnPossessed()
 	if (auto EncPlayerState = GetPlayerState<AEncPlayerState>())
 	{
 		EncPlayerState->OnPlayerStateChanged.Remove(OnPlayerStateChangedDelegetHandle);
-	}
-
-	if (auto PlayerController = GetController<AEncPlayerController>())
-	{
-		PlayerController->UnbindCharacterInventory(Inventory);
 	}
 }
 
@@ -320,8 +309,6 @@ void APlayerCharacter::OnPlayerStateChanged(EPlayerStateAttribute Attribute)
 
 	auto EncPlayerState = GetPlayerState<AEncPlayerState>();
 	return_if(EncPlayerState == nullptr);
-
-	LOG(Warning, TEXT("EPlayerStateAttribute: %d"), Attribute);
 
 	switch (Attribute)
 	{

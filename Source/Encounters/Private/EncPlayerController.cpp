@@ -85,43 +85,6 @@ void AEncPlayerController::SaveGame()
 	}
 }
 
-void AEncPlayerController::BindCharacterIneventory(UInventoryComponent* Inventory)
-{
-	return_if(Inventory == nullptr);
-
-	OnAddItemDelegateHandle = Inventory->OnAddItem.AddUObject(this, &AEncPlayerController::OnItemAdded);
-	OnRemoveItemDelegateHandle = Inventory->OnRemoveItem.AddUObject(this, &AEncPlayerController::OnItemRemoved);
-}
-
-void AEncPlayerController::UnbindCharacterInventory(UInventoryComponent* Inventory)
-{
-	return_if(Inventory == nullptr);
-	
-	Inventory->OnAddItem.Remove(OnAddItemDelegateHandle);
-	Inventory->OnRemoveItem.Remove(OnRemoveItemDelegateHandle);
-}
-
-void AEncPlayerController::OnPossess(APawn* aPawn)
-{
-	Super::OnPossess(aPawn);
-
-	if (auto EncPlayerState = Cast<AEncPlayerState>(PlayerState))
-	{
-		OnPlayerStateChangedDelegateHandle = 
-			EncPlayerState->OnPlayerStateChanged.AddUObject(this, &AEncPlayerController::OnPlayerStateChanged);
-	}
-}
-
-void AEncPlayerController::OnUnPossess()
-{
-	Super::OnUnPossess();
-
-	if (auto EncPlayerState = Cast<AEncPlayerState>(PlayerState))
-	{
-		EncPlayerState->OnPlayerStateChanged.Remove(OnPlayerStateChangedDelegateHandle);
-	}
-}
-
 void AEncPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -133,19 +96,4 @@ void AEncPlayerController::BeginPlay()
 	{
 		HudWidget->BindCharacterState(PlayerCharacter->GetCharacterStateComponent());
 	}
-}
-
-void AEncPlayerController::OnItemAdded(EPocketType PocketType, UEncItem* ChangedItem)
-{
-	SaveGame();
-}
-
-void AEncPlayerController::OnItemRemoved(EPocketType PocketType, UEncItem* RemovedItem)
-{
-	SaveGame();
-}
-
-void AEncPlayerController::OnPlayerStateChanged(EPlayerStateAttribute Attribute)
-{
-	SaveGame();
 }

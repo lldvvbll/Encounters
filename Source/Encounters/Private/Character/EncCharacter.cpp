@@ -115,22 +115,6 @@ void AEncCharacter::PostInitializeComponents()
 
 	CharacterState->OnHpIsZero.AddUObject(this, &AEncCharacter::Dead);
 	Inventory->OnAddItem.AddUObject(this, &AEncCharacter::OnAddItemToInventory);
-
-	//UWorld* World = GetWorld();
-	//if (CanSetWeapon())
-	//{
-	//	SetWeapon(World->SpawnActor<AWeapon>(DefaultWeaponClass));
-	//}
-
-	//if (CanSetShield())
-	//{
-	//	SetShield(World->SpawnActor<AShield>(DefaultShieldClass));
-	//}
-
-	//if (CanSetArmor())
-	//{
-	//	SetArmor(World->SpawnActor<AArmor>(DefaultArmorClass));
-	//}
 }
 
 float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -142,7 +126,12 @@ float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 			DrawDebugGuardSituation(DamageCauser);
 		}
 		
-		return 0.0f;
+		float UseStamina = (CurShield != nullptr) ? CurShield->GetUseStaminaOnGuard() : -1.0f;
+		if (UseStamina >= 0.0f && CharacterState->GetStamina() >= UseStamina)
+		{
+			CharacterState->ModifyStamina(-UseStamina);
+			return 0.0f;
+		}		
 	}		
 
 	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
@@ -179,6 +168,17 @@ void AEncCharacter::SetWeapon(AWeapon* Weapon)
 	CurWeapon = Weapon;
 }
 
+void AEncCharacter::SetWeapon(UWeaponDataAsset* DataAsset)
+{
+	return_if(DataAsset == nullptr);
+
+	auto Weapon = GetWorld()->SpawnActor<AWeapon>(DataAsset->ItemActorClass);
+	return_if(Weapon == nullptr);
+
+	Weapon->SetItemDataAsset(DataAsset);
+	SetWeapon(Weapon);
+}
+
 AWeapon* AEncCharacter::GetCurrentWeapon() const
 {
 	return CurWeapon;
@@ -204,6 +204,17 @@ void AEncCharacter::SetShield(AShield* Shield)
 	SetEquipment(Shield, SocketName);
 
 	CurShield = Shield;
+}
+
+void AEncCharacter::SetShield(UShieldDataAsset* DataAsset)
+{
+	return_if(DataAsset == nullptr);
+
+	auto Shield = GetWorld()->SpawnActor<AShield>(DataAsset->ItemActorClass);
+	return_if(Shield == nullptr);
+
+	Shield->SetItemDataAsset(DataAsset);
+	SetShield(Shield);
 }
 
 AShield* AEncCharacter::GetCurrentShield() const
@@ -233,6 +244,17 @@ void AEncCharacter::SetArmor(AArmor* Armor)
 	CurArmor = Armor;
 }
 
+void AEncCharacter::SetArmor(UArmorDataAsset* DataAsset)
+{
+	return_if(DataAsset == nullptr);
+
+	auto Armor = GetWorld()->SpawnActor<AArmor>(DataAsset->ItemActorClass);
+	return_if(Armor == nullptr);
+
+	Armor->SetItemDataAsset(DataAsset);
+	SetArmor(Armor);
+}
+
 AArmor* AEncCharacter::GetCurrentArmor() const
 {
 	return CurArmor;
@@ -252,6 +274,16 @@ void AEncCharacter::Attack()
 	if (bRolling || IsFalling() || bRagdoll)
 		return;
 
+	if (CurWeapon == nullptr)
+		return;
+
+	float UseStamina = CurWeapon->GetUseStaminaOnAttack();
+	if (UseStamina < 0.0f)
+		return;
+
+	if (CharacterState->GetStamina() < UseStamina)
+		return;
+
 	if (bAttacking)
 	{
 		if (CanSaveAttack)
@@ -264,6 +296,8 @@ void AEncCharacter::Attack()
 		CurrentCombo = 1;
 		bInputAttack = false;
 		bAttacking = true;
+
+		CharacterState->ModifyStamina(-UseStamina);
 
 		if (EncAnim != nullptr)
 		{
@@ -347,11 +381,20 @@ void AEncCharacter::Roll()
 	if (DirToMove.IsNearlyZero())
 		return;
 
+	float UseStamina = (CurArmor != nullptr) ? CurArmor->GetUseStaminaOnRolling() : 0.0f;
+	if (UseStamina < 0.0f)
+		return;
+
+	if (CharacterState->GetStamina() < UseStamina)
+		return;
+
+	CharacterState->ModifyStamina(-UseStamina);
+
 	SetActorRotation(DirToMove.Rotation(), ETeleportType::TeleportPhysics);
 
-	CurrentRootMotionVelocityRate = CharacterState->GetRollingVelocityRate();
 	if (EncAnim != nullptr)
 	{
+		CurrentRootMotionVelocityRate = CharacterState->GetRollingVelocityRate();
 		EncAnim->PlayRollingMontage(CharacterState->GetRolligSpeed());
 	}
 
@@ -471,26 +514,38 @@ void AEncCharacter::OnComboCheck()
 {
 	CanSaveAttack = false;
 
-	if (bInputAttack)
+	if (!bInputAttack)
+		return;
+
+	bInputAttack = false;
+
+	if (CurWeapon == nullptr)
+		return;
+
+	float UseStamina = CurWeapon->GetUseStaminaOnAttack();
+	if (UseStamina < 0.0f)
+		return;
+
+	if (CharacterState->GetStamina() < UseStamina)
+		return;
+
+	++CurrentCombo;
+	if (CurrentCombo > MaxComboCount)
 	{
-		bInputAttack = false;
+		CurrentCombo = 1;
+	}
 
-		++CurrentCombo;
-		if (CurrentCombo > MaxComboCount)
-		{
-			CurrentCombo = 1;
-		}
+	CharacterState->ModifyStamina(-UseStamina);
 
-		if (EncAnim != nullptr)
-		{
-			EncAnim->JumpToAttackMontageSection(CurrentCombo);
-		}
+	if (EncAnim != nullptr)
+	{
+		EncAnim->JumpToAttackMontageSection(CurrentCombo);
+	}
 
-		if (!SavedInput.IsNearlyZero())
-		{
-			FVector DirVec = FRotator(0.0f, GetControlRotation().Yaw, 0.0f).RotateVector(SavedInput);
-			SetActorRotation(DirVec.Rotation(), ETeleportType::TeleportPhysics);
-		}
+	if (!SavedInput.IsNearlyZero())
+	{
+		FVector DirVec = FRotator(0.0f, GetControlRotation().Yaw, 0.0f).RotateVector(SavedInput);
+		SetActorRotation(DirVec.Rotation(), ETeleportType::TeleportPhysics);
 	}
 }
 
@@ -516,26 +571,17 @@ void AEncCharacter::OnAddItemToInventory(EPocketType PocketType, UEncItem* NewIt
 	{
 	case EPocketType::Weapon:
 		{
-			auto DataAsset = Cast<UWeaponDataAsset>(NewItem->GetDataAsset());
-			return_if(DataAsset == nullptr);
-
-			SetWeapon(GetWorld()->SpawnActor<AWeapon>(DataAsset->ItemActorClass));
+			SetWeapon(Cast<UWeaponDataAsset>(NewItem->GetDataAsset()));
 		}		
 		break;
 	case EPocketType::Shield:
 		{
-			auto DataAsset = Cast<UShieldDataAsset>(NewItem->GetDataAsset());
-			return_if(DataAsset == nullptr);
-
-			SetShield(GetWorld()->SpawnActor<AShield>(DataAsset->ItemActorClass));
+			SetShield(Cast<UShieldDataAsset>(NewItem->GetDataAsset()));
 		}
 		break;
 	case EPocketType::Armor:
 		{
-			auto DataAsset = Cast<UArmorDataAsset>(NewItem->GetDataAsset());
-			return_if(DataAsset == nullptr);
-
-			SetArmor(GetWorld()->SpawnActor<AArmor>(DataAsset->ItemActorClass));
+			SetArmor(Cast<UArmorDataAsset>(NewItem->GetDataAsset()));
 		}
 		break;
 	default:
