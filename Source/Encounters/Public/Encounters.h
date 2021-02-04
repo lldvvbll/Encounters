@@ -3,6 +3,7 @@
 #pragma once
 
 #include "EngineMinimal.h"
+#include "UObject/UObjectGlobals.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(Encounters, Log, All);
 

@@ -4,6 +4,7 @@
 
 #include "Encounters.h"
 #include "GameFramework/Character.h"
+#include "EncStructures.h"
 #include "EncCharacter.generated.h"
 
 class UEncAnimInstance;
@@ -13,6 +14,8 @@ class AShield;
 class AArmor;
 class UEncCharacterStateComponent;
 class UWidgetComponent;
+class UInventoryComponent;
+class UEncItem;
 
 UCLASS()
 class ENCOUNTERS_API AEncCharacter : public ACharacter
@@ -33,14 +36,17 @@ public:
 	bool CanSetWeapon() const;
 	void SetWeapon(AWeapon* Weapon);
 	AWeapon* GetCurrentWeapon() const;
+	void RemoveWeapon();
 
 	bool CanSetShield() const;
 	void SetShield(AShield* Shield);
 	AShield* GetCurrentShield() const;
+	void RemoveShield();
 
 	bool CanSetArmor() const;
 	void SetArmor(AArmor* Armor);
 	AArmor* GetCurrentArmor() const;
+	void RemoveArmor();
 
 	void Attack();
 	float GetAttackDamage() const;
@@ -87,6 +93,12 @@ protected:
 	UFUNCTION()
 	void OnGuardUp();
 
+	UFUNCTION()
+	void OnAddItemToInventory(EPocketType PocketType, UEncItem* NewItem);
+
+	UFUNCTION()
+	void OnRemoveItemFromInventory(EPocketType PocketType, UEncItem* RemovedItem);
+
 protected:
 	UPROPERTY()
 	UEncAnimInstance* EncAnim;
@@ -111,6 +123,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State)
 	UEncCharacterStateComponent* CharacterState;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory)
+	UInventoryComponent* Inventory;
 
 	UPROPERTY(VisibleInstanceOnly, Category = Attack)
 	bool bAttacking;
@@ -165,9 +180,6 @@ protected:
 
 	UPROPERTY(VisibleInstanceOnly, Category = RootMotion)
 	float CurrentRootMotionVelocityRate;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Inventory)
-	//TMap<FPrimaryAssetId, FRPGItemData> DefaultInventory;
 
 	UPROPERTY(EditAnywhere, Category = Debug)
 	bool bShowAttackBox;

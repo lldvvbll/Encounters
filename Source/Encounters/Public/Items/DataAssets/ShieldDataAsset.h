@@ -23,6 +23,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Option)
 	float Stamina;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Actor)
-	TSubclassOf<AActor> ItemActor;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = ActorClass)
+	TSubclassOf<AActor> ItemActorClass;
 };

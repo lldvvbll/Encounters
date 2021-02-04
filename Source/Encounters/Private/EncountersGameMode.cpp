@@ -5,6 +5,7 @@
 #include "EncPlayerController.h"
 #include "Character/PlayerCharacter.h"
 #include "EncPlayerState.h"
+#include "EncPlayerController.h"
 
 AEncountersGameMode::AEncountersGameMode()
 {
@@ -17,8 +18,8 @@ void AEncountersGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
-	AEncPlayerState* EncPlayerState = Cast<AEncPlayerState>(NewPlayer->PlayerState);
-	return_if(EncPlayerState == nullptr);
+	AEncPlayerController* EncPlayerController = Cast<AEncPlayerController>(NewPlayer);
+	return_if(EncPlayerController == nullptr);
 
-	EncPlayerState->InitPlayerData();
+	EncPlayerController->LoadOrCreateSaveGame();
 }

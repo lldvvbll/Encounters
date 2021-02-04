@@ -10,9 +10,6 @@ DECLARE_MULTICAST_DELEGATE(FOnComboEnableDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnComboCheckDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnGuardUpDelegate);
 
-/**
- * 
- */
 UCLASS()
 class ENCOUNTERS_API UEncAnimInstance : public UAnimInstance
 {

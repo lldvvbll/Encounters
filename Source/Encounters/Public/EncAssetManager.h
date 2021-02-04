@@ -18,8 +18,8 @@ public:
 	static const FPrimaryAssetType	ShieldItemType;
 	static const FPrimaryAssetType	ArmorItemType;
 
-
 	static UEncAssetManager& Get();
 
+	UItemDataAsset* GetItemDataAsset(const FPrimaryAssetId& PrimaryAssetId, bool bLogWarning = true);
 	UItemDataAsset* ForceLoadItem(const FPrimaryAssetId& PrimaryAssetId, bool bLogWarning = true);
 };

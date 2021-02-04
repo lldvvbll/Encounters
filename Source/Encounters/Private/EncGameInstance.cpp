@@ -4,6 +4,7 @@
 #include "EncGameInstance.h"
 #include "Engine/DataTable.h"
 #include "DataStructures.h"
+#include "Items/EncItem.h"
 
 UEncGameInstance::UEncGameInstance()
 {
@@ -25,4 +26,14 @@ UEncGameInstance::UEncGameInstance()
 FCharacterAbilityData* UEncGameInstance::GetCharacterAbilityData(int32 Point) const
 {
 	return CharacterAbilityTable->FindRow<FCharacterAbilityData>(*FString::FromInt(Point), TEXT(""));
+}
+
+const TArray<FDefaultItem>& UEncGameInstance::GetDefaultItems() const
+{
+	return DefaultItems;
+}
+
+const FDefaultPlayerState& UEncGameInstance::GetDefaultPlayerState() const
+{
+	return DefaultPlayerState;
 }

@@ -2,7 +2,10 @@
 
 
 #include "Character/PlayerCharacter.h"
+#include "Character/InventoryComponent.h"
 #include "EncPlayerState.h"
+#include "EncGameInstance.h"
+#include "Items/EncItem.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -88,67 +91,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction(TEXT("LockOn"), EInputEvent::IE_Pressed, this, &APlayerCharacter::LockOn);
 }
 
-bool APlayerCharacter::IsLockOnTarget() const
-{
-	return bLockOnTarget;
-}
-
-void APlayerCharacter::MoveForward(float NewAxisValue)
-{
-	if (bRagdoll)
-		return;
-
-	if (bAttacking)
-	{
-		SavedInput.X = NewAxisValue;
-		return;
-	}
-
-	if (bRolling)
-		return;
-
-	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::X), NewAxisValue);
-}
-
-void APlayerCharacter::MoveRight(float NewAxisValue)
-{
-	if (bRagdoll)
-		return;
-
-	if (bAttacking)
-	{
-		SavedInput.Y = NewAxisValue;
-		return;
-	}
-
-	if (bRolling)
-		return;
-
-	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::Y), NewAxisValue);
-}
-
-void APlayerCharacter::LookUp(float NewAxisValue)
-{
-	if (!bLockOnTarget)
-	{
-		AddControllerPitchInput(NewAxisValue);
-	}	
-}
-
-void APlayerCharacter::Turn(float NewAxisValue)
-{
-	if (!bLockOnTarget)
-	{
-		AddControllerYawInput(NewAxisValue);
-	}	
-}
-
-FVector APlayerCharacter::GetCameraRotationPivot() const
-{
-	// 스프링암의 원점을 카메라 회전 중심으로 하자.
-	return SpringArm->GetComponentLocation();
-}
-
 void APlayerCharacter::LockOn()
 {
 	if (bLockOnTarget)
@@ -193,6 +135,11 @@ void APlayerCharacter::ReleaseLockOn()
 	UCharacterMovementComponent* CharMovement = GetCharacterMovement();
 	CharMovement->bOrientRotationToMovement = true;
 	CharMovement->bUseControllerDesiredRotation = false;
+}
+
+bool APlayerCharacter::IsLockOnTarget() const
+{
+	return bLockOnTarget;
 }
 
 TWeakObjectPtr<AEncCharacter> APlayerCharacter::FindLockOnTarget() const
@@ -276,4 +223,84 @@ TWeakObjectPtr<AEncCharacter> APlayerCharacter::FindLockOnTarget() const
 	}
 
 	return TargetPtr;
+}
+
+void APlayerCharacter::InitCharacterData()
+{
+	UEncGameInstance* EncGameInstance = GetGameInstance<UEncGameInstance>();
+	return_if(EncGameInstance == nullptr);
+
+	for (auto& ItemDesc : EncGameInstance->GetDefaultItems())
+	{
+		UEncItem* NewItem = NewObject<UEncItem>(Inventory);
+		if (NewItem == nullptr)
+		{
+			LOG(Warning, TEXT("Fail to New Item. %s"), *(ItemDesc.AssetId.ToString()));
+			continue;
+		}
+		NewItem->Init(ItemDesc.AssetId, ItemDesc.Count);
+
+		Inventory->AddItem(NewItem, ItemDesc.PocketType);
+	}
+}
+
+void APlayerCharacter::LoadCharacter(UEncSaveGame* SaveGame)
+{
+	Inventory->LoadInventory(SaveGame);
+}
+
+void APlayerCharacter::MoveForward(float NewAxisValue)
+{
+	if (bRagdoll)
+		return;
+
+	if (bAttacking)
+	{
+		SavedInput.X = NewAxisValue;
+		return;
+	}
+
+	if (bRolling)
+		return;
+
+	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::X), NewAxisValue);
+}
+
+void APlayerCharacter::MoveRight(float NewAxisValue)
+{
+	if (bRagdoll)
+		return;
+
+	if (bAttacking)
+	{
+		SavedInput.Y = NewAxisValue;
+		return;
+	}
+
+	if (bRolling)
+		return;
+
+	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::Y), NewAxisValue);
+}
+
+void APlayerCharacter::LookUp(float NewAxisValue)
+{
+	if (!bLockOnTarget)
+	{
+		AddControllerPitchInput(NewAxisValue);
+	}
+}
+
+void APlayerCharacter::Turn(float NewAxisValue)
+{
+	if (!bLockOnTarget)
+	{
+		AddControllerYawInput(NewAxisValue);
+	}
+}
+
+FVector APlayerCharacter::GetCameraRotationPivot() const
+{
+	// 스프링암의 원점을 카메라 회전 중심으로 하자.
+	return SpringArm->GetComponentLocation();
 }

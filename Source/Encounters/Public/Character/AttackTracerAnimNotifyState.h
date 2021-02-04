@@ -9,9 +9,6 @@
 class AEncCharacter;
 class AWeapon;
 
-/**
- * 
- */
 UCLASS()
 class ENCOUNTERS_API UAttackTracerAnimNotifyState : public UAnimNotifyState
 {

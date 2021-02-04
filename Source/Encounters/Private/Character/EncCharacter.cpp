@@ -5,11 +5,17 @@
 #include "Character/EncAnimInstance.h"
 #include "Character/EncCharacterMovementComponent.h"
 #include "Character/EncCharacterStateComponent.h"
+#include "Character/InventoryComponent.h"
 #include "Items/Actors/Equipment.h"
 #include "Items/Actors/Weapon.h"
 #include "Items/Actors/Shield.h"
 #include "Items/Actors/Armor.h"
+#include "Items/DataAssets/WeaponDataAsset.h"
+#include "Items/DataAssets/ShieldDataAsset.h"
+#include "Items/DataAssets/ArmorDataAsset.h"
+#include "Items/EncItem.h"
 #include "EncAssetManager.h"
+#include "EncStructures.h"
 #include "DrawDebugHelpers.h"
 
 AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FObjectInitializer::Get()*/)
@@ -18,6 +24,7 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 	PrimaryActorTick.bCanEverTick = true;
 
 	CharacterState = CreateDefaultSubobject<UEncCharacterStateComponent>(TEXT("CHARACTERSTATE"));
+	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("INVENTORY"));
 
 	MaxComboCount = 2;
 	AttackSpeed = 1.25f;
@@ -107,22 +114,23 @@ void AEncCharacter::PostInitializeComponents()
 	}
 
 	CharacterState->OnHpIsZero.AddUObject(this, &AEncCharacter::Dead);
+	Inventory->OnAddItem.AddUObject(this, &AEncCharacter::OnAddItemToInventory);
 
-	UWorld* World = GetWorld();
-	if (CanSetWeapon())
-	{
-		SetWeapon(World->SpawnActor<AWeapon>(DefaultWeaponClass));
-	}
+	//UWorld* World = GetWorld();
+	//if (CanSetWeapon())
+	//{
+	//	SetWeapon(World->SpawnActor<AWeapon>(DefaultWeaponClass));
+	//}
 
-	if (CanSetShield())
-	{
-		SetShield(World->SpawnActor<AShield>(DefaultShieldClass));
-	}
+	//if (CanSetShield())
+	//{
+	//	SetShield(World->SpawnActor<AShield>(DefaultShieldClass));
+	//}
 
-	if (CanSetArmor())
-	{
-		SetArmor(World->SpawnActor<AArmor>(DefaultArmorClass));
-	}
+	//if (CanSetArmor())
+	//{
+	//	SetArmor(World->SpawnActor<AArmor>(DefaultArmorClass));
+	//}
 }
 
 float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -176,6 +184,15 @@ AWeapon* AEncCharacter::GetCurrentWeapon() const
 	return CurWeapon;
 }
 
+void AEncCharacter::RemoveWeapon()
+{
+	if (CurWeapon == nullptr)
+		return;
+
+	GetWorld()->DestroyActor(CurWeapon);
+	CurWeapon = nullptr;
+}
+
 bool AEncCharacter::CanSetShield() const
 {
 	return (CurShield == nullptr);
@@ -194,6 +211,15 @@ AShield* AEncCharacter::GetCurrentShield() const
 	return CurShield;
 }
 
+void AEncCharacter::RemoveShield()
+{
+	if (CurShield == nullptr)
+		return;
+
+	GetWorld()->DestroyActor(CurShield);
+	CurShield = nullptr;
+}
+
 bool AEncCharacter::CanSetArmor() const
 {
 	return (CurArmor == nullptr);
@@ -210,6 +236,15 @@ void AEncCharacter::SetArmor(AArmor* Armor)
 AArmor* AEncCharacter::GetCurrentArmor() const
 {
 	return CurArmor;
+}
+
+void AEncCharacter::RemoveArmor()
+{
+	if (CurArmor == nullptr)
+		return;
+
+	GetWorld()->DestroyActor(CurArmor);
+	CurArmor = nullptr;
 }
 
 void AEncCharacter::Attack()
@@ -471,4 +506,63 @@ void AEncCharacter::OnRollingMontageEnded(UAnimMontage* Montage, bool bInterrupt
 void AEncCharacter::OnGuardUp()
 {
 	bGuardUp = true;
+}
+
+void AEncCharacter::OnAddItemToInventory(EPocketType PocketType, UEncItem* NewItem)
+{
+	return_if(NewItem == nullptr);
+
+	switch (PocketType)
+	{
+	case EPocketType::Weapon:
+		{
+			auto DataAsset = Cast<UWeaponDataAsset>(NewItem->GetDataAsset());
+			return_if(DataAsset == nullptr);
+
+			SetWeapon(GetWorld()->SpawnActor<AWeapon>(DataAsset->ItemActorClass));
+		}		
+		break;
+	case EPocketType::Shield:
+		{
+			auto DataAsset = Cast<UShieldDataAsset>(NewItem->GetDataAsset());
+			return_if(DataAsset == nullptr);
+
+			SetShield(GetWorld()->SpawnActor<AShield>(DataAsset->ItemActorClass));
+		}
+		break;
+	case EPocketType::Armor:
+		{
+			auto DataAsset = Cast<UArmorDataAsset>(NewItem->GetDataAsset());
+			return_if(DataAsset == nullptr);
+
+			SetArmor(GetWorld()->SpawnActor<AArmor>(DataAsset->ItemActorClass));
+		}
+		break;
+	default:
+		break;
+	}
+}
+
+void AEncCharacter::OnRemoveItemFromInventory(EPocketType PocketType, UEncItem* RemovedItem)
+{
+	switch (PocketType)
+	{
+	case EPocketType::Weapon:
+		{
+			RemoveWeapon();
+		}
+		break;
+	case EPocketType::Shield:
+		{
+			RemoveShield();
+		}
+		break;
+	case EPocketType::Armor:
+		{
+			RemoveArmor();
+		}
+		break;
+	default:
+		break;
+	}
 }

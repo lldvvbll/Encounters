@@ -2,7 +2,26 @@
 
 
 #include "Items/EncItem.h"
+#include "Items/DataAssets/ItemDataAsset.h"
+#include "EncAssetManager.h"
 
-UEncItem::UEncItem()
+void UEncItem::Init(const FPrimaryAssetId& NewDataAssetId, int32 NewCount)
 {
+	DataAssetId = NewDataAssetId;
+	Count = NewCount;
+}
+
+const FPrimaryAssetId& UEncItem::GetId() const
+{
+	return DataAssetId;
+}
+
+UItemDataAsset* UEncItem::GetDataAsset() const
+{
+	return UEncAssetManager::Get().GetItemDataAsset(DataAssetId);
+}
+
+int32 UEncItem::GetCount() const
+{
+	return Count;
 }

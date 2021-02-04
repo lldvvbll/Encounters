@@ -5,6 +5,9 @@
 #include "UI/HudWidget.h"
 #include "Character/PlayerCharacter.h"
 #include "Character/EncCharacterStateComponent.h"
+#include "EncSaveGame.h"
+#include "EncPlayerState.h"
+#include "EncGameInstance.h"
 
 AEncPlayerController::AEncPlayerController()
 {
@@ -22,6 +25,39 @@ void AEncPlayerController::SetPawn(APawn* InPawn)
 
 	ACharacter* Char = GetCharacter();
 	PlayerCharacter = (Char != nullptr) ? Cast<APlayerCharacter>(Char) : nullptr;
+}
+
+bool AEncPlayerController::LoadOrCreateSaveGame()
+{
+	static FString SlotName = TEXT("Default");
+	static int32 UserIndex = 0;
+
+	if (UGameplayStatics::DoesSaveGameExist(SlotName, UserIndex))
+	{
+		CurrentSaveGame = Cast<UEncSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, UserIndex));
+
+		AEncPlayerState* EncPlayerState = GetPlayerState<AEncPlayerState>();
+		if (EncPlayerState != nullptr)
+		{
+			EncPlayerState->LoadPlayerState(CurrentSaveGame);
+		}
+
+		PlayerCharacter->LoadCharacter(CurrentSaveGame);
+	}
+	else
+	{
+		CurrentSaveGame = Cast<UEncSaveGame>(UGameplayStatics::CreateSaveGameObject(UEncSaveGame::StaticClass()));
+
+		AEncPlayerState* EncPlayerState = GetPlayerState<AEncPlayerState>();
+		if (EncPlayerState != nullptr)
+		{
+			EncPlayerState->InitPlayerState();
+		}
+
+		PlayerCharacter->InitCharacterData();
+	}
+
+	return false;
 }
 
 void AEncPlayerController::BeginPlay()

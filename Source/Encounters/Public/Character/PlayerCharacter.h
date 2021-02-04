@@ -6,6 +6,8 @@
 #include "Character/EncCharacter.h"
 #include "PlayerCharacter.generated.h"
 
+class UEncSaveGame;
+
 USTRUCT()
 struct FLockOnCandidate
 {
@@ -41,6 +43,9 @@ public:
 	virtual void ReleaseLockOn() override;
 	virtual bool IsLockOnTarget() const override;
 	virtual TWeakObjectPtr<AEncCharacter> FindLockOnTarget() const override;
+
+	void InitCharacterData();
+	void LoadCharacter(UEncSaveGame* SaveGame);
 
 protected:
 	void MoveForward(float NewAxisValue);

@@ -7,6 +7,7 @@
 #include "EncPlayerState.generated.h"
 
 class UEncCharacterStateComponent;
+class UEncSaveGame;
 struct FCharacterAbilityData;
 
 UCLASS()
@@ -36,7 +37,8 @@ public:
 	int32 GetEndurance() const;
 	void SetEndurance(int32 NewEndurance);
 
-	void InitPlayerData();
+	void InitPlayerState();
+	void LoadPlayerState(UEncSaveGame* SaveGame);
 
 	void SetCharacterState(UEncCharacterStateComponent* NewState);
 

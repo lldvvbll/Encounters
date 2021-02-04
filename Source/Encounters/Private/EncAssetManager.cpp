@@ -23,6 +23,17 @@ UEncAssetManager& UEncAssetManager::Get()
 	}
 }
 
+UItemDataAsset* UEncAssetManager::GetItemDataAsset(const FPrimaryAssetId& PrimaryAssetId, bool bLogWarning)
+{
+	UItemDataAsset* DataAsset = GetPrimaryAssetObject<UItemDataAsset>(PrimaryAssetId);
+	if (DataAsset == nullptr)
+	{
+		DataAsset = ForceLoadItem(PrimaryAssetId, bLogWarning);
+	}
+
+	return DataAsset;
+}
+
 UItemDataAsset* UEncAssetManager::ForceLoadItem(const FPrimaryAssetId& PrimaryAssetId, bool bLogWarning)
 {
 	UItemDataAsset* LoadedItem = Cast<UItemDataAsset>(GetPrimaryAssetPath(PrimaryAssetId).TryLoad());

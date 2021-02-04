@@ -8,6 +8,7 @@
 
 class UHudWidget;
 class APlayerCharacter;
+class UEncSaveGame;
 
 UCLASS()
 class ENCOUNTERS_API AEncPlayerController : public APlayerController
@@ -19,12 +20,17 @@ public:
 
 	virtual void SetPawn(APawn* InPawn) override;
 
+	bool LoadOrCreateSaveGame();
+
 protected:
 	virtual void BeginPlay() override;
 
 private:
 	UPROPERTY()
 	APlayerCharacter* PlayerCharacter;
+
+	UPROPERTY()
+	UEncSaveGame* CurrentSaveGame;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI, Meta = (AllowPrivateAccess = true))
 	TSubclassOf<UHudWidget> HudWidgetClass;

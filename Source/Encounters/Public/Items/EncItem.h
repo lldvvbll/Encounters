@@ -13,11 +13,15 @@ class ENCOUNTERS_API UEncItem : public UObject
 	GENERATED_BODY()
 
 public:
-	UEncItem();
+	void Init(const FPrimaryAssetId& NewDataAssetId, int32 NewCount);
+
+	const FPrimaryAssetId& GetId() const;
+	UItemDataAsset* GetDataAsset() const;
+	int32 GetCount() const;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	UItemDataAsset* DataAsset;
+	FPrimaryAssetId DataAssetId;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int32 Count;

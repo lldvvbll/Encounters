@@ -6,6 +6,7 @@
 #include "DataStructures.h"
 #include "Character/PlayerCharacter.h"
 #include "Character/EncCharacterStateComponent.h"
+#include "EncSaveGame.h"
 
 AEncPlayerState::AEncPlayerState()
 {
@@ -108,14 +109,31 @@ void AEncPlayerState::SetEndurance(int32 NewEndurance)
 	CharacterState->SetStamina(Data->Stamina);
 }
 
-void AEncPlayerState::InitPlayerData()
+void AEncPlayerState::InitPlayerState()
 {
-	SetLevel(1);
+	UEncGameInstance* EncGameInstance = GetGameInstance<UEncGameInstance>();
+	return_if(EncGameInstance == nullptr);
+
+	const FDefaultPlayerState& DefaultState = EncGameInstance->GetDefaultPlayerState();
+
+	SetLevel(DefaultState.Level);
 	SetPoint(0);
-	SetStrength(1);
-	SetAgility(1);
-	SetVitality(1);
-	SetEndurance(1);
+	SetStrength(DefaultState.Strength);
+	SetAgility(DefaultState.Agility);
+	SetVitality(DefaultState.Vitality);
+	SetEndurance(DefaultState.Endurance);
+}
+
+void AEncPlayerState::LoadPlayerState(UEncSaveGame* SaveGame)
+{
+	return_if(SaveGame == nullptr);
+
+	SetLevel(SaveGame->Level);
+	SetPoint(SaveGame->Point);
+	SetStrength(SaveGame->Strength);
+	SetAgility(SaveGame->Agility);
+	SetVitality(SaveGame->Vitality);
+	SetEndurance(SaveGame->Endurance);
 }
 
 void AEncPlayerState::SetCharacterState(UEncCharacterStateComponent* NewState)
@@ -132,7 +150,7 @@ void AEncPlayerState::SetCharacterState(UEncCharacterStateComponent* NewState)
 
 FCharacterAbilityData* AEncPlayerState::FindCharacterAbilityData(int32 AbilityPoint) const
 {
-	UEncGameInstance* EncGameInstance = Cast<UEncGameInstance>(GetGameInstance());
+	UEncGameInstance* EncGameInstance = GetGameInstance<UEncGameInstance>();
 	return_if(EncGameInstance == nullptr, nullptr);
 	
 	return_if(!CharacterState.IsValid(), nullptr);
