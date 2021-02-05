@@ -14,7 +14,6 @@
 #include "Items/DataAssets/ShieldDataAsset.h"
 #include "Items/DataAssets/ArmorDataAsset.h"
 #include "Items/EncItem.h"
-#include "EncAssetManager.h"
 #include "EncStructures.h"
 #include "DrawDebugHelpers.h"
 
@@ -283,7 +282,7 @@ void AEncCharacter::Attack()
 
 	if (CharacterState->GetStamina() < UseStamina)
 		return;
-
+	
 	if (bAttacking)
 	{
 		if (CanSaveAttack)

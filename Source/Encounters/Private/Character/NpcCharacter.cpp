@@ -2,10 +2,14 @@
 
 
 #include "Character/NpcCharacter.h"
-#include "EncAIController.h"
+#include "Character/EncCharacterStateComponent.h"
+#include "Character/InventoryComponent.h"
 #include "Components/WidgetComponent.h"
 #include "UI/CharacterWidget.h"
-#include "Character/EncCharacterStateComponent.h"
+#include "Items/DataAssets/WeaponDataAsset.h"
+#include "Items/DataAssets/ShieldDataAsset.h"
+#include "EncAIController.h"
+#include "EncGameInstance.h"
 
 ANpcCharacter::ANpcCharacter()
 {
@@ -34,6 +38,17 @@ void ANpcCharacter::BeginPlay()
 	if (auto CharWidget = Cast<UCharacterWidget>(HpBarWidget->GetUserWidgetObject()))
 	{
 		CharWidget->BindCharacterState(CharacterState);
+	}
+
+	if (auto EncGameInstance = GetGameInstance<UEncGameInstance>())
+	{
+		Inventory->AddItemFromSaveItemDatas(EncGameInstance->GetDefaultItems());
+
+		CharacterState->SetAttackPower(10.0f);
+		CharacterState->SetMaxHP(100.0f);
+		CharacterState->SetHP(100.0f);
+		CharacterState->SetMaxStamina(30.0f);
+		CharacterState->SetStamina(30.0f);
 	}
 }
 

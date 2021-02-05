@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AI/BTTask_Guard.h"
+#include "AI/BTTask_Attack.h"
 #include "EncAIController.h"
 #include "Character/NpcCharacter.h"
 
 
-EBTNodeResult::Type UBTTask_Guard::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
 
@@ -14,7 +14,7 @@ EBTNodeResult::Type UBTTask_Guard::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 	if (Char == nullptr)
 		return EBTNodeResult::Failed;
 
-	Char->Guard();
+	Char->Attack();
 
-	return EBTNodeResult::InProgress;
+	return EBTNodeResult::Succeeded;
 }
