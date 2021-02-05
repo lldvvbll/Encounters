@@ -133,16 +133,16 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory)
 	UInventoryComponent* Inventory;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Attack)
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Attack)
 	bool bAttacking;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Attack)
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Attack)
 	bool CanSaveAttack;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Attack)
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Attack)
 	bool bInputAttack;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Attack)
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Attack)
 	int32 CurrentCombo;
 
 	UPROPERTY(VisibleInstanceOnly, Category = Attack)
@@ -151,51 +151,51 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Attack)
 	float AttackSpeed;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Attack)
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Attack)
 	FVector SavedInput;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Rolling)
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Rolling)
 	bool bRolling;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Ragdoll)
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Ragdoll)
 	bool bDead;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Ragdoll)
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Ragdoll)
 	bool bRagdoll;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Guard)
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Guard)
 	bool bGuarding;
 
 	UPROPERTY(EditAnywhere, Category = Guard)
 	float GuardSpeed;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Guard)
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Guard)
 	bool bGuardUp;
 
 	UPROPERTY(EditAnywhere, Category = LockOn)
 	float LockOnDistanceMax;
 
-	UPROPERTY()
+	UPROPERTY(Transient)
 	float LockOnDistanceMaxSquared;
 
-	UPROPERTY(VisibleInstanceOnly, Category = LockOn)
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = LockOn)
 	TWeakObjectPtr<AEncCharacter> LockedOnTarget;
 
-	UPROPERTY(VisibleInstanceOnly, Category = LockOn)
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = LockOn)
 	bool bLockOnTarget;
 
-	UPROPERTY(VisibleInstanceOnly, Category = RootMotion)
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = RootMotion)
 	float CurrentRootMotionVelocityRate;
 
-	UPROPERTY(EditAnywhere, Category = Debug)
+	UPROPERTY(Transient, EditAnywhere, Category = Debug)
 	bool bShowAttackBox;
 
-	UPROPERTY(EditAnywhere, Category = Debug)
+	UPROPERTY(Transient, EditAnywhere, Category = Debug)
 	bool bShowAttackBoxInAttack;
 
-	UPROPERTY(EditAnywhere, Category = Debug)
+	UPROPERTY(Transient, EditAnywhere, Category = Debug)
 	bool bShowGuardAngle;
 	
-	UPROPERTY(EditAnywhere, Category = Debug)
+	UPROPERTY(Transient, EditAnywhere, Category = Debug)
 	bool bShowGuardSituation;
 };

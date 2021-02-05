@@ -298,6 +298,7 @@ void AEncCharacter::Attack()
 		bAttacking = true;
 
 		CharacterState->ModifyStamina(-UseStamina);
+		CharacterState->SetStaminaRecovery(false);
 
 		if (EncAnim != nullptr)
 		{
@@ -389,6 +390,7 @@ void AEncCharacter::Roll()
 		return;
 
 	CharacterState->ModifyStamina(-UseStamina);
+	CharacterState->SetStaminaRecovery(false);
 
 	SetActorRotation(DirToMove.Rotation(), ETeleportType::TeleportPhysics);
 
@@ -503,6 +505,7 @@ void AEncCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupte
 	CurrentCombo = 0;
 	bInputAttack = false;
 	bAttacking = false;
+	CharacterState->SetStaminaRecovery(true);
 }
 
 void AEncCharacter::OnComboEnable()
@@ -536,6 +539,7 @@ void AEncCharacter::OnComboCheck()
 	}
 
 	CharacterState->ModifyStamina(-UseStamina);
+	CharacterState->SetStaminaRecovery(false);
 
 	if (EncAnim != nullptr)
 	{
@@ -556,6 +560,7 @@ void AEncCharacter::OnRollingMontageEnded(UAnimMontage* Montage, bool bInterrupt
 
 	CurrentRootMotionVelocityRate = 1.0f;
 	bRolling = false;
+	CharacterState->SetStaminaRecovery(true);
 }
 
 void AEncCharacter::OnGuardUp()

@@ -10,6 +10,7 @@ UEncCharacterStateComponent::UEncCharacterStateComponent()
 	MaxHP = 1.0f;
 	MaxStamina = 1.0f;
 	StaminaRecoverySpeed = 1.0f;
+	bStaminaRecovery = true;
 	RollingSpeed = 1.0f;
 	RollingVelocityRate = 1.0f;
 }
@@ -18,12 +19,12 @@ void UEncCharacterStateComponent::TickComponent(float DeltaTime, enum ELevelTick
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (HpRecoverySpeed > KINDA_SMALL_NUMBER && CurrentHP < MaxHP)
+	if (bHpRecovery && CurrentHP < MaxHP)
 	{
 		SetHP(FMath::FInterpConstantTo(CurrentHP, MaxHP, DeltaTime, HpRecoverySpeed));
 	}
 
-	if (StaminaRecoverySpeed > KINDA_SMALL_NUMBER && CurrentStamina < MaxStamina)
+	if (bStaminaRecovery && CurrentStamina < MaxStamina)
 	{
 		SetStamina(FMath::FInterpConstantTo(CurrentStamina, MaxStamina, DeltaTime, StaminaRecoverySpeed));
 	}
@@ -41,7 +42,8 @@ float UEncCharacterStateComponent::GetAttackPower() const
 
 void UEncCharacterStateComponent::SetHP(float NewHP)
 {
-	CurrentHP = NewHP;
+	CurrentHP = FMath::Clamp<float>(NewHP, 0.0f, MaxHP);
+
 	OnHpChanged.Broadcast();
 	if (CurrentHP < KINDA_SMALL_NUMBER)
 	{
@@ -51,7 +53,7 @@ void UEncCharacterStateComponent::SetHP(float NewHP)
 
 void UEncCharacterStateComponent::ModifyHP(float Amount)
 {
-	SetHP(FMath::Clamp<float>(CurrentHP + Amount, 0.0f, MaxHP));
+	SetHP(CurrentHP + Amount);
 }
 
 float UEncCharacterStateComponent::GetHP() const
@@ -75,15 +77,21 @@ float UEncCharacterStateComponent::GetHpRatio() const
 	return CurrentHP / MaxHP;
 }
 
+void UEncCharacterStateComponent::SetHpRecovery(bool bEnable)
+{
+	bHpRecovery = bEnable;
+}
+
 void UEncCharacterStateComponent::SetStamina(float NewStamina)
 {
-	CurrentStamina = NewStamina;
+	CurrentStamina = FMath::Clamp<float>(NewStamina, 0.0f, MaxStamina);
+
 	OnStaminaChanged.Broadcast();
 }
 
 void UEncCharacterStateComponent::ModifyStamina(float Amount)
 {
-	SetStamina(FMath::Clamp<float>(CurrentStamina + Amount, 0.0f, MaxStamina));
+	SetStamina(CurrentStamina + Amount);
 }
 
 float UEncCharacterStateComponent::GetStamina() const
@@ -105,6 +113,11 @@ float UEncCharacterStateComponent::GetMaxStamina() const
 float UEncCharacterStateComponent::GetStaminaRatio() const
 {
 	return CurrentStamina / MaxStamina;
+}
+
+void UEncCharacterStateComponent::SetStaminaRecovery(bool bEnable)
+{
+	bStaminaRecovery = bEnable;
 }
 
 void UEncCharacterStateComponent::SetRollingSpeed(float NewRollingSpeed)

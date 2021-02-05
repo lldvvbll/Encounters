@@ -31,6 +31,7 @@ public:
 	void SetMaxHP(float NewHP);
 	float GetMaxHP() const;
 	float GetHpRatio() const;
+	void SetHpRecovery(bool bEnable);
 
 	void SetStamina(float NewStamina);
 	void ModifyStamina(float Amount);
@@ -38,6 +39,7 @@ public:
 	void SetMaxStamina(float NewStamina);
 	float GetMaxStamina() const;
 	float GetStaminaRatio() const;
+	void SetStaminaRecovery(bool bEnable);
 
 	void SetRollingSpeed(float NewRollingSpeed);
 	float GetRolligSpeed() const;
@@ -55,30 +57,36 @@ public:
 	FOnMaxStaminaChangedDelegate OnMaxStaminaChanged;
 
 private:
-	UPROPERTY(Transient, VisibleInstanceOnly, Category = State, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = AttackPower, Meta = (AllowPrivateAccess = true))
 	float AttackPower;
 
-	UPROPERTY(Transient, VisibleInstanceOnly, Category = State, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = HP, Meta = (AllowPrivateAccess = true))
 	float CurrentHP;
 
-	UPROPERTY(Transient, VisibleInstanceOnly, Category = State, Meta = (AllowPrivateAccess = true))
-	float CurrentStamina;
-
-	UPROPERTY(Transient, VisibleInstanceOnly, Category = State, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = HP, Meta = (AllowPrivateAccess = true))
 	float MaxHP;
 
-	UPROPERTY(Transient, VisibleInstanceOnly, Category = State, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = HP, Meta = (AllowPrivateAccess = true))
 	float HpRecoverySpeed;
 
-	UPROPERTY(Transient, VisibleInstanceOnly, Category = State, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = HP, Meta = (AllowPrivateAccess = true))
+	bool bHpRecovery;
+
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stamina, Meta = (AllowPrivateAccess = true))
+	float CurrentStamina;
+
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stamina, Meta = (AllowPrivateAccess = true))
 	float MaxStamina;
 
-	UPROPERTY(Transient, VisibleInstanceOnly, Category = State, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stamina, Meta = (AllowPrivateAccess = true))
 	float StaminaRecoverySpeed;
 
-	UPROPERTY(Transient, VisibleInstanceOnly, Category = State, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stamina, Meta = (AllowPrivateAccess = true))
+	bool bStaminaRecovery;
+
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Rolling, Meta = (AllowPrivateAccess = true))
 	float RollingSpeed;
 
-	UPROPERTY(Transient, VisibleInstanceOnly, Category = State, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Rolling, Meta = (AllowPrivateAccess = true))
 	float RollingVelocityRate;
 };
