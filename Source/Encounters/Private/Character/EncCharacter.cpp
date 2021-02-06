@@ -125,16 +125,24 @@ float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 			DrawDebugGuardSituation(DamageCauser);
 		}
 		
-		float UseStamina = (CurShield != nullptr) ? CurShield->GetUseStaminaOnGuard() : -1.0f;
-		if (UseStamina >= 0.0f && CharacterState->GetStamina() >= UseStamina)
+		if (CurShield != nullptr)
 		{
-			CharacterState->ModifyStamina(-UseStamina);
-			return 0.0f;
-		}		
+			float UseStamina = CurShield->GetUseStaminaOnGuard();
+			if (UseStamina >= 0.0f && CharacterState->GetStamina() >= UseStamina)
+			{
+				CharacterState->ModifyStamina(-UseStamina);
+				GetCharacterMovement()->AddImpulse(GetActorForwardVector() * -100000.0f);
+
+				DamageAmount = FMath::Max(0.0f, DamageAmount * (1.0f - CurShield->GetDamageReduction()));
+			}
+		}				
 	}		
 
 	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	CharacterState->ModifyHP(-FinalDamage);
+	if (FinalDamage > KINDA_SMALL_NUMBER)
+	{
+		CharacterState->ModifyHP(-FinalDamage);
+	}
 
 	return FinalDamage;
 }
@@ -404,11 +412,13 @@ void AEncCharacter::Roll()
 
 void AEncCharacter::Dead()
 {
-	StartRagdoll();
-	
-	GuardDown();
 	bDead = true;
+
+	GuardDown();
 	SetCanBeDamaged(false);
+	CharacterState->SetStaminaRecovery(false);
+
+	StartRagdoll();
 }
 
 bool AEncCharacter::IsDead() const

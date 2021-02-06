@@ -25,9 +25,18 @@ float AShield::GetUseStaminaOnGuard() const
 {
     TWeakObjectPtr<UShieldDataAsset> DataAsset = Cast<UShieldDataAsset>(ItemDataAsset);
     if (!DataAsset.IsValid())
-        return -1.0;
+        return -1.0f;
 
     return DataAsset->Stamina;
+}
+
+float AShield::GetDamageReduction() const
+{
+    TWeakObjectPtr<UShieldDataAsset> DataAsset = Cast<UShieldDataAsset>(ItemDataAsset);
+    if (!DataAsset.IsValid())
+        return 0.0f;
+
+    return DataAsset->DamageReduction;
 }
 
 void AShield::DrawGuardAngle(FColor Color/* = FColor::Red*/) const

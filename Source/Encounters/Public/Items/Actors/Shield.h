@@ -15,8 +15,8 @@ public:
 	AShield();
 
 	float GetGuardAngleCosine() const;
-
 	float GetUseStaminaOnGuard() const;
+	float GetDamageReduction() const;
 
 	void DrawGuardAngle(FColor Color = FColor::Red) const;
 
