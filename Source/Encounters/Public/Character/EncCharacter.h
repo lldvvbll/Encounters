@@ -85,7 +85,10 @@ protected:
 	void SetEquipment(AEquipment* Equipment, const FName& SocketName);
 
 	UFUNCTION()
-	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+	void OnMontageStarted(UAnimMontage* Montage);
+
+	UFUNCTION()
+	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
 	UFUNCTION()
 	void OnComboEnable();
@@ -94,13 +97,7 @@ protected:
 	void OnComboCheck();
 
 	UFUNCTION()
-	void OnRollingMontageEnded(UAnimMontage* Montage, bool bInterrupted);
-
-	UFUNCTION()
 	void OnGuardUp();
-
-	UFUNCTION()
-	void OnShovedOnBlockingMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
 	UFUNCTION()
 	void OnAddItemToInventory(EPocketType PocketType, UEncItem* NewItem);

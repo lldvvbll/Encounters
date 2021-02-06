@@ -103,9 +103,8 @@ void AEncCharacter::PostInitializeComponents()
 	EncAnim = Cast<UEncAnimInstance>(GetMesh()->GetAnimInstance());
 	if (EncAnim != nullptr)
 	{
-		EncAnim->OnMontageEnded.AddDynamic(this, &AEncCharacter::OnAttackMontageEnded);
-		EncAnim->OnMontageEnded.AddDynamic(this, &AEncCharacter::OnRollingMontageEnded);
-		EncAnim->OnMontageEnded.AddDynamic(this, &AEncCharacter::OnShovedOnBlockingMontageEnded);
+		EncAnim->OnMontageStarted.AddDynamic(this, &AEncCharacter::OnMontageStarted);
+		EncAnim->OnMontageEnded.AddDynamic(this, &AEncCharacter::OnMontageEnded);
 		EncAnim->OnComboEnable.AddUObject(this, &AEncCharacter::OnComboEnable);
 		EncAnim->OnComboCheck.AddUObject(this, &AEncCharacter::OnComboCheck);
 		EncAnim->OnGuardUp.AddUObject(this, &AEncCharacter::OnGuardUp);
@@ -312,7 +311,6 @@ void AEncCharacter::Attack()
 		bAttacking = true;
 
 		CharacterState->ModifyStamina(-UseStamina);
-		CharacterState->SetStaminaRecovery(false);
 
 		if (EncAnim != nullptr)
 		{
@@ -406,7 +404,6 @@ void AEncCharacter::Roll()
 		return;
 
 	CharacterState->ModifyStamina(-UseStamina);
-	CharacterState->SetStaminaRecovery(false);
 
 	SetActorRotation(DirToMove.Rotation(), ETeleportType::TeleportPhysics);
 
@@ -515,14 +512,37 @@ void AEncCharacter::SetEquipment(AEquipment* Equipment, const FName& SocketName)
 	Equipment->SetActorRelativeRotation(Equipment->GetAttachRotator());
 }
 
-void AEncCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+void AEncCharacter::OnMontageStarted(UAnimMontage* Montage)
 {
-	if (EncAnim != nullptr && !EncAnim->IsAttackMontage(Montage))
-		return;
+	if (!EncAnim->IsShovedOnBlockingMontage(Montage))
+	{
+		bGuardUp = false;
+	}
 
-	CurrentCombo = 0;
-	bInputAttack = false;
-	bAttacking = false;
+	CharacterState->SetStaminaRecovery(false);
+}
+
+void AEncCharacter::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	if (EncAnim != nullptr)
+	{
+		if (EncAnim->IsAttackMontage(Montage))
+		{
+			CurrentCombo = 0;
+			bInputAttack = false;
+			bAttacking = false;
+		}
+		else if (EncAnim->IsRollingMontage(Montage))
+		{
+			CurrentRootMotionVelocityRate = 1.0f;
+			bRolling = false;
+		}
+		else if (EncAnim->IsShovedOnBlockingMontage(Montage))
+		{
+			bShovedOnBlocking = false;
+		}
+	}
+
 	CharacterState->SetStaminaRecovery(true);
 }
 
@@ -571,28 +591,9 @@ void AEncCharacter::OnComboCheck()
 	}
 }
 
-void AEncCharacter::OnRollingMontageEnded(UAnimMontage* Montage, bool bInterrupted)
-{
-	if (EncAnim != nullptr && !EncAnim->IsRollingMontage(Montage))
-		return;
-
-	CurrentRootMotionVelocityRate = 1.0f;
-	bRolling = false;
-	CharacterState->SetStaminaRecovery(true);
-}
-
 void AEncCharacter::OnGuardUp()
 {
 	bGuardUp = true;
-}
-
-void AEncCharacter::OnShovedOnBlockingMontageEnded(UAnimMontage* Montage, bool bInterrupted)
-{
-	if (EncAnim != nullptr && !EncAnim->IsShovedOnBlockingMontage(Montage))
-		return;
-
-	bShovedOnBlocking = false;
-	CharacterState->SetStaminaRecovery(true);
 }
 
 void AEncCharacter::OnAddItemToInventory(EPocketType PocketType, UEncItem* NewItem)
