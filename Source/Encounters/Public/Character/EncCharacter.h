@@ -175,6 +175,9 @@ protected:
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Guard)
 	bool bShovedOnBlocking;
 
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Guard)
+	bool bFlinching;
+
 	UPROPERTY(EditAnywhere, Category = LockOn)
 	float LockOnDistanceMax;
 

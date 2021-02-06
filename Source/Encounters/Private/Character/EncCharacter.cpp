@@ -137,7 +137,14 @@ float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 				{
 					EncAnim->PlayShovedOnBlockingMontage(1.0f);
 				}
-				GetCharacterMovement()->AddImpulse(GetActorForwardVector() * -100000.0f);
+
+				FVector Dir = -GetActorForwardVector();
+				if (DamageCauser != nullptr)
+				{
+					Dir = GetActorLocation() - DamageCauser->GetActorLocation();
+					Dir.Normalize();
+				}
+				GetCharacterMovement()->AddImpulse(Dir * 100000.0f);
 
 				DamageAmount = FMath::Max(0.0f, DamageAmount * (1.0f - CurShield->GetDamageReduction()));
 			}
@@ -148,6 +155,19 @@ float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 	if (FinalDamage > KINDA_SMALL_NUMBER)
 	{
 		CharacterState->ModifyHP(-FinalDamage);
+		bFlinching = true;
+		if (EncAnim != nullptr)
+		{
+			EncAnim->PlayFlinchMontage(1.0f);
+		}
+
+		if (DamageCauser != nullptr)
+		{
+			FVector Dir = GetActorLocation() - DamageCauser->GetActorLocation();
+			Dir.Normalize();
+
+			GetCharacterMovement()->AddImpulse(Dir * 100000.0f);
+		}
 	}
 
 	return FinalDamage;
@@ -540,6 +560,10 @@ void AEncCharacter::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 		else if (EncAnim->IsShovedOnBlockingMontage(Montage))
 		{
 			bShovedOnBlocking = false;
+		}
+		else if (EncAnim->IsFlinchMontage(Montage))
+		{
+			bFlinching = false;
 		}
 	}
 

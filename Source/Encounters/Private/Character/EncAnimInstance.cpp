@@ -20,11 +20,18 @@ UEncAnimInstance::UEncAnimInstance()
 		RollingMontage = ROLLING_MONTAGE.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> SHOVED_ON_BLOCKING(
-		TEXT("AnimMontage'/Game/Encounters/Characters/Animations/ShovedOnBlockingAnimMontage.ShovedOnBlockingAnimMontage'"));
-	if (SHOVED_ON_BLOCKING.Succeeded())
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> SHOVED_ON_BLOCKING_MONTAGE(
+		TEXT("/Game/Encounters/Characters/Animations/ShovedOnBlockingAnimMontage.ShovedOnBlockingAnimMontage"));
+	if (SHOVED_ON_BLOCKING_MONTAGE.Succeeded())
 	{
-		ShovedOnBlockingMontage = SHOVED_ON_BLOCKING.Object;
+		ShovedOnBlockingMontage = SHOVED_ON_BLOCKING_MONTAGE.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> FLINCH_MONTAGE(
+		TEXT("/Game/Encounters/Characters/Animations/FlinchAnimMontage.FlinchAnimMontage"));
+	if (FLINCH_MONTAGE.Succeeded())
+	{
+		FlinchMontage = FLINCH_MONTAGE.Object;
 	}
 }
 
@@ -59,16 +66,16 @@ void UEncAnimInstance::StopAttackMontage()
 	Montage_Stop(0.1f, AttackMontage);
 }
 
+bool UEncAnimInstance::IsAttackMontage(UAnimMontage* Montage)
+{
+	return (Montage != nullptr &&  Montage == AttackMontage);
+}
+
 void UEncAnimInstance::JumpToAttackMontageSection(int32 NewSection)
 {
 	return_if(!Montage_IsPlaying(AttackMontage));
 
 	Montage_JumpToSection(GetAttackMontageSectionName(NewSection));
-}
-
-bool UEncAnimInstance::IsAttackMontage(UAnimMontage* Montage)
-{
-	return (Montage != nullptr &&  Montage == AttackMontage);
 }
 
 void UEncAnimInstance::PlayRollingMontage(float PlayRate)
@@ -99,6 +106,21 @@ void UEncAnimInstance::StopShovedOnBlockingMontage()
 bool UEncAnimInstance::IsShovedOnBlockingMontage(UAnimMontage* Montage)
 {
 	return (Montage != nullptr && Montage == ShovedOnBlockingMontage);
+}
+
+void UEncAnimInstance::PlayFlinchMontage(float PlayRate)
+{
+	Montage_Play(FlinchMontage, PlayRate);
+}
+
+void UEncAnimInstance::StopFlinchMontage()
+{
+	Montage_Stop(0.1f, FlinchMontage);
+}
+
+bool UEncAnimInstance::IsFlinchMontage(UAnimMontage* Montage)
+{
+	return (Montage != nullptr && Montage == FlinchMontage);
 }
 
 void UEncAnimInstance::SetGuardSpeed(float NewSpeed)

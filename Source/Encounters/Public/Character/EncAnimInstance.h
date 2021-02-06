@@ -21,8 +21,8 @@ public:
 
 	void PlayAttackMontage(float PlayRate);
 	void StopAttackMontage();
-	void JumpToAttackMontageSection(int32 NewSection);
 	bool IsAttackMontage(UAnimMontage* Montage);
+	void JumpToAttackMontageSection(int32 NewSection);
 
 	void PlayRollingMontage(float PlayRate);
 	void StopRollingMontage();
@@ -31,6 +31,10 @@ public:
 	void PlayShovedOnBlockingMontage(float PlayRate);
 	void StopShovedOnBlockingMontage();
 	bool IsShovedOnBlockingMontage(UAnimMontage* Montage);
+
+	void PlayFlinchMontage(float PlayRate);
+	void StopFlinchMontage();
+	bool IsFlinchMontage(UAnimMontage* Montage);
 
 	void SetGuardSpeed(float NewSpeed);
 
@@ -81,4 +85,7 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Montage, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* ShovedOnBlockingMontage;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Montage, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* FlinchMontage;
 };

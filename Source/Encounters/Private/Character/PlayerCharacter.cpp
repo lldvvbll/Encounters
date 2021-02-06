@@ -248,7 +248,7 @@ void APlayerCharacter::SaveCharacter(UEncSaveGame* SaveGame)
 
 void APlayerCharacter::MoveForward(float NewAxisValue)
 {
-	if (bRagdoll || bRolling || bShovedOnBlocking)
+	if (bRagdoll || bRolling || bShovedOnBlocking || bFlinching)
 		return;
 
 	if (bAttacking)
@@ -262,7 +262,7 @@ void APlayerCharacter::MoveForward(float NewAxisValue)
 
 void APlayerCharacter::MoveRight(float NewAxisValue)
 {
-	if (bRagdoll || bRolling || bShovedOnBlocking)
+	if (bRagdoll || bRolling || bShovedOnBlocking || bFlinching)
 		return;
 
 	if (bAttacking)
