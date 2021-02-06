@@ -8,11 +8,15 @@
 AWeapon::AWeapon()
 {
 	SkMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MESH"));
+	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("COLLISIONBOX"));
 
 	DefaultDamage = 10.0f;
 
 	RootComponent = SkMeshComp;
+	CollisionBox->SetupAttachment(RootComponent);
+
 	SkMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
+	CollisionBox->SetCollisionProfileName(TEXT("NoCollision"));
 }
 
 float AWeapon::GetAttackDamage() const
@@ -20,15 +24,18 @@ float AWeapon::GetAttackDamage() const
 	return DefaultDamage;
 }
 
-FVector AWeapon::GetAttackBoxSocketPos() const
+FVector AWeapon::GetCollisionBoxPos() const
 {
-	static FName AttackBoxSocketName(TEXT("attackTrace"));
-	return SkMeshComp->GetSocketLocation(AttackBoxSocketName);
+	return_if(CollisionBox == nullptr, FVector::ZeroVector);
+
+	return CollisionBox->GetComponentLocation();
 }
 
-FVector AWeapon::GetAttackBoxHalfExtent() const
+FCollisionShape AWeapon::GetCollisionBox() const
 {
-	return AttackBoxHalfExtent;
+	return_if(CollisionBox == nullptr, FCollisionShape::MakeBox(FVector::ZeroVector));
+
+	return CollisionBox->GetCollisionShape();
 }
 
 float AWeapon::GetUseStaminaOnAttack() const
@@ -43,9 +50,11 @@ float AWeapon::GetUseStaminaOnAttack() const
 void AWeapon::DrawAttackBox(FColor Color/* = FColor::Red*/) const
 {
 #if ENABLE_DRAW_DEBUG
-	FVector Pos = GetAttackBoxSocketPos();
-	FVector Extent = AttackBoxHalfExtent * 2.0f * GetActorScale();
-	FQuat Quat = GetActorRotation().Quaternion();
-	DrawDebugBox(GetWorld(), Pos, Extent, Quat, Color, false, 5.0f);
+	if (CollisionBox != nullptr)
+	{
+		FVector Pos = GetCollisionBoxPos();
+		FQuat Quat = GetActorRotation().Quaternion();
+		DrawDebugBox(GetWorld(), Pos, CollisionBox->GetScaledBoxExtent(), Quat, Color, false, 5.0f);
+	}
 #endif
 }

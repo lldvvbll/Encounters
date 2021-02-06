@@ -19,7 +19,7 @@ void UAttackTracerAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp,
 	Weapon = EncChar->GetCurrentWeapon();
 	return_if(Weapon == nullptr);
 
-	LastAttackBoxPos = Weapon->GetAttackBoxSocketPos();
+	LastAttackBoxPos = Weapon->GetCollisionBoxPos();
 }
 
 void UAttackTracerAnimNotifyState::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime)
@@ -29,12 +29,12 @@ void UAttackTracerAnimNotifyState::NotifyTick(USkeletalMeshComponent* MeshComp, 
 	if (EncChar == nullptr || Weapon == nullptr)
 		return;
 
-	FVector CurPos = Weapon->GetAttackBoxSocketPos();
+	FVector CurPos = Weapon->GetCollisionBoxPos();
 
 	TArray<FHitResult> HitResults;
 	FCollisionQueryParams Params(NAME_None, false, EncChar);
 	EncChar->GetWorld()->SweepMultiByChannel(HitResults, LastAttackBoxPos, CurPos, Weapon->GetActorRotation().Quaternion(),
-		ECollisionChannel::ECC_GameTraceChannel2, FCollisionShape::MakeBox(Weapon->GetAttackBoxHalfExtent()), Params);
+		ECollisionChannel::ECC_GameTraceChannel2, Weapon->GetCollisionBox(), Params);
 
 	for (auto& Result : HitResults)
 	{

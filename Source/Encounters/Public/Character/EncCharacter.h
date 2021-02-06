@@ -109,20 +109,11 @@ protected:
 	UPROPERTY()
 	UEncAnimInstance* EncAnim;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Equipment)
-	TSubclassOf<AWeapon> DefaultWeaponClass;
-
 	UPROPERTY(VisibleInstanceOnly, Category = Equipment)
 	AWeapon* CurWeapon;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Equipment)
-	TSubclassOf<AShield> DefaultShieldClass;
-
 	UPROPERTY(VisibleInstanceOnly, Category = Equipment)
 	AShield* CurShield;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Equipment)
-	TSubclassOf<AArmor> DefaultArmorClass;
 
 	UPROPERTY(VisibleInstanceOnly, Category = Equipment)
 	AArmor* CurArmor;

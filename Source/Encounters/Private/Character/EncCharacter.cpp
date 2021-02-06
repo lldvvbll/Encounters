@@ -62,24 +62,6 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 	{
 		SkeletalMeshComp->SetAnimInstanceClass(ENC_ANIM.Class);
 	}
-
-	static ConstructorHelpers::FClassFinder<AWeapon> WEAPON(TEXT("/Game/Encounters/Items/BP_Sword.BP_Sword_C"));
-	if (WEAPON.Succeeded())
-	{
-		DefaultWeaponClass = WEAPON.Class;
-	}
-
-	static ConstructorHelpers::FClassFinder<AShield> SHIELD(TEXT("/Game/Encounters/Items/BP_Shield.BP_Shield_C"));
-	if (SHIELD.Succeeded())
-	{
-		DefaultShieldClass = SHIELD.Class;
-	}
-
-	static ConstructorHelpers::FClassFinder<AArmor> ARMOR(TEXT("/Game/Encounters/Items/BP_Armor.BP_Armor_C"));
-	if (ARMOR.Succeeded())
-	{
-		DefaultArmorClass = ARMOR.Class;
-	}
 }
 
 void AEncCharacter::Tick(float DeltaTime)

@@ -15,8 +15,8 @@ public:
 	AWeapon();
 
 	float GetAttackDamage() const;
-	FVector GetAttackBoxSocketPos() const;
-	FVector GetAttackBoxHalfExtent() const;
+	FVector GetCollisionBoxPos() const;
+	FCollisionShape GetCollisionBox() const;
 
 	float GetUseStaminaOnAttack() const;
 
@@ -26,8 +26,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = Mesh)
 	USkeletalMeshComponent* SkMeshComp;
 
-	UPROPERTY(EditDefaultsOnly, Category = AttackTrace)
-	FVector AttackBoxHalfExtent;
+	UPROPERTY(EditDefaultsOnly, Category = Collision)
+	UBoxComponent* CollisionBox;
 
 	UPROPERTY(EditAnywhere, Category = Damage)
 	float DefaultDamage;
