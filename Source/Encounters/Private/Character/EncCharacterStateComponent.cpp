@@ -9,7 +9,7 @@ UEncCharacterStateComponent::UEncCharacterStateComponent()
 
 	MaxHP = 1.0f;
 	MaxStamina = 1.0f;
-	StaminaRecoverySpeed = 1.0f;
+	StaminaRecoverySpeed = 2.0f;
 	bStaminaRecovery = true;
 	RollingSpeed = 1.0f;
 	RollingVelocityRate = 1.0f;
@@ -82,6 +82,11 @@ void UEncCharacterStateComponent::SetHpRecovery(bool bEnable)
 	bHpRecovery = bEnable;
 }
 
+void UEncCharacterStateComponent::SetHpRecoverySpeed(float Speed)
+{
+	HpRecoverySpeed = Speed;
+}
+
 void UEncCharacterStateComponent::SetStamina(float NewStamina)
 {
 	CurrentStamina = FMath::Clamp<float>(NewStamina, 0.0f, MaxStamina);
@@ -118,6 +123,11 @@ float UEncCharacterStateComponent::GetStaminaRatio() const
 void UEncCharacterStateComponent::SetStaminaRecovery(bool bEnable)
 {
 	bStaminaRecovery = bEnable;
+}
+
+void UEncCharacterStateComponent::SetStaminaRecoverySpeed(float Speed)
+{
+	StaminaRecoverySpeed = Speed;
 }
 
 void UEncCharacterStateComponent::SetRollingSpeed(float NewRollingSpeed)

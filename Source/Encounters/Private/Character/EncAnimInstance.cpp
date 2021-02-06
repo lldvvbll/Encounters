@@ -19,6 +19,13 @@ UEncAnimInstance::UEncAnimInstance()
 	{
 		RollingMontage = ROLLING_MONTAGE.Object;
 	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> SHOVED_ON_BLOCKING(
+		TEXT("AnimMontage'/Game/Encounters/Characters/Animations/ShovedOnBlockingAnimMontage.ShovedOnBlockingAnimMontage'"));
+	if (SHOVED_ON_BLOCKING.Succeeded())
+	{
+		ShovedOnBlockingMontage = SHOVED_ON_BLOCKING.Object;
+	}
 }
 
 void UEncAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -30,6 +37,7 @@ void UEncAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		return;
 
 	FVector CharVelocity = Char->GetVelocity();
+
 	CurrentPawnSpeed = CharVelocity.Size();
 	IsRolling = Char->IsRolling();
 	IsInAir = IsRolling ? false : Char->IsFalling();
@@ -78,6 +86,21 @@ bool UEncAnimInstance::IsRollingMontage(UAnimMontage* Montage)
 	return (Montage != nullptr && Montage == RollingMontage);
 }
 
+void UEncAnimInstance::PlayShovedOnBlockingMontage(float PlayRate)
+{
+	Montage_Play(ShovedOnBlockingMontage, PlayRate);
+}
+
+void UEncAnimInstance::StopShovedOnBlockingMontage()
+{
+	Montage_Stop(0.1f, ShovedOnBlockingMontage);
+}
+
+bool UEncAnimInstance::IsShovedOnBlockingMontage(UAnimMontage* Montage)
+{
+	return (Montage != nullptr && Montage == ShovedOnBlockingMontage);
+}
+
 void UEncAnimInstance::SetGuardSpeed(float NewSpeed)
 {
 	GuardSpeed = NewSpeed;
@@ -93,12 +116,12 @@ void UEncAnimInstance::AnimNotify_ComboCheck()
 	OnComboCheck.Broadcast();
 }
 
-FName UEncAnimInstance::GetAttackMontageSectionName(int32 Section)
-{
-	return FName(*FString::Printf(TEXT("Attack%d"), Section));
-}
-
 void UEncAnimInstance::AnimNotify_GuardUp()
 {
 	OnGuardUp.Broadcast();
+}
+
+FName UEncAnimInstance::GetAttackMontageSectionName(int32 Section)
+{
+	return FName(*FString::Printf(TEXT("Attack%d"), Section));
 }

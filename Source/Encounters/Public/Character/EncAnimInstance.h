@@ -28,6 +28,10 @@ public:
 	void StopRollingMontage();
 	bool IsRollingMontage(UAnimMontage* Montage);
 
+	void PlayShovedOnBlockingMontage(float PlayRate);
+	void StopShovedOnBlockingMontage();
+	bool IsShovedOnBlockingMontage(UAnimMontage* Montage);
+
 	void SetGuardSpeed(float NewSpeed);
 
 private:
@@ -37,10 +41,10 @@ private:
 	UFUNCTION()
 	void AnimNotify_ComboCheck();
 
-	FName GetAttackMontageSectionName(int32 Section);
-
 	UFUNCTION()
 	void AnimNotify_GuardUp();
+
+	FName GetAttackMontageSectionName(int32 Section);
 
 public:
 	FOnComboEnableDelegate OnComboEnable;
@@ -74,4 +78,7 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Montage, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* RollingMontage;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Montage, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* ShovedOnBlockingMontage;
 };

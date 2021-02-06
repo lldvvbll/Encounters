@@ -248,7 +248,7 @@ void APlayerCharacter::SaveCharacter(UEncSaveGame* SaveGame)
 
 void APlayerCharacter::MoveForward(float NewAxisValue)
 {
-	if (bRagdoll)
+	if (bRagdoll || bRolling || bShovedOnBlocking)
 		return;
 
 	if (bAttacking)
@@ -257,15 +257,12 @@ void APlayerCharacter::MoveForward(float NewAxisValue)
 		return;
 	}
 
-	if (bRolling)
-		return;
-
 	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::X), NewAxisValue);
 }
 
 void APlayerCharacter::MoveRight(float NewAxisValue)
 {
-	if (bRagdoll)
+	if (bRagdoll || bRolling || bShovedOnBlocking)
 		return;
 
 	if (bAttacking)
@@ -273,9 +270,6 @@ void APlayerCharacter::MoveRight(float NewAxisValue)
 		SavedInput.Y = NewAxisValue;
 		return;
 	}
-
-	if (bRolling)
-		return;
 
 	AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::Y), NewAxisValue);
 }

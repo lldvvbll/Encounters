@@ -105,6 +105,7 @@ void AEncCharacter::PostInitializeComponents()
 	{
 		EncAnim->OnMontageEnded.AddDynamic(this, &AEncCharacter::OnAttackMontageEnded);
 		EncAnim->OnMontageEnded.AddDynamic(this, &AEncCharacter::OnRollingMontageEnded);
+		EncAnim->OnMontageEnded.AddDynamic(this, &AEncCharacter::OnShovedOnBlockingMontageEnded);
 		EncAnim->OnComboEnable.AddUObject(this, &AEncCharacter::OnComboEnable);
 		EncAnim->OnComboCheck.AddUObject(this, &AEncCharacter::OnComboCheck);
 		EncAnim->OnGuardUp.AddUObject(this, &AEncCharacter::OnGuardUp);
@@ -131,6 +132,12 @@ float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 			if (UseStamina >= 0.0f && CharacterState->GetStamina() >= UseStamina)
 			{
 				CharacterState->ModifyStamina(-UseStamina);
+				CharacterState->SetStaminaRecovery(false);
+				bShovedOnBlocking = true;
+				if (EncAnim != nullptr)
+				{
+					EncAnim->PlayShovedOnBlockingMontage(1.0f);
+				}
 				GetCharacterMovement()->AddImpulse(GetActorForwardVector() * -100000.0f);
 
 				DamageAmount = FMath::Max(0.0f, DamageAmount * (1.0f - CurShield->GetDamageReduction()));
@@ -278,7 +285,7 @@ void AEncCharacter::RemoveArmor()
 
 void AEncCharacter::Attack()
 {
-	if (bRolling || IsFalling() || bRagdoll)
+	if (bRolling || IsFalling() || bRagdoll || bShovedOnBlocking)
 		return;
 
 	if (CurWeapon == nullptr)
@@ -340,12 +347,14 @@ void AEncCharacter::Guard()
 		return;
 
 	bGuarding = true;
+	CharacterState->SetStaminaRecoverySpeed(1.0f);
 }
 
 void AEncCharacter::GuardDown()
 {
 	bGuarding = false;
 	bGuardUp = false;
+	CharacterState->SetStaminaRecoverySpeed(2.0f);
 }
 
 bool AEncCharacter::CanGuardByShield(AActor* Attacker)
@@ -373,7 +382,7 @@ bool AEncCharacter::IsGuarding() const
 
 void AEncCharacter::Roll()
 {
-	if (bRolling || CanSaveAttack || IsFalling())
+	if (bRolling || CanSaveAttack || IsFalling() || bShovedOnBlocking)
 		return;
 
 	FVector DirToMove(FVector::ZeroVector);
@@ -575,6 +584,15 @@ void AEncCharacter::OnRollingMontageEnded(UAnimMontage* Montage, bool bInterrupt
 void AEncCharacter::OnGuardUp()
 {
 	bGuardUp = true;
+}
+
+void AEncCharacter::OnShovedOnBlockingMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	if (EncAnim != nullptr && !EncAnim->IsShovedOnBlockingMontage(Montage))
+		return;
+
+	bShovedOnBlocking = false;
+	CharacterState->SetStaminaRecovery(true);
 }
 
 void AEncCharacter::OnAddItemToInventory(EPocketType PocketType, UEncItem* NewItem)

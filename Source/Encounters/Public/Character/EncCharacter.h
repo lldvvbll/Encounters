@@ -100,6 +100,9 @@ protected:
 	void OnGuardUp();
 
 	UFUNCTION()
+	void OnShovedOnBlockingMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
+	UFUNCTION()
 	void OnAddItemToInventory(EPocketType PocketType, UEncItem* NewItem);
 
 	UFUNCTION()
@@ -171,6 +174,9 @@ protected:
 
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Guard)
 	bool bGuardUp;
+
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Guard)
+	bool bShovedOnBlocking;
 
 	UPROPERTY(EditAnywhere, Category = LockOn)
 	float LockOnDistanceMax;

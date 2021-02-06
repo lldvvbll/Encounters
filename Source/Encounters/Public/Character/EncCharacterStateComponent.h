@@ -32,6 +32,7 @@ public:
 	float GetMaxHP() const;
 	float GetHpRatio() const;
 	void SetHpRecovery(bool bEnable);
+	void SetHpRecoverySpeed(float Speed);
 
 	void SetStamina(float NewStamina);
 	void ModifyStamina(float Amount);
@@ -40,6 +41,7 @@ public:
 	float GetMaxStamina() const;
 	float GetStaminaRatio() const;
 	void SetStaminaRecovery(bool bEnable);
+	void SetStaminaRecoverySpeed(float Speed);
 
 	void SetRollingSpeed(float NewRollingSpeed);
 	float GetRolligSpeed() const;
