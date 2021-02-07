@@ -62,6 +62,7 @@ public:
 	void GuardDown();
 	bool CanGuardByShield(AActor* Attacker);
 	bool IsGuarding() const;
+	bool IsShovedOnBlocking() const;
 
 	void Roll();
 

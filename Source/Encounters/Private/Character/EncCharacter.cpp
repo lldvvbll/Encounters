@@ -115,18 +115,19 @@ float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 				CharacterState->ModifyStamina(-UseStamina);
 				CharacterState->SetStaminaRecovery(false);
 				bShovedOnBlocking = true;
+
 				if (EncAnim != nullptr)
 				{
 					EncAnim->PlayShovedOnBlockingMontage(1.0f);
 				}
 
-				FVector Dir = -GetActorForwardVector();
 				if (DamageCauser != nullptr)
 				{
-					Dir = GetActorLocation() - DamageCauser->GetActorLocation();
+					FVector Dir = GetActorLocation() - DamageCauser->GetActorLocation();
 					Dir.Normalize();
+
+					LaunchCharacter(Dir * 500.0f, false, true);
 				}
-				GetCharacterMovement()->AddImpulse(Dir * 100000.0f);
 
 				DamageAmount = FMath::Max(0.0f, DamageAmount * (1.0f - CurShield->GetDamageReduction()));
 			}
@@ -138,6 +139,7 @@ float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 	{
 		CharacterState->ModifyHP(-FinalDamage);
 		bFlinching = true;
+
 		if (EncAnim != nullptr)
 		{
 			EncAnim->PlayFlinchMontage(1.0f);
@@ -148,7 +150,7 @@ float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 			FVector Dir = GetActorLocation() - DamageCauser->GetActorLocation();
 			Dir.Normalize();
 
-			GetCharacterMovement()->AddImpulse(Dir * 100000.0f);
+			LaunchCharacter(Dir * 500.0f, false, true);
 		}
 	}
 
@@ -380,6 +382,11 @@ bool AEncCharacter::IsGuarding() const
 	return bGuarding;
 }
 
+bool AEncCharacter::IsShovedOnBlocking() const
+{
+	return bShovedOnBlocking;
+}
+
 void AEncCharacter::Roll()
 {
 	if (bRolling || CanSaveAttack || IsFalling() || bShovedOnBlocking)
@@ -439,9 +446,8 @@ void AEncCharacter::StartRagdoll()
 	if (bRagdoll)
 		return;
 
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);	
 	bRagdoll = true;
-
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);	
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	USkeletalMeshComponent* SkMesh = GetMesh();

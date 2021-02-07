@@ -50,6 +50,7 @@ void UEncAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	IsInAir = IsRolling ? false : Char->IsFalling();
 	IsGuarding = Char->IsGuarding();
 	IsLockOnTarget = Char->IsLockOnTarget();
+	IsShovedOnBlocking = Char->IsShovedOnBlocking();
 	if (IsLockOnTarget)
 	{
 		Direction = CalculateDirection(CharVelocity, Char->GetActorRotation());
