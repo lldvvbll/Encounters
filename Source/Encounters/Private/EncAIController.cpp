@@ -4,33 +4,21 @@
 #include "EncAIController.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardData.h"
+#include "Character/NpcCharacter.h"
 
-AEncAIController::AEncAIController()
-{
-	static ConstructorHelpers::FObjectFinder<UBlackboardData> BB_Data(
-		TEXT("/Game/Encounters/AI/BB_Exam.BB_Exam"));
-	if (BB_Data.Succeeded())
-	{
-		BbAsset = BB_Data.Object;
-	}
-
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BT_OBJECT(
-		TEXT("/Game/Encounters/AI/BT_Exam.BT_Exam"));
-	if (BT_OBJECT.Succeeded())
-	{
-		BtAsset = BT_OBJECT.Object;
-	}
-}
 
 void AEncAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	if (UseBlackboard(BbAsset, Blackboard))
+	auto NpcChar = Cast<ANpcCharacter>(InPawn);
+	return_if(NpcChar == nullptr);
+
+	if (UseBlackboard(NpcChar->GetBlackboardData(), Blackboard))
 	{
-		if (!RunBehaviorTree(BtAsset))
+		if (!RunBehaviorTree(NpcChar->GetBehaviorTree()))
 		{
 			LOG(Error, TEXT("AIController couldn't run behavior tree!"));
 		}
-	}
+	}	
 }

@@ -6,6 +6,9 @@
 #include "Character/EncCharacter.h"
 #include "NpcCharacter.generated.h"
 
+class UBehaviorTree;
+class UBlackboardData;
+
 UCLASS()
 class ENCOUNTERS_API ANpcCharacter : public AEncCharacter
 {
@@ -19,7 +22,16 @@ public:
 
 	virtual void Dead() override;
 
+	UBehaviorTree* GetBehaviorTree() const;
+	UBlackboardData* GetBlackboardData() const;
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = UI, Meta = (AllowPrivateAccess = true))
 	UWidgetComponent* HpBarWidget;
+
+	UPROPERTY(EditAnywhere, Category = AI, Meta = (AllowPrivateAccess = true))
+	UBehaviorTree* BehaviorTree;
+
+	UPROPERTY(EditAnywhere, Category = AI, Meta = (AllowPrivateAccess = true))
+	UBlackboardData* BlackboardData;
 };

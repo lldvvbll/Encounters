@@ -9,23 +9,12 @@
 class UBehaviorTree;
 class UBlackboardData;
 
-/**
- * 
- */
 UCLASS()
 class ENCOUNTERS_API AEncAIController : public AAIController
 {
 	GENERATED_BODY()
 	
 public:
-	AEncAIController();
-
 	virtual void OnPossess(APawn* InPawn) override;
-	
-private:
-	UPROPERTY(EditAnywhere, Category = AI, Meta = (AllowPrivateAccess = true))
-	UBehaviorTree* BtAsset;
 
-	UPROPERTY(EditAnywhere, Category = AI, Meta = (AllowPrivateAccess = true))
-	UBlackboardData* BbAsset;
 };

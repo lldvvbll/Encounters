@@ -18,17 +18,32 @@ ANpcCharacter::ANpcCharacter()
 
 	HpBarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBARWIDGET"));
 
+	HpBarWidget->SetupAttachment(GetCapsuleComponent());
+
 	static ConstructorHelpers::FClassFinder<UCharacterWidget> UI_CHAR(
 		TEXT("/Game/Encounters/UI/UI_HpBar.UI_HpBar_C"));
 	if (UI_CHAR.Succeeded())
 	{
 		HpBarWidget->SetWidgetClass(UI_CHAR.Class);
 		HpBarWidget->SetDrawSize(FVector2D(150.0f, 50.0f));
+		HpBarWidget->SetRelativeLocation(FVector(0.0f, 0.0f, 110.0f));
+		HpBarWidget->SetWidgetSpace(EWidgetSpace::Screen);
+		HpBarWidget->SetVisibility(false);
 	}
-	HpBarWidget->SetupAttachment(GetCapsuleComponent());
-	HpBarWidget->SetRelativeLocation(FVector(0.0f, 0.0f, 110.0f));
-	HpBarWidget->SetWidgetSpace(EWidgetSpace::Screen);
-	HpBarWidget->SetVisibility(false);
+
+	static ConstructorHelpers::FObjectFinder<UBlackboardData> BB_Data(
+		TEXT("/Game/Encounters/AI/BB_Exam.BB_Exam"));
+	if (BB_Data.Succeeded())
+	{
+		BlackboardData = BB_Data.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BT_OBJECT(
+		TEXT("/Game/Encounters/AI/BT_Exam.BT_Exam"));
+	if (BT_OBJECT.Succeeded())
+	{
+		BehaviorTree = BT_OBJECT.Object;
+	}
 }
 
 void ANpcCharacter::BeginPlay()
@@ -69,4 +84,14 @@ void ANpcCharacter::Dead()
 	Super::Dead();
 
 	HpBarWidget->SetVisibility(false);
+}
+
+UBehaviorTree* ANpcCharacter::GetBehaviorTree() const
+{
+	return BehaviorTree;
+}
+
+UBlackboardData* ANpcCharacter::GetBlackboardData() const
+{
+	return BlackboardData;
 }
