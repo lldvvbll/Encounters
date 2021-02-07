@@ -126,7 +126,7 @@ float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 					FVector Dir = GetActorLocation() - DamageCauser->GetActorLocation();
 					Dir.Normalize();
 
-					LaunchCharacter(Dir * 500.0f, false, true);
+					LaunchCharacter(Dir * 500.0f, false, false);
 				}
 
 				DamageAmount = FMath::Max(0.0f, DamageAmount * (1.0f - CurShield->GetDamageReduction()));
@@ -150,7 +150,7 @@ float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 			FVector Dir = GetActorLocation() - DamageCauser->GetActorLocation();
 			Dir.Normalize();
 
-			LaunchCharacter(Dir * 500.0f, false, true);
+			LaunchCharacter(Dir * 500.0f, false, false);
 		}
 	}
 
