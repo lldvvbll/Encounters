@@ -12,11 +12,21 @@ AArmor::AArmor()
 	StMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
 }
 
+void AArmor::SetItemDataAsset(UItemDataAsset* DataAsset)
+{
+	Super::SetItemDataAsset(DataAsset);
+
+	ArmorDataAsset = Cast<UArmorDataAsset>(DataAsset);
+}
+
+const UArmorDataAsset* AArmor::GetArmorDataAsset() const
+{
+	return ArmorDataAsset;
+}
+
 float AArmor::GetUseStaminaOnRolling() const
 {
-	TWeakObjectPtr<UArmorDataAsset> DataAsset = Cast<UArmorDataAsset>(ItemDataAsset);
-	if (!DataAsset.IsValid())
-		return -1.0;
+	return_if(ArmorDataAsset == nullptr, -1.0f);
 
-	return DataAsset->Stamina;
+	return ArmorDataAsset->Stamina;
 }

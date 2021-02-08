@@ -2,11 +2,22 @@
 
 
 #include "Items/Actors/Equipment.h"
+#include "Items/DataAssets/ItemDataAsset.h"
 
 AEquipment::AEquipment()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
+}
+
+void AEquipment::SetItemDataAsset(UItemDataAsset* DataAsset)
+{
+	ItemDataAsset = DataAsset;
+}
+
+const UItemDataAsset* AEquipment::GetItemDataAsset() const
+{
+	return ItemDataAsset;
 }
 
 FVector AEquipment::GetAttachOffset() const
@@ -17,14 +28,4 @@ FVector AEquipment::GetAttachOffset() const
 FRotator AEquipment::GetAttachRotator() const
 {
 	return AttachRotator;
-}
-
-void AEquipment::SetItemDataAsset(const TWeakObjectPtr<UItemDataAsset>& DataAsset)
-{
-	ItemDataAsset = DataAsset;
-}
-
-const TWeakObjectPtr<UItemDataAsset>& AEquipment::GetItemDataAsset() const
-{
-	return ItemDataAsset;
 }

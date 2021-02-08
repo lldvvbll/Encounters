@@ -6,6 +6,9 @@
 #include "Items/Actors/Equipment.h"
 #include "Armor.generated.h"
 
+class UItemDataAsset;
+class UArmorDataAsset;
+
 UCLASS()
 class ENCOUNTERS_API AArmor : public AEquipment
 {
@@ -14,9 +17,15 @@ class ENCOUNTERS_API AArmor : public AEquipment
 public:
 	AArmor();
 
+	virtual void SetItemDataAsset(UItemDataAsset* DataAsset) override;
+	const UArmorDataAsset* GetArmorDataAsset() const;
+
 	float GetUseStaminaOnRolling() const;
 
 protected:
+	UPROPERTY()
+	UArmorDataAsset* ArmorDataAsset;
+
 	UPROPERTY(VisibleAnywhere, Category = Mesh)
 	UStaticMeshComponent* StMeshComp;
 };

@@ -26,7 +26,6 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("INVENTORY"));
 
 	MaxComboCount = 2;
-	AttackSpeed = 1.25f;
 	GuardSpeed = 2.0f;
 	LockOnDistanceMax = 800.0f;
 	LockOnDistanceMaxSquared = LockOnDistanceMax * LockOnDistanceMax;
@@ -318,7 +317,7 @@ void AEncCharacter::Attack()
 
 		if (EncAnim != nullptr)
 		{
-			EncAnim->PlayAttackMontage(AttackSpeed);
+			EncAnim->PlayAttackMontage(CurWeapon->GetAttackSpeed());
 			EncAnim->JumpToAttackMontageSection(CurrentCombo);
 		}
 	}

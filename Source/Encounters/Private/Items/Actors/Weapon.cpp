@@ -10,8 +10,6 @@ AWeapon::AWeapon()
 	SkMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MESH"));
 	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("COLLISIONBOX"));
 
-	DefaultDamage = 10.0f;
-
 	RootComponent = SkMeshComp;
 	CollisionBox->SetupAttachment(RootComponent);
 
@@ -19,9 +17,30 @@ AWeapon::AWeapon()
 	CollisionBox->SetCollisionProfileName(TEXT("NoCollision"));
 }
 
+void AWeapon::SetItemDataAsset(UItemDataAsset* DataAsset)
+{
+	Super::SetItemDataAsset(DataAsset);
+
+	WeaponDataAsset = Cast<UWeaponDataAsset>(DataAsset);
+}
+
+const UWeaponDataAsset* AWeapon::GetWeaponDataAsset() const
+{
+	return WeaponDataAsset;
+}
+
 float AWeapon::GetAttackDamage() const
 {
-	return DefaultDamage;
+	return_if(WeaponDataAsset == nullptr, 0.0f);
+
+	return WeaponDataAsset->Damage;
+}
+
+float AWeapon::GetAttackSpeed() const
+{
+	return_if(WeaponDataAsset == nullptr, 1.0f);
+
+	return WeaponDataAsset->AttackSpeed;
 }
 
 FVector AWeapon::GetCollisionBoxPos() const
@@ -40,11 +59,9 @@ FCollisionShape AWeapon::GetCollisionBox() const
 
 float AWeapon::GetUseStaminaOnAttack() const
 {
-	TWeakObjectPtr<UWeaponDataAsset> DataAsset = Cast<UWeaponDataAsset>(ItemDataAsset);
-	if (!DataAsset.IsValid())
-		return -1.0;
+	return_if(WeaponDataAsset == nullptr, -1.0f);
 
-	return DataAsset->Stamina;
+	return WeaponDataAsset->Stamina;
 }
 
 void AWeapon::DrawAttackBox(FColor Color/* = FColor::Red*/) const

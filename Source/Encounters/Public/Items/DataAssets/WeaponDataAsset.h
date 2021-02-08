@@ -14,6 +14,7 @@ class ENCOUNTERS_API UWeaponDataAsset : public UItemDataAsset
 public:
 	UWeaponDataAsset();
 
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Option)
 	float Damage;
 

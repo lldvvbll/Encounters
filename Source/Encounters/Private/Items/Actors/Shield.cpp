@@ -16,6 +16,18 @@ AShield::AShield()
     SkMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
 }
 
+void AShield::SetItemDataAsset(UItemDataAsset* DataAsset)
+{
+    Super::SetItemDataAsset(DataAsset);
+
+    ShieldDataAsset = Cast<UShieldDataAsset>(DataAsset);
+}
+
+const UShieldDataAsset* AShield::GetShieldDataAsset() const
+{
+    return ShieldDataAsset;
+}
+
 float AShield::GetGuardAngleCosine() const
 {
     return GuardAngleCosine;
@@ -23,20 +35,16 @@ float AShield::GetGuardAngleCosine() const
 
 float AShield::GetUseStaminaOnGuard() const
 {
-    TWeakObjectPtr<UShieldDataAsset> DataAsset = Cast<UShieldDataAsset>(ItemDataAsset);
-    if (!DataAsset.IsValid())
-        return -1.0f;
+    return_if(ShieldDataAsset == nullptr, -1.0f);
 
-    return DataAsset->Stamina;
+    return ShieldDataAsset->Stamina;
 }
 
 float AShield::GetDamageReduction() const
 {
-    TWeakObjectPtr<UShieldDataAsset> DataAsset = Cast<UShieldDataAsset>(ItemDataAsset);
-    if (!DataAsset.IsValid())
-        return 0.0f;
+    return_if(ShieldDataAsset == nullptr, 0.0f);
 
-    return DataAsset->DamageReduction;
+    return ShieldDataAsset->DamageReduction;
 }
 
 void AShield::DrawGuardAngle(FColor Color/* = FColor::Red*/) const

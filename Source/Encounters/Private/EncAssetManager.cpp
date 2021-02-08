@@ -8,6 +8,8 @@ const FPrimaryAssetType	UEncAssetManager::WeaponItemType = TEXT("Weapon");
 const FPrimaryAssetType	UEncAssetManager::ShieldItemType = TEXT("Shield");
 const FPrimaryAssetType	UEncAssetManager::ArmorItemType = TEXT("Armor");
 
+const FPrimaryAssetType UEncAssetManager::HostileNpcType = TEXT("HostileNpc");
+
 UEncAssetManager& UEncAssetManager::Get()
 {
 	UEncAssetManager* This = Cast<UEncAssetManager>(GEngine->AssetManager);
@@ -21,27 +23,4 @@ UEncAssetManager& UEncAssetManager::Get()
 		LOG(Fatal, TEXT("Invalid AssetManager in DefaultEngine.ini, must be UEncAssetManager!"));
 		return *NewObject<UEncAssetManager>();
 	}
-}
-
-UItemDataAsset* UEncAssetManager::GetItemDataAsset(const FPrimaryAssetId& PrimaryAssetId, bool bLogWarning)
-{
-	UItemDataAsset* DataAsset = GetPrimaryAssetObject<UItemDataAsset>(PrimaryAssetId);
-	if (DataAsset == nullptr)
-	{
-		DataAsset = ForceLoadItem(PrimaryAssetId, bLogWarning);
-	}
-
-	return DataAsset;
-}
-
-UItemDataAsset* UEncAssetManager::ForceLoadItem(const FPrimaryAssetId& PrimaryAssetId, bool bLogWarning)
-{
-	UItemDataAsset* LoadedItem = Cast<UItemDataAsset>(GetPrimaryAssetPath(PrimaryAssetId).TryLoad());
-
-	if (bLogWarning && LoadedItem == nullptr)
-	{
-		LOG(Warning, TEXT("Failed to load item for identifier %s!"), *PrimaryAssetId.ToString());
-	}
-
-	return LoadedItem;
 }

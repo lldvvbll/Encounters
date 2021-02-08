@@ -14,12 +14,36 @@ class ENCOUNTERS_API UEncAssetManager : public UAssetManager
 	GENERATED_BODY()
 	
 public:
-	static const FPrimaryAssetType	WeaponItemType;
-	static const FPrimaryAssetType	ShieldItemType;
-	static const FPrimaryAssetType	ArmorItemType;
+	static const FPrimaryAssetType WeaponItemType;
+	static const FPrimaryAssetType ShieldItemType;
+	static const FPrimaryAssetType ArmorItemType;
+
+	static const FPrimaryAssetType HostileNpcType;
 
 	static UEncAssetManager& Get();
 
-	UItemDataAsset* GetItemDataAsset(const FPrimaryAssetId& PrimaryAssetId, bool bLogWarning = true);
-	UItemDataAsset* ForceLoadItem(const FPrimaryAssetId& PrimaryAssetId, bool bLogWarning = true);
+	template <typename T>
+	T* GetDataAsset(const FPrimaryAssetId& PrimaryAssetId, bool bLogWarning = true)
+	{
+		T* DataAsset = GetPrimaryAssetObject<T>(PrimaryAssetId);
+		if (DataAsset == nullptr)
+		{
+			DataAsset = ForceLoadDataAsset<T>(PrimaryAssetId, bLogWarning);
+		}
+
+		return DataAsset;
+	}
+
+	template <typename T>
+	T* ForceLoadDataAsset(const FPrimaryAssetId& PrimaryAssetId, bool bLogWarning = true)
+	{
+		T* LoadedDataAsset = Cast<T>(GetPrimaryAssetPath(PrimaryAssetId).TryLoad());
+
+		if (bLogWarning && LoadedDataAsset == nullptr)
+		{
+			LOG(Warning, TEXT("Failed to load Asset for identifier %s!"), *PrimaryAssetId.ToString());
+		}
+
+		return LoadedDataAsset;
+	}
 };

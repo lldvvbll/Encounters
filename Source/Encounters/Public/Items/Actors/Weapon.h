@@ -6,6 +6,9 @@
 #include "Items/Actors/Equipment.h"
 #include "Weapon.generated.h"
 
+class UItemDataAsset;
+class UWeaponDataAsset;
+
 UCLASS()
 class ENCOUNTERS_API AWeapon : public AEquipment
 {
@@ -14,7 +17,11 @@ class ENCOUNTERS_API AWeapon : public AEquipment
 public:	
 	AWeapon();
 
+	virtual void SetItemDataAsset(UItemDataAsset* DataAsset) override;
+	const UWeaponDataAsset* GetWeaponDataAsset() const;
+
 	float GetAttackDamage() const;
+	float GetAttackSpeed() const;
 	FVector GetCollisionBoxPos() const;
 	FCollisionShape GetCollisionBox() const;
 
@@ -23,12 +30,12 @@ public:
 	void DrawAttackBox(FColor Color = FColor::Red) const;
 
 protected:
+	UPROPERTY()
+	UWeaponDataAsset* WeaponDataAsset;
+
 	UPROPERTY(VisibleAnywhere, Category = Mesh)
 	USkeletalMeshComponent* SkMeshComp;
 
 	UPROPERTY(EditDefaultsOnly, Category = Collision)
 	UBoxComponent* CollisionBox;
-
-	UPROPERTY(EditAnywhere, Category = Damage)
-	float DefaultDamage;
 };

@@ -12,8 +12,9 @@ class ENCOUNTERS_API UItemDataAsset : public UPrimaryDataAsset
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Item)
-	FPrimaryAssetType ItemType;
-
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Type)
+	FPrimaryAssetType ItemType;
 };

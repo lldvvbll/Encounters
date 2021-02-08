@@ -6,6 +6,9 @@
 #include "Items/Actors/Equipment.h"
 #include "Shield.generated.h"
 
+class UItemDataAsset;
+class UShieldDataAsset;
+
 UCLASS()
 class ENCOUNTERS_API AShield : public AEquipment
 {
@@ -14,6 +17,9 @@ class ENCOUNTERS_API AShield : public AEquipment
 public:
 	AShield();
 
+	virtual void SetItemDataAsset(UItemDataAsset* DataAsset) override;
+	const UShieldDataAsset* GetShieldDataAsset() const;
+
 	float GetGuardAngleCosine() const;
 	float GetUseStaminaOnGuard() const;
 	float GetDamageReduction() const;
@@ -21,6 +27,9 @@ public:
 	void DrawGuardAngle(FColor Color = FColor::Red) const;
 
 protected:
+	UPROPERTY()
+	UShieldDataAsset* ShieldDataAsset;
+
 	UPROPERTY(VisibleAnywhere, Category = Mesh)
 	USkeletalMeshComponent* SkMeshComp;
 

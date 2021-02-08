@@ -18,7 +18,7 @@ const FPrimaryAssetId& UEncItem::GetDataAssetId() const
 
 UItemDataAsset* UEncItem::GetDataAsset() const
 {
-	return UEncAssetManager::Get().GetItemDataAsset(DataAssetId);
+	return UEncAssetManager::Get().GetDataAsset<UItemDataAsset>(DataAssetId);
 }
 
 int32 UEncItem::GetCount() const

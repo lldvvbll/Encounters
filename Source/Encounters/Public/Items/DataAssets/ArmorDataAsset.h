@@ -14,6 +14,7 @@ class ENCOUNTERS_API UArmorDataAsset : public UItemDataAsset
 public:
 	UArmorDataAsset();
 
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Option)
 	float Defense;
 

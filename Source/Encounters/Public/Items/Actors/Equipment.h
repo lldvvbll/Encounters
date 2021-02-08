@@ -16,19 +16,19 @@ class ENCOUNTERS_API AEquipment : public AActor
 public:
 	AEquipment();
 
+	virtual void SetItemDataAsset(UItemDataAsset* DataAsset);
+	const UItemDataAsset* GetItemDataAsset() const;
+
 	FVector GetAttachOffset() const;
 	FRotator GetAttachRotator() const;
 
-	void SetItemDataAsset(const TWeakObjectPtr<UItemDataAsset>& DataAsset);
-	const TWeakObjectPtr<UItemDataAsset>& GetItemDataAsset() const;
-
 protected:
+	UPROPERTY()
+	UItemDataAsset* ItemDataAsset;
+
 	UPROPERTY(EditDefaultsOnly, Category = Transform)
 	FVector AttachOffset;
 
 	UPROPERTY(EditDefaultsOnly, Category = Transform)
 	FRotator AttachRotator;
-
-	UPROPERTY()
-	TWeakObjectPtr<UItemDataAsset> ItemDataAsset;
 };

@@ -32,14 +32,14 @@ ANpcCharacter::ANpcCharacter()
 	}
 
 	static ConstructorHelpers::FObjectFinder<UBlackboardData> BB_Data(
-		TEXT("/Game/Encounters/AI/BB_Exam.BB_Exam"));
+		TEXT("/Game/Encounters/AI/BB_Knight.BB_Knight"));
 	if (BB_Data.Succeeded())
 	{
 		BlackboardData = BB_Data.Object;
 	}
 
 	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BT_OBJECT(
-		TEXT("/Game/Encounters/AI/BT_Exam.BT_Exam"));
+		TEXT("/Game/Encounters/AI/BT_Knight.BT_Knight"));
 	if (BT_OBJECT.Succeeded())
 	{
 		BehaviorTree = BT_OBJECT.Object;

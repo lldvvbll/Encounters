@@ -140,9 +140,6 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, Category = Attack)
 	int32 MaxComboCount;
 
-	UPROPERTY(EditAnywhere, Category = Attack)
-	float AttackSpeed;
-
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Attack)
 	FVector SavedInput;
 

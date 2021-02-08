@@ -14,6 +14,7 @@ class ENCOUNTERS_API UShieldDataAsset : public UItemDataAsset
 public:
 	UShieldDataAsset();
 
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Option)
 	float DamageReduction;
 
