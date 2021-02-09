@@ -18,7 +18,7 @@ public:
 	static const FPrimaryAssetType ShieldItemType;
 	static const FPrimaryAssetType ArmorItemType;
 
-	static const FPrimaryAssetType HostileNpcType;
+	static const FPrimaryAssetType EnemyType;
 
 	static UEncAssetManager& Get();
 

@@ -155,9 +155,6 @@ protected:
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Guard)
 	bool bGuarding;
 
-	UPROPERTY(EditAnywhere, Category = Guard)
-	float GuardSpeed;
-
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Guard)
 	bool bGuardUp;
 

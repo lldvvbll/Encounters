@@ -26,7 +26,6 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("INVENTORY"));
 
 	MaxComboCount = 2;
-	GuardSpeed = 2.0f;
 	LockOnDistanceMax = 800.0f;
 	LockOnDistanceMaxSquared = LockOnDistanceMax * LockOnDistanceMax;
 	
@@ -89,8 +88,6 @@ void AEncCharacter::PostInitializeComponents()
 		EncAnim->OnComboEnable.AddUObject(this, &AEncCharacter::OnComboEnable);
 		EncAnim->OnComboCheck.AddUObject(this, &AEncCharacter::OnComboCheck);
 		EncAnim->OnGuardUp.AddUObject(this, &AEncCharacter::OnGuardUp);
-
-		EncAnim->SetGuardSpeed(GuardSpeed);
 	}
 
 	CharacterState->OnHpIsZero.AddUObject(this, &AEncCharacter::Dead);
@@ -220,6 +217,12 @@ void AEncCharacter::SetShield(AShield* Shield)
 	SetEquipment(Shield, SocketName);
 
 	CurShield = Shield;
+
+	if (EncAnim != nullptr)
+	{
+		float GuardSpeed = (CurShield != nullptr) ? CurShield->GetGuardSpeed() : 0.0f;
+		EncAnim->SetGuardSpeed(GuardSpeed);
+	}
 }
 
 void AEncCharacter::SetShield(UShieldDataAsset* DataAsset)
@@ -245,6 +248,11 @@ void AEncCharacter::RemoveShield()
 
 	GetWorld()->DestroyActor(CurShield);
 	CurShield = nullptr;
+
+	if (EncAnim != nullptr)
+	{
+		EncAnim->SetGuardSpeed(0.0f);
+	}
 }
 
 bool AEncCharacter::CanSetArmor() const

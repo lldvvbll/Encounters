@@ -17,4 +17,7 @@ class ENCOUNTERS_API AEncAIController : public AAIController
 public:
 	virtual void OnPossess(APawn* InPawn) override;
 
+public:
+	static const FName TargetKey;
+
 };

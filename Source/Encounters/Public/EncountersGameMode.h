@@ -6,9 +6,6 @@
 #include "GameFramework/GameModeBase.h"
 #include "EncountersGameMode.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class ENCOUNTERS_API AEncountersGameMode : public AGameModeBase
 {
@@ -18,4 +15,7 @@ public:
 	AEncountersGameMode();
 
 	virtual void PostLogin(APlayerController* NewPlayer) override;
+
+	UFUNCTION(Exec, Category = ExecFunctions)
+	void SpawnEnemy() const;
 };

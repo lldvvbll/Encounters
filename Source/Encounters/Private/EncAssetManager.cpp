@@ -8,7 +8,7 @@ const FPrimaryAssetType	UEncAssetManager::WeaponItemType = TEXT("Weapon");
 const FPrimaryAssetType	UEncAssetManager::ShieldItemType = TEXT("Shield");
 const FPrimaryAssetType	UEncAssetManager::ArmorItemType = TEXT("Armor");
 
-const FPrimaryAssetType UEncAssetManager::HostileNpcType = TEXT("HostileNpc");
+const FPrimaryAssetType UEncAssetManager::EnemyType = TEXT("Enemy");
 
 UEncAssetManager& UEncAssetManager::Get()
 {

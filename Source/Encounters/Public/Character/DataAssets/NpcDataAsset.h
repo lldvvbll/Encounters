@@ -36,7 +36,7 @@ public:
 	float RollingVelocityRate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Ability)
-	float DetectRange;
+	float DetectionRange;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = ActorClass)
 	TSubclassOf<AActor> NpcActorClass;

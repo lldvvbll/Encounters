@@ -4,8 +4,11 @@
 #include "EncountersGameMode.h"
 #include "EncPlayerController.h"
 #include "Character/PlayerCharacter.h"
+#include "Character/NpcCharacter.h"
 #include "EncPlayerState.h"
 #include "EncPlayerController.h"
+#include "EncAssetManager.h"
+#include "Character/DataAssets/NpcDataAsset.h"
 
 AEncountersGameMode::AEncountersGameMode()
 {
@@ -22,4 +25,25 @@ void AEncountersGameMode::PostLogin(APlayerController* NewPlayer)
 	return_if(EncPlayerController == nullptr);
 
 	EncPlayerController->LoadOrCreateSaveGame();
+}
+
+void AEncountersGameMode::SpawnEnemy() const
+{
+	static FString DataAssetTypeAndName = TEXT("Enemy:KnightDataAsset");
+
+	UWorld* World = GetWorld();
+	return_if(World == nullptr);
+
+	APlayerController* PlayerController = World->GetFirstPlayerController();
+	return_if(PlayerController == nullptr);
+
+	auto Pawn = PlayerController->GetPawn();
+	return_if(Pawn == nullptr);
+
+	auto DataAsset = UEncAssetManager::Get().GetDataAsset<UNpcDataAsset>(FPrimaryAssetId(DataAssetTypeAndName));
+	return_if(DataAsset == nullptr);
+
+	FVector Pos = Pawn->GetActorLocation() + Pawn->GetActorForwardVector() * 1000.0f;
+		
+	World->SpawnActor<ANpcCharacter>(DataAsset->NpcActorClass, Pos, FRotator::ZeroRotator);
 }

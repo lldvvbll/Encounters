@@ -47,6 +47,13 @@ float AShield::GetDamageReduction() const
     return ShieldDataAsset->DamageReduction;
 }
 
+float AShield::GetGuardSpeed() const
+{
+    return_if(ShieldDataAsset == nullptr, 0.0f);
+
+    return ShieldDataAsset->GuardSpeed;
+}
+
 void AShield::DrawGuardAngle(FColor Color/* = FColor::Red*/) const
 {
 #if ENABLE_DRAW_DEBUG

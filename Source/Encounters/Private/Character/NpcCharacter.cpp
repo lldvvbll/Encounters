@@ -4,12 +4,14 @@
 #include "Character/NpcCharacter.h"
 #include "Character/EncCharacterStateComponent.h"
 #include "Character/InventoryComponent.h"
+#include "Character/DataAssets/NpcDataAsset.h"
 #include "Components/WidgetComponent.h"
 #include "UI/CharacterWidget.h"
 #include "Items/DataAssets/WeaponDataAsset.h"
 #include "Items/DataAssets/ShieldDataAsset.h"
 #include "EncAIController.h"
 #include "EncGameInstance.h"
+#include "EncAssetManager.h"
 
 ANpcCharacter::ANpcCharacter()
 {
@@ -59,11 +61,7 @@ void ANpcCharacter::BeginPlay()
 	{
 		Inventory->AddItemFromSaveItemDatas(EncGameInstance->GetDefaultItems());
 
-		CharacterState->SetAttackPower(10.0f);
-		CharacterState->SetMaxHP(100.0f);
-		CharacterState->SetHP(100.0f);
-		CharacterState->SetMaxStamina(30.0f);
-		CharacterState->SetStamina(30.0f);
+		SetCharacterAbilityByDataAsset(UEncAssetManager::Get().GetDataAsset<UNpcDataAsset>(FPrimaryAssetId(TEXT("Enemy:KnightDataAsset"))));
 	}
 }
 
@@ -94,4 +92,23 @@ UBehaviorTree* ANpcCharacter::GetBehaviorTree() const
 UBlackboardData* ANpcCharacter::GetBlackboardData() const
 {
 	return BlackboardData;
+}
+
+void ANpcCharacter::SetCharacterAbilityByDataAsset(UNpcDataAsset* DataAsset) const
+{
+	return_if(DataAsset == nullptr);
+
+	CharacterState->SetAttackPower(DataAsset->AttackPower);
+	CharacterState->SetMaxHP(DataAsset->HP);
+	CharacterState->SetHP(DataAsset->HP);
+	CharacterState->SetMaxStamina(DataAsset->Stamina);
+	CharacterState->SetStamina(DataAsset->Stamina);
+	CharacterState->SetRollingSpeed(DataAsset->RollingSpeed);
+	CharacterState->SetRollingVelocityRate(DataAsset->RollingVelocityRate);
+	CharacterState->SetDetectionRange(DataAsset->DetectionRange);
+}
+
+float ANpcCharacter::GetDetectionRange() const
+{
+	return CharacterState->GetDetectionRange();
 }

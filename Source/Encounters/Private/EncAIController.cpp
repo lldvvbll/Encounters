@@ -6,6 +6,7 @@
 #include "BehaviorTree/BlackboardData.h"
 #include "Character/NpcCharacter.h"
 
+const FName AEncAIController::TargetKey(TEXT("Target"));
 
 void AEncAIController::OnPossess(APawn* InPawn)
 {

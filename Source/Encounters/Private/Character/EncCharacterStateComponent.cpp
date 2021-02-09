@@ -13,6 +13,7 @@ UEncCharacterStateComponent::UEncCharacterStateComponent()
 	bStaminaRecovery = true;
 	RollingSpeed = 1.0f;
 	RollingVelocityRate = 1.0f;
+	DetectionRange = 600.0f;
 }
 
 void UEncCharacterStateComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -148,6 +149,16 @@ void UEncCharacterStateComponent::SetRollingVelocityRate(float NewRate)
 float UEncCharacterStateComponent::GetRollingVelocityRate() const
 {
 	return RollingVelocityRate;
+}
+
+void UEncCharacterStateComponent::SetDetectionRange(float Range)
+{
+	DetectionRange = FMath::Max(0.0f, Range);
+}
+
+float UEncCharacterStateComponent::GetDetectionRange() const
+{
+	return DetectionRange;
 }
 
 void UEncCharacterStateComponent::BeginPlay()

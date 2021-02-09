@@ -48,6 +48,9 @@ public:
 	void SetRollingVelocityRate(float NewRate);
 	float GetRollingVelocityRate() const;
 
+	void SetDetectionRange(float Range);
+	float GetDetectionRange() const;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -91,4 +94,7 @@ private:
 
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Rolling, Meta = (AllowPrivateAccess = true))
 	float RollingVelocityRate;
+
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Detection, Meta = (AllowPrivateAccess = true))
+	float DetectionRange;
 };

@@ -23,6 +23,7 @@ public:
 	float GetGuardAngleCosine() const;
 	float GetUseStaminaOnGuard() const;
 	float GetDamageReduction() const;
+	float GetGuardSpeed() const;
 
 	void DrawGuardAngle(FColor Color = FColor::Red) const;
 

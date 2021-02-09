@@ -8,6 +8,7 @@
 
 class UBehaviorTree;
 class UBlackboardData;
+class UNpcDataAsset;
 
 UCLASS()
 class ENCOUNTERS_API ANpcCharacter : public AEncCharacter
@@ -24,6 +25,10 @@ public:
 
 	UBehaviorTree* GetBehaviorTree() const;
 	UBlackboardData* GetBlackboardData() const;
+
+	void SetCharacterAbilityByDataAsset(UNpcDataAsset* DataAsset) const;
+
+	float GetDetectionRange() const;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = UI, Meta = (AllowPrivateAccess = true))

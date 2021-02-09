@@ -6,7 +6,7 @@
 
 UNpcDataAsset::UNpcDataAsset()
 {
-	NpcType = UEncAssetManager::HostileNpcType;
+	NpcType = UEncAssetManager::EnemyType;
 }
 
 FPrimaryAssetId UNpcDataAsset::GetPrimaryAssetId() const
