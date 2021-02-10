@@ -20,6 +20,10 @@ void UAttackTracerAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp,
 	return_if(Weapon == nullptr);
 
 	LastAttackBoxPos = Weapon->GetCollisionBoxPos();
+
+	//FVector Dist = LastAttackBoxPos - EncChar->GetActorLocation();
+	//MaxAttackRange = Dist.Size2D();
+	//MinAttackRange = Dist.Size2D();
 }
 
 void UAttackTracerAnimNotifyState::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime)
@@ -55,6 +59,10 @@ void UAttackTracerAnimNotifyState::NotifyTick(USkeletalMeshComponent* MeshComp, 
 	}
 
 	LastAttackBoxPos = CurPos;
+
+	//FVector Dist = LastAttackBoxPos - EncChar->GetActorLocation();
+	//MaxAttackRange = FMath::Max(MaxAttackRange, Dist.Size2D());
+	//MinAttackRange = FMath::Min(MinAttackRange, Dist.Size2D());
 }
 
 void UAttackTracerAnimNotifyState::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
@@ -62,4 +70,6 @@ void UAttackTracerAnimNotifyState::NotifyEnd(USkeletalMeshComponent* MeshComp, U
 	Super::NotifyEnd(MeshComp, Animation);
 
 	HitActors.Empty();
+
+	//LOG(Warning, TEXT("Min: %f, Max: %f"), MinAttackRange, MaxAttackRange);
 }

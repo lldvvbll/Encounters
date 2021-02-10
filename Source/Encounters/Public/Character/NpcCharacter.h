@@ -22,21 +22,34 @@ public:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	virtual void Dead() override;
+	virtual bool IsAttackInputSaved() override;
 
 	UBehaviorTree* GetBehaviorTree() const;
 	UBlackboardData* GetBlackboardData() const;
 
-	void SetCharacterAbilityByDataAsset(UNpcDataAsset* DataAsset) const;
+	void SetNpcDataAsset(UNpcDataAsset* DataAsset);
 
 	float GetDetectionRange() const;
+	float GetAttackRange() const;
+
+	void StartComboAttack(int32 ComboCount);
+
+protected:
+	virtual void ConsumeAttackInput() override;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = UI, Meta = (AllowPrivateAccess = true))
 	UWidgetComponent* HpBarWidget;
+
+	UPROPERTY(VisibleAnywhere, Category = DataAsset, Meta = (AllowPrivateAccess = true))
+	UNpcDataAsset* NpcDataAsset;
 
 	UPROPERTY(EditAnywhere, Category = AI, Meta = (AllowPrivateAccess = true))
 	UBehaviorTree* BehaviorTree;
 
 	UPROPERTY(EditAnywhere, Category = AI, Meta = (AllowPrivateAccess = true))
 	UBlackboardData* BlackboardData;
+
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	int32 RemainComboCount;
 };

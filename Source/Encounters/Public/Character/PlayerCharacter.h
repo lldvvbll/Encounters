@@ -40,6 +40,8 @@ public:
 	virtual void UnPossessed() override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void Dead() override;
+
 	virtual void LockOn() override;
 	virtual void ReleaseLockOn() override;
 	virtual bool IsLockOnTarget() const override;

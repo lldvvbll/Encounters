@@ -38,6 +38,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Ability)
 	float DetectionRange;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Ability)
+	float AttackRange;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = ActorClass)
 	TSubclassOf<AActor> NpcActorClass;
 };

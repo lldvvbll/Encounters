@@ -57,6 +57,7 @@ public:
 	void Attack();
 	float GetAttackDamage() const;
 	void GiveAttackDamage(TWeakObjectPtr<AActor>& Target);
+	virtual bool IsAttackInputSaved();
 
 	void Guard();
 	void GuardDown();
@@ -96,6 +97,9 @@ protected:
 
 	UFUNCTION()
 	void OnComboCheck();
+
+	void SaveAttackInput();
+	virtual void ConsumeAttackInput();
 
 	UFUNCTION()
 	void OnGuardUp();

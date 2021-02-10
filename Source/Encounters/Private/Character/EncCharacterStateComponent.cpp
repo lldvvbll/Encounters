@@ -9,7 +9,7 @@ UEncCharacterStateComponent::UEncCharacterStateComponent()
 
 	MaxHP = 1.0f;
 	MaxStamina = 1.0f;
-	StaminaRecoverySpeed = 2.0f;
+	StaminaRecoverySpeed = 5.0f;
 	bStaminaRecovery = true;
 	RollingSpeed = 1.0f;
 	RollingVelocityRate = 1.0f;
@@ -149,16 +149,6 @@ void UEncCharacterStateComponent::SetRollingVelocityRate(float NewRate)
 float UEncCharacterStateComponent::GetRollingVelocityRate() const
 {
 	return RollingVelocityRate;
-}
-
-void UEncCharacterStateComponent::SetDetectionRange(float Range)
-{
-	DetectionRange = FMath::Max(0.0f, Range);
-}
-
-float UEncCharacterStateComponent::GetDetectionRange() const
-{
-	return DetectionRange;
 }
 
 void UEncCharacterStateComponent::BeginPlay()

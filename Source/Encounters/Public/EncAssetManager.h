@@ -20,6 +20,7 @@ public:
 
 	static const FPrimaryAssetType EnemyType;
 
+public:
 	static UEncAssetManager& Get();
 
 	template <typename T>

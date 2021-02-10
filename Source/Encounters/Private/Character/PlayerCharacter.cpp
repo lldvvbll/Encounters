@@ -94,6 +94,13 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction(TEXT("LockOn"), EInputEvent::IE_Pressed, this, &APlayerCharacter::LockOn);
 }
 
+void APlayerCharacter::Dead()
+{
+	Super::Dead();
+
+	DisableInput(GetController<AEncPlayerController>());
+}
+
 void APlayerCharacter::LockOn()
 {
 	if (bLockOnTarget)
@@ -248,7 +255,7 @@ void APlayerCharacter::SaveCharacter(UEncSaveGame* SaveGame)
 
 void APlayerCharacter::MoveForward(float NewAxisValue)
 {
-	if (bRagdoll || bRolling || bShovedOnBlocking || bFlinching)
+	if (bRolling || bShovedOnBlocking || bFlinching)
 		return;
 
 	if (bAttacking)
@@ -262,7 +269,7 @@ void APlayerCharacter::MoveForward(float NewAxisValue)
 
 void APlayerCharacter::MoveRight(float NewAxisValue)
 {
-	if (bRagdoll || bRolling || bShovedOnBlocking || bFlinching)
+	if (bRolling || bShovedOnBlocking || bFlinching)
 		return;
 
 	if (bAttacking)

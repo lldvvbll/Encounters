@@ -61,7 +61,7 @@ void ANpcCharacter::BeginPlay()
 	{
 		Inventory->AddItemFromSaveItemDatas(EncGameInstance->GetDefaultItems());
 
-		SetCharacterAbilityByDataAsset(UEncAssetManager::Get().GetDataAsset<UNpcDataAsset>(FPrimaryAssetId(TEXT("Enemy:KnightDataAsset"))));
+		SetNpcDataAsset(UEncAssetManager::Get().GetDataAsset<UNpcDataAsset>(FPrimaryAssetId(TEXT("Enemy:KnightDataAsset"))));
 	}
 }
 
@@ -82,6 +82,12 @@ void ANpcCharacter::Dead()
 	Super::Dead();
 
 	HpBarWidget->SetVisibility(false);
+	GetController<AEncAIController>()->StopAI();
+}
+
+bool ANpcCharacter::IsAttackInputSaved()
+{
+	return RemainComboCount > 0;
 }
 
 UBehaviorTree* ANpcCharacter::GetBehaviorTree() const
@@ -94,9 +100,11 @@ UBlackboardData* ANpcCharacter::GetBlackboardData() const
 	return BlackboardData;
 }
 
-void ANpcCharacter::SetCharacterAbilityByDataAsset(UNpcDataAsset* DataAsset) const
+void ANpcCharacter::SetNpcDataAsset(UNpcDataAsset* DataAsset)
 {
 	return_if(DataAsset == nullptr);
+
+	NpcDataAsset = DataAsset;
 
 	CharacterState->SetAttackPower(DataAsset->AttackPower);
 	CharacterState->SetMaxHP(DataAsset->HP);
@@ -105,10 +113,31 @@ void ANpcCharacter::SetCharacterAbilityByDataAsset(UNpcDataAsset* DataAsset) con
 	CharacterState->SetStamina(DataAsset->Stamina);
 	CharacterState->SetRollingSpeed(DataAsset->RollingSpeed);
 	CharacterState->SetRollingVelocityRate(DataAsset->RollingVelocityRate);
-	CharacterState->SetDetectionRange(DataAsset->DetectionRange);
 }
 
 float ANpcCharacter::GetDetectionRange() const
 {
-	return CharacterState->GetDetectionRange();
+	return_if(NpcDataAsset == nullptr, 0.0f);
+
+	return NpcDataAsset->DetectionRange;
+}
+
+float ANpcCharacter::GetAttackRange() const
+{
+	return_if(NpcDataAsset == nullptr, 0.0f);
+
+	return NpcDataAsset->AttackRange;
+}
+
+void ANpcCharacter::StartComboAttack(int32 ComboCount)
+{
+	RemainComboCount = ComboCount;
+	Attack();
+}
+
+void ANpcCharacter::ConsumeAttackInput()
+{
+	Super::ConsumeAttackInput();
+
+	RemainComboCount--;
 }

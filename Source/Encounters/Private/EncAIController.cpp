@@ -11,8 +11,13 @@ const FName AEncAIController::TargetKey(TEXT("Target"));
 void AEncAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+	
+	RunAI();
+}
 
-	auto NpcChar = Cast<ANpcCharacter>(InPawn);
+void AEncAIController::RunAI()
+{
+	auto NpcChar = Cast<ANpcCharacter>(GetPawn());
 	return_if(NpcChar == nullptr);
 
 	if (UseBlackboard(NpcChar->GetBlackboardData(), Blackboard))
@@ -21,5 +26,13 @@ void AEncAIController::OnPossess(APawn* InPawn)
 		{
 			LOG(Error, TEXT("AIController couldn't run behavior tree!"));
 		}
-	}	
+	}
+}
+
+void AEncAIController::StopAI()
+{
+	auto BehaviorTreeComponent = Cast<UBehaviorTreeComponent>(BrainComponent);
+	return_if(BehaviorTreeComponent == nullptr);
+
+	BehaviorTreeComponent->StopTree(EBTStopMode::Safe);
 }

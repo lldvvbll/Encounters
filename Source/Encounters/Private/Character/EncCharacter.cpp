@@ -312,13 +312,13 @@ void AEncCharacter::Attack()
 	{
 		if (CanSaveAttack)
 		{
-			bInputAttack = true;
+			SaveAttackInput();
 		}
 	}
 	else
 	{
 		CurrentCombo = 1;
-		bInputAttack = false;
+		ConsumeAttackInput();
 		bAttacking = true;
 
 		CharacterState->ModifyStamina(-UseStamina);
@@ -350,20 +350,25 @@ void AEncCharacter::GiveAttackDamage(TWeakObjectPtr<AActor>& TargetPtr)
 	TargetPtr->TakeDamage(GetAttackDamage(), DamageEvent, GetController(), this);
 }
 
+bool AEncCharacter::IsAttackInputSaved()
+{
+	return bInputAttack;
+}
+
 void AEncCharacter::Guard()
 {
 	if (bRagdoll)
 		return;
 
 	bGuarding = true;
-	CharacterState->SetStaminaRecoverySpeed(1.0f);
+	CharacterState->SetStaminaRecoverySpeed(2.5f);
 }
 
 void AEncCharacter::GuardDown()
 {
 	bGuarding = false;
 	bGuardUp = false;
-	CharacterState->SetStaminaRecoverySpeed(2.0f);
+	CharacterState->SetStaminaRecoverySpeed(5.0f);
 }
 
 bool AEncCharacter::CanGuardByShield(AActor* Attacker)
@@ -529,10 +534,13 @@ void AEncCharacter::SetEquipment(AEquipment* Equipment, const FName& SocketName)
 
 void AEncCharacter::OnMontageStarted(UAnimMontage* Montage)
 {
-	if (!EncAnim->IsShovedOnBlockingMontage(Montage))
+	if (EncAnim != nullptr)
 	{
-		bGuardUp = false;
-	}
+		if (!EncAnim->IsShovedOnBlockingMontage(Montage))
+		{
+			bGuardUp = false;
+		}
+	}	
 
 	CharacterState->SetStaminaRecovery(false);
 }
@@ -544,7 +552,7 @@ void AEncCharacter::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 		if (EncAnim->IsAttackMontage(Montage))
 		{
 			CurrentCombo = 0;
-			bInputAttack = false;
+			ConsumeAttackInput();
 			bAttacking = false;
 		}
 		else if (EncAnim->IsRollingMontage(Montage))
@@ -574,10 +582,10 @@ void AEncCharacter::OnComboCheck()
 {
 	CanSaveAttack = false;
 
-	if (!bInputAttack)
+	if (!IsAttackInputSaved())
 		return;
 
-	bInputAttack = false;
+	ConsumeAttackInput();
 
 	if (CurWeapon == nullptr)
 		return;
@@ -608,6 +616,16 @@ void AEncCharacter::OnComboCheck()
 		FVector DirVec = FRotator(0.0f, GetControlRotation().Yaw, 0.0f).RotateVector(SavedInput);
 		SetActorRotation(DirVec.Rotation(), ETeleportType::TeleportPhysics);
 	}
+}
+
+void AEncCharacter::SaveAttackInput()
+{
+	bInputAttack = true;
+}
+
+void AEncCharacter::ConsumeAttackInput()
+{
+	bInputAttack = false;
 }
 
 void AEncCharacter::OnGuardUp()

@@ -31,4 +31,7 @@ private:
 
 	UPROPERTY()
 	TArray<TWeakObjectPtr<AActor>> HitActors;
+
+	float MaxAttackRange;
+	float MinAttackRange;
 };
