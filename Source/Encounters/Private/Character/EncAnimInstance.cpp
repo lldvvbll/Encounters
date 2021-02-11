@@ -139,6 +139,16 @@ void UEncAnimInstance::AnimNotify_ComboCheck()
 	OnComboCheck.Broadcast();
 }
 
+void UEncAnimInstance::AnimNotify_BeginAvoidance()
+{
+	OnBeginAvoidance.Broadcast();
+}
+
+void UEncAnimInstance::AnimNotify_EndAvoidance()
+{
+	OnEndAvoidance.Broadcast();
+}
+
 void UEncAnimInstance::AnimNotify_GuardUp()
 {
 	OnGuardUp.Broadcast();

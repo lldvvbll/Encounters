@@ -8,6 +8,8 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnComboEnableDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnComboCheckDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnBeginAvoidanceDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnEndAvoidanceDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnGuardUpDelegate);
 
 UCLASS()
@@ -46,6 +48,12 @@ private:
 	void AnimNotify_ComboCheck();
 
 	UFUNCTION()
+	void AnimNotify_BeginAvoidance();
+
+	UFUNCTION()
+	void AnimNotify_EndAvoidance();
+
+	UFUNCTION()
 	void AnimNotify_GuardUp();
 
 	FName GetAttackMontageSectionName(int32 Section);
@@ -54,6 +62,8 @@ public:
 	FOnComboEnableDelegate OnComboEnable;
 	FOnComboCheckDelegate OnComboCheck;
 	FOnGuardUpDelegate OnGuardUp;
+	FOnBeginAvoidanceDelegate OnBeginAvoidance;
+	FOnEndAvoidanceDelegate OnEndAvoidance;
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))

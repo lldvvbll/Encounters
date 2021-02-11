@@ -87,6 +87,8 @@ void AEncCharacter::PostInitializeComponents()
 		EncAnim->OnMontageEnded.AddDynamic(this, &AEncCharacter::OnMontageEnded);
 		EncAnim->OnComboEnable.AddUObject(this, &AEncCharacter::OnComboEnable);
 		EncAnim->OnComboCheck.AddUObject(this, &AEncCharacter::OnComboCheck);
+		EncAnim->OnBeginAvoidance.AddUObject(this, &AEncCharacter::OnBeginAvoidance);
+		EncAnim->OnEndAvoidance.AddUObject(this, &AEncCharacter::OnEndAvoidance);
 		EncAnim->OnGuardUp.AddUObject(this, &AEncCharacter::OnGuardUp);
 	}
 
@@ -147,6 +149,15 @@ float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 			Dir.Normalize();
 
 			LaunchCharacter(Dir * 500.0f, false, false);
+		}
+	}
+	else
+	{
+		if (!CanBeDamaged())
+		{
+			auto Capsule = GetCapsuleComponent();
+			DrawDebugCapsule(GetWorld(), Capsule->GetComponentLocation(), Capsule->GetScaledCapsuleHalfHeight(), Capsule->GetScaledCapsuleRadius(),
+				Capsule->GetComponentQuat(), FColor::Red, false, 1.0f);
 		}
 	}
 
@@ -353,13 +364,13 @@ float AEncCharacter::GetAttackDamage() const
 	return AttackPower + CurWeapon->GetAttackDamage();
 }
 
-void AEncCharacter::GiveAttackDamage(TWeakObjectPtr<AActor>& TargetPtr)
+float AEncCharacter::GiveAttackDamage(TWeakObjectPtr<AActor>& TargetPtr)
 {
 	if (!TargetPtr.IsValid())
-		return;
+		return 0.0f;
 
 	FDamageEvent DamageEvent;
-	TargetPtr->TakeDamage(GetAttackDamage(), DamageEvent, GetController(), this);
+	return TargetPtr->TakeDamage(GetAttackDamage(), DamageEvent, GetController(), this);
 }
 
 void AEncCharacter::Guard()
@@ -566,6 +577,7 @@ void AEncCharacter::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 		{
 			CurrentRootMotionVelocityRate = 1.0f;
 			bRolling = false;
+			SetCanBeDamaged(true);
 		}
 		else if (EncAnim->IsShovedOnBlockingMontage(Montage))
 		{
@@ -623,6 +635,16 @@ void AEncCharacter::OnComboCheck()
 		FVector DirVec = FRotator(0.0f, GetControlRotation().Yaw, 0.0f).RotateVector(SavedInput);
 		SetActorRotation(DirVec.Rotation(), ETeleportType::TeleportPhysics);
 	}
+}
+
+void AEncCharacter::OnBeginAvoidance()
+{
+	SetCanBeDamaged(false);
+}
+
+void AEncCharacter::OnEndAvoidance()
+{
+	SetCanBeDamaged(true);
 }
 
 void AEncCharacter::OnGuardUp()

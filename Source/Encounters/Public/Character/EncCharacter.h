@@ -58,7 +58,7 @@ public:
 	bool IsAttacking() const;
 	bool CanSaveAttack() const;
 	float GetAttackDamage() const;
-	void GiveAttackDamage(TWeakObjectPtr<AActor>& Target);
+	float GiveAttackDamage(TWeakObjectPtr<AActor>& Target);
 
 	void Guard();
 	void GuardDown();
@@ -98,6 +98,12 @@ protected:
 
 	UFUNCTION()
 	void OnComboCheck();
+
+	UFUNCTION()
+	void OnBeginAvoidance();
+
+	UFUNCTION()
+	void OnEndAvoidance();
 
 	UFUNCTION()
 	void OnGuardUp();
