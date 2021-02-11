@@ -3,8 +3,8 @@
 
 #include "AI/BTService_Detect.h"
 #include "EncAIController.h"
-#include "Character/PlayerCharacter.h"
 #include "Character/NpcCharacter.h"
+#include "Character/PlayerCharacter.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "DrawDebugHelpers.h"
 

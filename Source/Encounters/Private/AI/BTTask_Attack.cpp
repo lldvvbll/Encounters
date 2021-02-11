@@ -16,12 +16,14 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 {
 	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
 
-	auto Char = Cast<ANpcCharacter>(OwnerComp.GetAIOwner()->GetPawn());
-	if (Char == nullptr)
+	auto NpcChar = Cast<ANpcCharacter>(OwnerComp.GetAIOwner()->GetPawn());
+	if (NpcChar == nullptr)
 		return EBTNodeResult::Failed;
 
-	Char->StartComboAttack(2);
-
+	//if (!NpcChar->StartComboAttack(2))
+	if (!NpcChar->Attack())
+		return EBTNodeResult::Failed;
+	
 	return EBTNodeResult::InProgress;
 }
 
@@ -39,7 +41,7 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
-	else if (!NpcChar->IsAttackInputSaved())
+	else if (!NpcChar->IsAttacking())
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}

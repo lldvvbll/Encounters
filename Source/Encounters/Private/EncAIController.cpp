@@ -7,6 +7,7 @@
 #include "Character/NpcCharacter.h"
 
 const FName AEncAIController::TargetKey(TEXT("Target"));
+const FName AEncAIController::RecoveryStaminaKey(TEXT("RecoveryStamina"));
 
 void AEncAIController::OnPossess(APawn* InPawn)
 {

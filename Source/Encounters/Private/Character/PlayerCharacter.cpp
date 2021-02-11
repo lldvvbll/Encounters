@@ -86,8 +86,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &APlayerCharacter::Turn);
 	PlayerInputComponent->BindAxis(TEXT("TurnRate"), this, &APlayerCharacter::Turn);
 
+	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &APlayerCharacter::OnAttackButtonPressed);
 	PlayerInputComponent->BindAction(TEXT("Roll"), EInputEvent::IE_Pressed, this, &APlayerCharacter::Roll);
-	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &APlayerCharacter::Attack);
 	PlayerInputComponent->BindAction(TEXT("Ragdoll"), EInputEvent::IE_Pressed, this, &APlayerCharacter::StartRagdoll);
 	PlayerInputComponent->BindAction(TEXT("Guard"), EInputEvent::IE_Pressed, this, &APlayerCharacter::Guard);
 	PlayerInputComponent->BindAction(TEXT("Guard"), EInputEvent::IE_Released, this, &APlayerCharacter::GuardDown);
@@ -295,6 +295,11 @@ void APlayerCharacter::Turn(float NewAxisValue)
 	{
 		AddControllerYawInput(NewAxisValue);
 	}
+}
+
+void APlayerCharacter::OnAttackButtonPressed()
+{
+	Attack();
 }
 
 FVector APlayerCharacter::GetCameraRotationPivot() const

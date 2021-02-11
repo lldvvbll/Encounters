@@ -293,32 +293,32 @@ void AEncCharacter::RemoveArmor()
 	CurArmor = nullptr;
 }
 
-void AEncCharacter::Attack()
+bool AEncCharacter::Attack()
 {
 	if (bRolling || IsFalling() || bRagdoll || bShovedOnBlocking)
-		return;
+		return false;
 
 	if (CurWeapon == nullptr)
-		return;
+		return false;
 
 	float UseStamina = CurWeapon->GetUseStaminaOnAttack();
 	if (UseStamina < 0.0f)
-		return;
+		return false;
 
 	if (CharacterState->GetStamina() < UseStamina)
-		return;
+		return false;
 	
 	if (bAttacking)
 	{
-		if (CanSaveAttack)
+		if (bCanSaveAttack)
 		{
-			SaveAttackInput();
+			bInputAttack = true;
 		}
 	}
 	else
 	{
 		CurrentCombo = 1;
-		ConsumeAttackInput();
+		bInputAttack = false;
 		bAttacking = true;
 
 		CharacterState->ModifyStamina(-UseStamina);
@@ -329,6 +329,18 @@ void AEncCharacter::Attack()
 			EncAnim->JumpToAttackMontageSection(CurrentCombo);
 		}
 	}
+
+	return true;
+}
+
+bool AEncCharacter::IsAttacking() const
+{
+	return bAttacking;
+}
+
+bool AEncCharacter::CanSaveAttack() const
+{
+	return bCanSaveAttack;
 }
 
 float AEncCharacter::GetAttackDamage() const
@@ -348,11 +360,6 @@ void AEncCharacter::GiveAttackDamage(TWeakObjectPtr<AActor>& TargetPtr)
 
 	FDamageEvent DamageEvent;
 	TargetPtr->TakeDamage(GetAttackDamage(), DamageEvent, GetController(), this);
-}
-
-bool AEncCharacter::IsAttackInputSaved()
-{
-	return bInputAttack;
 }
 
 void AEncCharacter::Guard()
@@ -401,7 +408,7 @@ bool AEncCharacter::IsShovedOnBlocking() const
 
 void AEncCharacter::Roll()
 {
-	if (bRolling || CanSaveAttack || IsFalling() || bShovedOnBlocking)
+	if (bRolling || bCanSaveAttack || IsFalling() || bShovedOnBlocking)
 		return;
 
 	FVector DirToMove(FVector::ZeroVector);
@@ -552,7 +559,7 @@ void AEncCharacter::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 		if (EncAnim->IsAttackMontage(Montage))
 		{
 			CurrentCombo = 0;
-			ConsumeAttackInput();
+			bInputAttack = false;
 			bAttacking = false;
 		}
 		else if (EncAnim->IsRollingMontage(Montage))
@@ -575,17 +582,17 @@ void AEncCharacter::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 
 void AEncCharacter::OnComboEnable()
 {
-	CanSaveAttack = true;
+	bCanSaveAttack = true;
 }
 
 void AEncCharacter::OnComboCheck()
 {
-	CanSaveAttack = false;
+	bCanSaveAttack = false;
 
-	if (!IsAttackInputSaved())
+	if (!bInputAttack)
 		return;
 
-	ConsumeAttackInput();
+	bInputAttack = false;
 
 	if (CurWeapon == nullptr)
 		return;
@@ -616,16 +623,6 @@ void AEncCharacter::OnComboCheck()
 		FVector DirVec = FRotator(0.0f, GetControlRotation().Yaw, 0.0f).RotateVector(SavedInput);
 		SetActorRotation(DirVec.Rotation(), ETeleportType::TeleportPhysics);
 	}
-}
-
-void AEncCharacter::SaveAttackInput()
-{
-	bInputAttack = true;
-}
-
-void AEncCharacter::ConsumeAttackInput()
-{
-	bInputAttack = false;
 }
 
 void AEncCharacter::OnGuardUp()

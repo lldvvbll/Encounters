@@ -54,10 +54,11 @@ public:
 	AArmor* GetCurrentArmor() const;
 	void RemoveArmor();
 
-	void Attack();
+	bool Attack();
+	bool IsAttacking() const;
+	bool CanSaveAttack() const;
 	float GetAttackDamage() const;
 	void GiveAttackDamage(TWeakObjectPtr<AActor>& Target);
-	virtual bool IsAttackInputSaved();
 
 	void Guard();
 	void GuardDown();
@@ -98,9 +99,6 @@ protected:
 	UFUNCTION()
 	void OnComboCheck();
 
-	void SaveAttackInput();
-	virtual void ConsumeAttackInput();
-
 	UFUNCTION()
 	void OnGuardUp();
 
@@ -133,7 +131,7 @@ protected:
 	bool bAttacking;
 
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Attack)
-	bool CanSaveAttack;
+	bool bCanSaveAttack;
 
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Attack)
 	bool bInputAttack;

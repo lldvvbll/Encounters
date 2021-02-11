@@ -22,7 +22,6 @@ public:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	virtual void Dead() override;
-	virtual bool IsAttackInputSaved() override;
 
 	UBehaviorTree* GetBehaviorTree() const;
 	UBlackboardData* GetBlackboardData() const;
@@ -31,11 +30,6 @@ public:
 
 	float GetDetectionRange() const;
 	float GetAttackRange() const;
-
-	void StartComboAttack(int32 ComboCount);
-
-protected:
-	virtual void ConsumeAttackInput() override;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = UI, Meta = (AllowPrivateAccess = true))

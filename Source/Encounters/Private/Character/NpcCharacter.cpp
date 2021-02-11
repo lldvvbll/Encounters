@@ -85,11 +85,6 @@ void ANpcCharacter::Dead()
 	GetController<AEncAIController>()->StopAI();
 }
 
-bool ANpcCharacter::IsAttackInputSaved()
-{
-	return RemainComboCount > 0;
-}
-
 UBehaviorTree* ANpcCharacter::GetBehaviorTree() const
 {
 	return BehaviorTree;
@@ -127,17 +122,4 @@ float ANpcCharacter::GetAttackRange() const
 	return_if(NpcDataAsset == nullptr, 0.0f);
 
 	return NpcDataAsset->AttackRange;
-}
-
-void ANpcCharacter::StartComboAttack(int32 ComboCount)
-{
-	RemainComboCount = ComboCount;
-	Attack();
-}
-
-void ANpcCharacter::ConsumeAttackInput()
-{
-	Super::ConsumeAttackInput();
-
-	RemainComboCount--;
 }

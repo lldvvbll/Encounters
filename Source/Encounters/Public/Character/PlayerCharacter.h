@@ -57,6 +57,8 @@ protected:
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
 	
+	void OnAttackButtonPressed();
+
 	FVector GetCameraRotationPivot() const;
 
 	void OnPlayerStateChanged(EPlayerStateAttribute Attribute);
