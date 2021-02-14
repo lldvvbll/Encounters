@@ -24,11 +24,12 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	UWorld* World = NpcChar->GetWorld();
 	return_if(World == nullptr);
 
+	UBlackboardComponent* BlackboardComp = OwnerComp.GetBlackboardComponent();
+	if (BlackboardComp->GetValueAsObject(AEncAIController::TargetKey) != nullptr)
+		return;
+
 	FVector Center = NpcChar->GetActorLocation();
 	float DetectionRange = NpcChar->GetDetectionRange();
-
-	UBlackboardComponent* BlackboardComp = OwnerComp.GetBlackboardComponent();
-	BlackboardComp->SetValueAsObject(AEncAIController::TargetKey, nullptr);
 
 	TArray<FOverlapResult> OverlapResults;
 	FCollisionQueryParams CollisionQueryParam(NAME_None, false, NpcChar);
