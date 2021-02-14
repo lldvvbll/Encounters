@@ -8,6 +8,7 @@
 
 const FName AEncAIController::TargetKey(TEXT("Target"));
 const FName AEncAIController::RecoveryStaminaKey(TEXT("RecoveryStamina"));
+const FName AEncAIController::RecoveryStaminaAmountKey(TEXT("RecoveryStaminaAmount"));
 
 void AEncAIController::OnPossess(APawn* InPawn)
 {

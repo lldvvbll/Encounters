@@ -36,9 +36,18 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 		FCollisionShape::MakeSphere(DetectionRange), CollisionQueryParam))
 		return;
 
-	APlayerCharacter* PlayerChar = Cast<APlayerCharacter>(OverlapResults[0].GetActor());
-	if (PlayerChar != nullptr && PlayerChar->GetController()->IsPlayerController())
+	for (auto& Result : OverlapResults)
 	{
+		if (!Result.Actor.IsValid())
+			continue;
+
+		APlayerCharacter* PlayerChar = Cast<APlayerCharacter>(Result.GetActor());
+		if (PlayerChar == nullptr)
+			continue;
+
+		if (!PlayerChar->GetController()->IsPlayerController())
+			continue;
+
 		BlackboardComp->SetValueAsObject(AEncAIController::TargetKey, PlayerChar);
 
 #if ENABLE_DRAW_DEBUG
@@ -48,5 +57,6 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 			FColor::Blue, false, 0.2f);
 #endif // ENABLE_DRAW_DEBUG
 
+		break;
 	}
 }

@@ -26,9 +26,11 @@ void UBTService_CheckStamina::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 
 	if (BlackboardComp->GetValueAsBool(AEncAIController::RecoveryStaminaKey))
 	{
-		if (StateComp->GetStaminaRatio() > 0.9f)
+		float CurRecoveryStaminaAmount = BlackboardComp->GetValueAsFloat(AEncAIController::RecoveryStaminaAmountKey);
+		if (StateComp->GetStaminaRatio() > CurRecoveryStaminaAmount)
 		{
 			BlackboardComp->SetValueAsBool(AEncAIController::RecoveryStaminaKey, false);
+			BlackboardComp->SetValueAsFloat(AEncAIController::RecoveryStaminaAmountKey, 0.0f);
 		}
 	}
 	else
@@ -36,6 +38,9 @@ void UBTService_CheckStamina::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 		if (StateComp->GetStaminaRatio() < 0.1f)
 		{
 			BlackboardComp->SetValueAsBool(AEncAIController::RecoveryStaminaKey, true);
+
+			float RandomAmount = static_cast<float>(FMath::RandRange(3, 9)) / 10.0f;
+			BlackboardComp->SetValueAsFloat(AEncAIController::RecoveryStaminaAmountKey, RandomAmount);
 		}
 	}	
 }

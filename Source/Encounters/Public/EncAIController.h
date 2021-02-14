@@ -23,4 +23,5 @@ public:
 public:
 	static const FName TargetKey;
 	static const FName RecoveryStaminaKey;
+	static const FName RecoveryStaminaAmountKey;
 };
