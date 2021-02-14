@@ -316,7 +316,7 @@ bool AEncCharacter::Attack()
 	if (UseStamina < 0.0f)
 		return false;
 
-	if (CharacterState->GetStamina() < UseStamina)
+	if (CharacterState->GetStamina() < KINDA_SMALL_NUMBER)
 		return false;
 	
 	if (bAttacking)
@@ -439,7 +439,7 @@ void AEncCharacter::Roll()
 	if (UseStamina < 0.0f)
 		return;
 
-	if (CharacterState->GetStamina() < UseStamina)
+	if (CharacterState->GetStamina() < KINDA_SMALL_NUMBER)
 		return;
 
 	CharacterState->ModifyStamina(-UseStamina);
@@ -613,7 +613,7 @@ void AEncCharacter::OnComboCheck()
 	if (UseStamina < 0.0f)
 		return;
 
-	if (CharacterState->GetStamina() < UseStamina)
+	if (CharacterState->GetStamina() < KINDA_SMALL_NUMBER)
 		return;
 
 	++CurrentCombo;
