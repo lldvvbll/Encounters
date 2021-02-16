@@ -9,6 +9,7 @@
 #include "EncGameInstance.generated.h"
 
 class UDataTable;
+class UStageDataAsset;
 
 UCLASS()
 class ENCOUNTERS_API UEncGameInstance : public UGameInstance
@@ -22,6 +23,16 @@ public:
 
 	const TArray<FSaveItemData>& GetDefaultItems() const;
 	const FSavePlayerStateData& GetDefaultPlayerState() const;
+	const TArray<FPrimaryAssetId>& GetStageAssetIds() const;
+
+	UStageDataAsset* GetStageDataAssetByIndex(int32 Index) const;
+
+	int32 GetCurretnStageIndex() const;
+	void SetCurrentStageIndex(int32 Index);
+
+public:
+	static const FString SaveGameSlotName;
+	static const int32 SaveGameUserIndex;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = DefaultSetting)
@@ -30,10 +41,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = DefaultSetting)
 	FSavePlayerStateData DefaultPlayerState;
 
+	UPROPERTY(EditDefaultsOnly, Category = Stage)
+	TArray<FPrimaryAssetId> StageAssetIds;
+
 private:
 	UPROPERTY()
 	UDataTable* CharacterAbilityTable;
 
 	UPROPERTY()
 	UDataTable* LevelUpPointTable;
+
+	UPROPERTY()
+	int32 CurrentStageIndex;
 };

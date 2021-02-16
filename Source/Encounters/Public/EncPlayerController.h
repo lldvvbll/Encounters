@@ -26,6 +26,8 @@ public:
 	bool LoadOrCreateSaveGame();
 	void SaveGame();
 
+	void ChangeInputMode(bool bGameMode);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -45,4 +47,7 @@ private:
 	FDelegateHandle OnAddItemDelegateHandle;
 	FDelegateHandle OnRemoveItemDelegateHandle;
 	FDelegateHandle OnPlayerStateChangedDelegateHandle;
+
+	FInputModeGameOnly GameInputMode;
+	FInputModeUIOnly UiInputMode;
 };

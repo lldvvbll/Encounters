@@ -5,6 +5,11 @@
 #include "Engine/DataTable.h"
 #include "DataStructures.h"
 #include "Items/EncItem.h"
+#include "EncAssetManager.h"
+#include "Stage/DataAssets/StageDataAsset.h"
+
+const FString UEncGameInstance::SaveGameSlotName = TEXT("Default");
+const int32 UEncGameInstance::SaveGameUserIndex = 0;
 
 UEncGameInstance::UEncGameInstance()
 {
@@ -36,4 +41,27 @@ const TArray<FSaveItemData>& UEncGameInstance::GetDefaultItems() const
 const FSavePlayerStateData& UEncGameInstance::GetDefaultPlayerState() const
 {
 	return DefaultPlayerState;
+}
+
+const TArray<FPrimaryAssetId>& UEncGameInstance::GetStageAssetIds() const
+{
+	return StageAssetIds;
+}
+
+UStageDataAsset* UEncGameInstance::GetStageDataAssetByIndex(int32 Index) const
+{
+	return_if(Index < 0, nullptr);
+	return_if(StageAssetIds.Num() <= Index, nullptr);
+
+	return UEncAssetManager::Get().GetDataAsset<UStageDataAsset>(StageAssetIds[Index]);
+}
+
+int32 UEncGameInstance::GetCurretnStageIndex() const
+{
+	return CurrentStageIndex;
+}
+
+void UEncGameInstance::SetCurrentStageIndex(int32 Index)
+{
+	CurrentStageIndex = Index;
 }

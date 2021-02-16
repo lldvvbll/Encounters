@@ -8,9 +8,6 @@
 
 class AEncCharacter;
 
-/**
- * 
- */
 UCLASS()
 class ENCOUNTERS_API UEncCharacterMovementComponent : public UCharacterMovementComponent
 {

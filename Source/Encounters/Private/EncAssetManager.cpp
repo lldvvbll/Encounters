@@ -10,6 +10,8 @@ const FPrimaryAssetType	UEncAssetManager::ArmorItemType = TEXT("Armor");
 
 const FPrimaryAssetType UEncAssetManager::EnemyType = TEXT("Enemy");
 
+const FPrimaryAssetType UEncAssetManager::NormalStageType = TEXT("NormalStage");
+
 UEncAssetManager& UEncAssetManager::Get()
 {
 	UEncAssetManager* This = Cast<UEncAssetManager>(GEngine->AssetManager);

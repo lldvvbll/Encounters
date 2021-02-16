@@ -6,6 +6,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "EncountersGameMode.generated.h"
 
+class ASpawnBox;
+
 UCLASS()
 class ENCOUNTERS_API AEncountersGameMode : public AGameModeBase
 {
@@ -14,8 +16,13 @@ class ENCOUNTERS_API AEncountersGameMode : public AGameModeBase
 public:
 	AEncountersGameMode();
 
+	virtual void StartPlay() override;
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 	UFUNCTION(Exec, Category = ExecFunctions)
 	void SpawnEnemy() const;
+
+private:
+	UPROPERTY(Transient)
+	TArray<ASpawnBox*> SpawnBoxes;
 };

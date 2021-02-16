@@ -9,12 +9,24 @@
 #include "EncPlayerController.h"
 #include "EncAssetManager.h"
 #include "Character/DataAssets/NpcDataAsset.h"
+#include "Stage/SpawnBox.h"
+#include "EngineUtils.h"
 
 AEncountersGameMode::AEncountersGameMode()
 {
 	DefaultPawnClass = APlayerCharacter::StaticClass();
 	PlayerControllerClass = AEncPlayerController::StaticClass();
 	PlayerStateClass = AEncPlayerState::StaticClass();
+}
+
+void AEncountersGameMode::StartPlay()
+{
+	Super::StartPlay();
+
+	for (TActorIterator<ASpawnBox> It(GetWorld()); It; ++It)
+	{
+		SpawnBoxes.Emplace(*It);
+	}
 }
 
 void AEncountersGameMode::PostLogin(APlayerController* NewPlayer)

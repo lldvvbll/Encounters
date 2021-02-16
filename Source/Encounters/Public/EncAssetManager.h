@@ -20,6 +20,8 @@ public:
 
 	static const FPrimaryAssetType EnemyType;
 
+	static const FPrimaryAssetType NormalStageType;
+
 public:
 	static UEncAssetManager& Get();
 

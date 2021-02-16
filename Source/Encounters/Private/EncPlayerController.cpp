@@ -30,8 +30,8 @@ void AEncPlayerController::SetPawn(APawn* InPawn)
 
 bool AEncPlayerController::LoadOrCreateSaveGame()
 {
-	static FString SlotName = TEXT("Default");
-	static int32 UserIndex = 0;
+	const FString& SlotName = UEncGameInstance::SaveGameSlotName;
+	const int32& UserIndex = UEncGameInstance::SaveGameUserIndex;
 
 	if (UGameplayStatics::DoesSaveGameExist(SlotName, UserIndex))
 	{
@@ -65,8 +65,8 @@ bool AEncPlayerController::LoadOrCreateSaveGame()
 
 void AEncPlayerController::SaveGame()
 {
-	static FString SlotName = TEXT("Default");
-	static int32 UserIndex = 0;
+	const FString& SlotName = UEncGameInstance::SaveGameSlotName;
+	const int32& UserIndex = UEncGameInstance::SaveGameUserIndex;
 
 	UEncSaveGame* NewSaveGame = NewObject<UEncSaveGame>();
 	return_if(NewSaveGame == nullptr);
@@ -79,15 +79,31 @@ void AEncPlayerController::SaveGame()
 
 	PlayerCharacter->SaveCharacter(NewSaveGame);
 
-	if (!UGameplayStatics::SaveGameToSlot(NewSaveGame, SlotName, UserIndex))
+	if (!UGameplayStatics::SaveGameToSlot(NewSaveGame, UEncGameInstance::SaveGameSlotName, UEncGameInstance::SaveGameUserIndex))
 	{
 		LOG(Error, TEXT("SaveGame Error"));
+	}
+}
+
+void AEncPlayerController::ChangeInputMode(bool bGameMode)
+{
+	if (bGameMode)
+	{
+		SetInputMode(GameInputMode);
+		bShowMouseCursor = false;
+	}
+	else
+	{
+		SetInputMode(UiInputMode);
+		bShowMouseCursor = true;
 	}
 }
 
 void AEncPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	ChangeInputMode(true);
 
 	HudWidget = CreateWidget<UHudWidget>(this, HudWidgetClass);
 	HudWidget->AddToViewport();
