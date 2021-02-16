@@ -48,20 +48,35 @@ const TArray<FPrimaryAssetId>& UEncGameInstance::GetStageAssetIds() const
 	return StageAssetIds;
 }
 
-UStageDataAsset* UEncGameInstance::GetStageDataAssetByIndex(int32 Index) const
+void UEncGameInstance::StartNewGame()
 {
-	return_if(Index < 0, nullptr);
-	return_if(StageAssetIds.Num() <= Index, nullptr);
+	return_if(StageAssetIds.Num() == 0);
 
-	return UEncAssetManager::Get().GetDataAsset<UStageDataAsset>(StageAssetIds[Index]);
+	UStageDataAsset* StageDataAsset = UEncAssetManager::Get().GetDataAsset<UStageDataAsset>(StageAssetIds[0]);
+	return_if(StageDataAsset == nullptr);
+
+	UGameplayStatics::DeleteGameInSlot(UEncGameInstance::SaveGameSlotName, UEncGameInstance::SaveGameUserIndex);
+	UGameplayStatics::OpenLevel(GetWorld(), StageDataAsset->LevelAssetId.PrimaryAssetName);
 }
 
-int32 UEncGameInstance::GetCurretnStageIndex() const
+void UEncGameInstance::ContinueGame()
+{
+	return_if(StageAssetIds.Num() == 0);
+
+	UStageDataAsset* StageDataAsset = UEncAssetManager::Get().GetDataAsset<UStageDataAsset>(StageAssetIds[0]);
+	return_if(StageDataAsset == nullptr);
+
+	UGameplayStatics::OpenLevel(GetWorld(), StageDataAsset->LevelAssetId.PrimaryAssetName);
+}
+
+FPrimaryAssetId UEncGameInstance::GetCurrentStageDataAssetId() const
+{
+	return_if(StageAssetIds.Num() == 0, FPrimaryAssetId());
+
+	return StageAssetIds[CurrentStageIndex];
+}
+
+int32 UEncGameInstance::GetCurrentStageIndex() const
 {
 	return CurrentStageIndex;
-}
-
-void UEncGameInstance::SetCurrentStageIndex(int32 Index)
-{
-	CurrentStageIndex = Index;
 }

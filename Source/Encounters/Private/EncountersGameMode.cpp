@@ -9,8 +9,11 @@
 #include "EncPlayerController.h"
 #include "EncAssetManager.h"
 #include "Character/DataAssets/NpcDataAsset.h"
+#include "Stage/DataAssets/StageDataAsset.h"
 #include "Stage/SpawnBox.h"
+#include "Stage/EncStage.h"
 #include "EngineUtils.h"
+#include "EncGameInstance.h"
 
 AEncountersGameMode::AEncountersGameMode()
 {
@@ -27,6 +30,17 @@ void AEncountersGameMode::StartPlay()
 	{
 		SpawnBoxes.Emplace(*It);
 	}
+
+	auto GameInstance = GetGameInstance<UEncGameInstance>();
+	return_if(GameInstance == nullptr);
+
+	FPrimaryAssetId StageDataAssetId = GameInstance->GetCurrentStageDataAssetId();
+	return_if(!StageDataAssetId.IsValid());
+
+	StageDataAsset = UEncAssetManager::Get().GetDataAsset<UStageDataAsset>(StageDataAssetId);
+	return_if(StageDataAsset == nullptr);
+
+	StartStage();
 }
 
 void AEncountersGameMode::PostLogin(APlayerController* NewPlayer)
@@ -39,7 +53,7 @@ void AEncountersGameMode::PostLogin(APlayerController* NewPlayer)
 	EncPlayerController->LoadOrCreateSaveGame();
 }
 
-void AEncountersGameMode::SpawnEnemy() const
+void AEncountersGameMode::exec_SpawnEnemy() const
 {
 	static FString DataAssetTypeAndName = TEXT("Enemy:KnightDataAsset");
 
@@ -58,4 +72,34 @@ void AEncountersGameMode::SpawnEnemy() const
 	FVector Pos = Pawn->GetActorLocation() + Pawn->GetActorForwardVector() * 1000.0f;
 		
 	World->SpawnActor<ANpcCharacter>(DataAsset->NpcActorClass, Pos, FRotator::ZeroRotator);
+}
+
+void AEncountersGameMode::StartStage()
+{
+	SpawnEnemies();
+
+
+}
+
+void AEncountersGameMode::SpawnEnemies()
+{
+	return_if(SpawnBoxes.Num() == 0);
+
+	for (auto& Pair : StageDataAsset->EnemyMap)
+	{
+		FPrimaryAssetId& EnemyDataAssetId = Pair.Key;
+		int32& Count = Pair.Value;
+
+		UNpcDataAsset* NpcDataAsset = UEncAssetManager::Get().GetDataAsset<UNpcDataAsset>(EnemyDataAssetId);
+		if (NpcDataAsset == nullptr)
+			continue;
+
+		for (int32 i = 0; i < Count; ++i)
+		{
+			FVector Pos = SpawnBoxes[FMath::RandRange(0, SpawnBoxes.Num() - 1)]->GetActorLocation();
+			FRotator Rot(0.0f, FMath::FRandRange(-180.f, 180.f), 0.0f);
+
+			GetWorld()->SpawnActor<ANpcCharacter>(NpcDataAsset->NpcActorClass, Pos, Rot);
+		}
+	}
 }

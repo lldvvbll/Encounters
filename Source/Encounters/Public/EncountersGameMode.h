@@ -7,6 +7,7 @@
 #include "EncountersGameMode.generated.h"
 
 class ASpawnBox;
+class UStageDataAsset;
 
 UCLASS()
 class ENCOUNTERS_API AEncountersGameMode : public AGameModeBase
@@ -20,9 +21,16 @@ public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 	UFUNCTION(Exec, Category = ExecFunctions)
-	void SpawnEnemy() const;
+	void exec_SpawnEnemy() const;
 
 private:
+	void StartStage();
+	void SpawnEnemies();
+
+private:
+	UPROPERTY(VisibleAnywhere, Category = DataAsset, Meta = (AllowPrivateAccess = true))
+	UStageDataAsset* StageDataAsset;
+
 	UPROPERTY(Transient)
 	TArray<ASpawnBox*> SpawnBoxes;
 };

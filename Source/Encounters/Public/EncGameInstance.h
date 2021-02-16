@@ -25,10 +25,11 @@ public:
 	const FSavePlayerStateData& GetDefaultPlayerState() const;
 	const TArray<FPrimaryAssetId>& GetStageAssetIds() const;
 
-	UStageDataAsset* GetStageDataAssetByIndex(int32 Index) const;
+	void StartNewGame();
+	void ContinueGame();
 
-	int32 GetCurretnStageIndex() const;
-	void SetCurrentStageIndex(int32 Index);
+	FPrimaryAssetId GetCurrentStageDataAssetId() const;
+	int32 GetCurrentStageIndex() const;
 
 public:
 	static const FString SaveGameSlotName;

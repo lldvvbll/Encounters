@@ -3,9 +3,7 @@
 
 #include "UI/TitleWidget.h"
 #include "Components/Button.h"
-#include "EncAssetManager.h"
 #include "EncGameInstance.h"
-#include "Stage/DataAssets/StageDataAsset.h"
 
 void UTitleWidget::NativeConstruct()
 {
@@ -26,19 +24,12 @@ void UTitleWidget::NativeConstruct()
 
 void UTitleWidget::OnNewGameButtonClicked()
 {
-	UStageDataAsset* StageDataAsset = GetGameInstance<UEncGameInstance>()->GetStageDataAssetByIndex(0);
-	return_if(StageDataAsset == nullptr);
-
-	UGameplayStatics::DeleteGameInSlot(UEncGameInstance::SaveGameSlotName, UEncGameInstance::SaveGameUserIndex);
-	UGameplayStatics::OpenLevel(GetWorld(), StageDataAsset->LevelAssetId.PrimaryAssetName);
+	GetGameInstance<UEncGameInstance>()->StartNewGame();
 }
 
 void UTitleWidget::OnContinueButtonClicked()
 {
-	UStageDataAsset* StageDataAsset = GetGameInstance<UEncGameInstance>()->GetStageDataAssetByIndex(0);
-	return_if(StageDataAsset == nullptr);
-
-	UGameplayStatics::OpenLevel(GetWorld(), StageDataAsset->LevelAssetId.PrimaryAssetName);
+	GetGameInstance<UEncGameInstance>()->ContinueGame();
 }
 
 void UTitleWidget::OnExitButtonClicked()

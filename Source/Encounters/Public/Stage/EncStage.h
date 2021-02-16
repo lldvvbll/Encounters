@@ -6,15 +6,20 @@
 #include "UObject/NoExportTypes.h"
 #include "EncStage.generated.h"
 
+class UStageDataAsset;
+
 UCLASS(Blueprintable)
 class ENCOUNTERS_API UEncStage : public UObject
 {
 	GENERATED_BODY()
 
 public:
-	void Init(const FPrimaryAssetId& NewDataAssetId);
+	void StartStage(const FPrimaryAssetId& NewDataAssetId);
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FPrimaryAssetId DataAssetId;
+	void SpawnEnemy();
+
+protected:
+	UPROPERTY(VisibleAnywhere, Category = DataAsset)
+	UStageDataAsset* StageDataAsset;
 };
