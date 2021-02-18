@@ -12,3 +12,11 @@ UEncSaveGame::UEncSaveGame()
 	PlayerState.Vitality = 1;
 	PlayerState.Endurance = 1;
 }
+
+void UEncSaveGame::Copy(UEncSaveGame* Src)
+{
+	return_if(Src == nullptr);
+
+	PlayerState = Src->PlayerState;
+	Items = Src->Items;
+}

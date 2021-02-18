@@ -58,7 +58,7 @@ public:
 	bool IsAttacking() const;
 	bool CanSaveAttack() const;
 	float GetAttackDamage() const;
-	float GiveAttackDamage(TWeakObjectPtr<AActor>& Target);
+	virtual float GiveAttackDamage(TWeakObjectPtr<AActor>& Target);
 
 	void Guard();
 	void GuardDown();

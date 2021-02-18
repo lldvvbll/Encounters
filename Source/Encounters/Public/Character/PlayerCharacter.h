@@ -8,6 +8,9 @@
 #include "PlayerCharacter.generated.h"
 
 class UEncSaveGame;
+class APlayerCharacter;
+
+DECLARE_MULTICAST_DELEGATE(FOnPlayerDeadDelegate);
 
 USTRUCT()
 struct FLockOnCandidate
@@ -51,6 +54,8 @@ public:
 	void LoadCharacter(const UEncSaveGame* SaveGame);
 	void SaveCharacter(UEncSaveGame* SaveGame);
 
+	void GivePoint(int32 Point);
+
 protected:
 	void MoveForward(float NewAxisValue);
 	void MoveRight(float NewAxisValue);
@@ -62,6 +67,9 @@ protected:
 	FVector GetCameraRotationPivot() const;
 
 	void OnPlayerStateChanged(EPlayerStateAttribute Attribute);
+
+public:
+	FOnPlayerDeadDelegate OnPlayerDead;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera, Meta = (AllowPrivateAccess = true))

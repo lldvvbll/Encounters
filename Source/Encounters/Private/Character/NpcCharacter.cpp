@@ -2,6 +2,7 @@
 
 
 #include "Character/NpcCharacter.h"
+#include "Character/PlayerCharacter.h"
 #include "Character/EncCharacterStateComponent.h"
 #include "Character/InventoryComponent.h"
 #include "Character/DataAssets/NpcDataAsset.h"
@@ -12,6 +13,7 @@
 #include "EncAIController.h"
 #include "EncGameInstance.h"
 #include "EncAssetManager.h"
+#include "EncPlayerState.h"
 
 ANpcCharacter::ANpcCharacter()
 {
@@ -69,7 +71,14 @@ float ANpcCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 {
 	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	if (FinalDamage > 0.0f && !bDead)
+	if (bDead)
+	{
+		if (auto PlayerChar = Cast<APlayerCharacter>(DamageCauser))
+		{
+			PlayerChar->GivePoint(NpcDataAsset->DropPoint);
+		}
+	}
+	else if (FinalDamage > 0.0f)
 	{
 		HpBarWidget->SetVisibility(true);
 	}
@@ -83,6 +92,8 @@ void ANpcCharacter::Dead()
 
 	HpBarWidget->SetVisibility(false);
 	GetController<AEncAIController>()->StopAI();
+
+	OnNpcDead.Broadcast(this);
 }
 
 UBehaviorTree* ANpcCharacter::GetBehaviorTree() const

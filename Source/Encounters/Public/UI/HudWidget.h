@@ -23,7 +23,7 @@ protected:
 	void UpdateCharacterState();
 
 private:
-	UEncCharacterStateComponent* CharacterState;
+	TWeakObjectPtr<UEncCharacterStateComponent> CharacterState;
 
 	UPROPERTY()
 	UProgressBar* HpBar;

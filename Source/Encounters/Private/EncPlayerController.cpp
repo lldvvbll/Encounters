@@ -3,6 +3,7 @@
 
 #include "EncPlayerController.h"
 #include "UI/HudWidget.h"
+#include "UI/PlayerStateWidget.h"
 #include "Character/PlayerCharacter.h"
 #include "Character/EncCharacterStateComponent.h"
 #include "Character/InventoryComponent.h"
@@ -18,14 +19,23 @@ AEncPlayerController::AEncPlayerController()
 	{
 		HudWidgetClass = UI_HUD.Class;
 	}
+
+	static ConstructorHelpers::FClassFinder<UPlayerStateWidget> UI_PLAYERSTATE(
+		TEXT("/Game/Encounters/UI/UI_PlayerState.UI_PlayerState_C"));
+	if (UI_PLAYERSTATE.Succeeded())
+	{
+		PlayerStateWidgetClass = UI_PLAYERSTATE.Class;
+	}
 }
 
 void AEncPlayerController::SetPawn(APawn* InPawn)
 {
 	Super::SetPawn(InPawn);
 
-	ACharacter* Char = GetCharacter();
-	PlayerCharacter = (Char != nullptr) ? Cast<APlayerCharacter>(Char) : nullptr;
+	PlayerCharacter = Cast<APlayerCharacter>(InPawn);
+	return_if(PlayerCharacter == nullptr);
+
+	PlayerCharacter->OnPlayerDead.AddUObject(this, &AEncPlayerController::OnPlayerDead);
 }
 
 bool AEncPlayerController::LoadOrCreateSaveGame()
@@ -99,6 +109,25 @@ void AEncPlayerController::ChangeInputMode(bool bGameMode)
 	}
 }
 
+APlayerCharacter* AEncPlayerController::GetPlayerCharacter() const
+{
+	return PlayerCharacter;
+}
+
+void AEncPlayerController::OnPlayerDead()
+{
+	SaveGame();
+
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(TimerHandle, 
+		FTimerDelegate::CreateLambda(
+			[this]()
+			{
+				UGameplayStatics::OpenLevel(GetWorld(), TEXT("PlayerState"));
+			}), 
+		3.0f, false);
+}
+
 void AEncPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -112,4 +141,23 @@ void AEncPlayerController::BeginPlay()
 	{
 		HudWidget->BindCharacterState(PlayerCharacter->GetCharacterStateComponent());
 	}
+}
+
+void AEncPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+
+	InputComponent->BindAction(TEXT("GamePause"), EInputEvent::IE_Pressed, this, &AEncPlayerController::OnGamePause);
+}
+
+void AEncPlayerController::OnGamePause()
+{
+	PlayerStateWidget = CreateWidget<UPlayerStateWidget>(this, PlayerStateWidgetClass);
+	return_if(PlayerStateWidget == nullptr);
+
+	PlayerStateWidget->Bind(true);
+	PlayerStateWidget->AddToViewport(3);
+
+	SetPause(true);
+	ChangeInputMode(false);
 }

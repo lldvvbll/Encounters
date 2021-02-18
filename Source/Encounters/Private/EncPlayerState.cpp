@@ -41,7 +41,7 @@ void AEncPlayerState::SetPoint(int32 NewPoint)
 
 void AEncPlayerState::ModifyPoint(int32 Amount)
 {
-	Point = FMath::Max(Point + Amount, 0);
+	SetPoint(FMath::Max(Point + Amount, 0));
 }
 
 int32 AEncPlayerState::GetStrength() const

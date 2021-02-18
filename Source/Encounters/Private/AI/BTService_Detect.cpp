@@ -49,6 +49,9 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 		if (!PlayerChar->GetController()->IsPlayerController())
 			continue;
 
+		if (PlayerChar->IsDead())
+			continue;
+
 		BlackboardComp->SetValueAsObject(AEncAIController::TargetKey, PlayerChar);
 
 #if ENABLE_DRAW_DEBUG

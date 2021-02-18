@@ -12,6 +12,7 @@ class APlayerCharacter;
 class UEncSaveGame;
 class UInventoryComponent;
 class UEncItem;
+class UPlayerStateWidget;
 
 UCLASS()
 class ENCOUNTERS_API AEncPlayerController : public APlayerController
@@ -28,8 +29,16 @@ public:
 
 	void ChangeInputMode(bool bGameMode);
 
+	APlayerCharacter* GetPlayerCharacter() const;
+
+	void OnPlayerDead();
+
 protected:
 	virtual void BeginPlay() override;
+	virtual void SetupInputComponent() override;
+
+private:
+	void OnGamePause();
 
 private:
 	UPROPERTY()
@@ -43,6 +52,12 @@ private:
 
 	UPROPERTY()
 	UHudWidget* HudWidget;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI, Meta = (AllowPrivateAccess = true))
+	TSubclassOf<UPlayerStateWidget> PlayerStateWidgetClass;
+
+	UPROPERTY()
+	UPlayerStateWidget* PlayerStateWidget;
 
 	FDelegateHandle OnAddItemDelegateHandle;
 	FDelegateHandle OnRemoveItemDelegateHandle;

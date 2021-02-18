@@ -20,7 +20,6 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	if (NpcChar == nullptr)
 		return EBTNodeResult::Failed;
 
-	//if (!NpcChar->StartComboAttack(2))
 	if (!NpcChar->Attack())
 		return EBTNodeResult::Failed;
 	

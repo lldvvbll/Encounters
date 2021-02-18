@@ -20,6 +20,7 @@ public:
 	UEncGameInstance();
 
 	FCharacterAbilityData* GetCharacterAbilityData(int32 Point) const;
+	int32 GetLevelUpPoint(int32 CurLevel) const;
 
 	const TArray<FSaveItemData>& GetDefaultItems() const;
 	const FSavePlayerStateData& GetDefaultPlayerState() const;

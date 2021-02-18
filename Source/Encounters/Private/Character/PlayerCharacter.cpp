@@ -99,6 +99,8 @@ void APlayerCharacter::Dead()
 	Super::Dead();
 
 	DisableInput(GetController<AEncPlayerController>());
+
+	OnPlayerDead.Broadcast();
 }
 
 void APlayerCharacter::LockOn()
@@ -251,6 +253,14 @@ void APlayerCharacter::LoadCharacter(const UEncSaveGame* SaveGame)
 void APlayerCharacter::SaveCharacter(UEncSaveGame* SaveGame)
 {
 	Inventory->SaveInventory(SaveGame);
+}
+
+void APlayerCharacter::GivePoint(int32 Point)
+{
+	auto EncPlayerState = GetPlayerState<AEncPlayerState>();
+	return_if(EncPlayerState == nullptr);
+
+	EncPlayerState->ModifyPoint(Point);
 }
 
 void APlayerCharacter::MoveForward(float NewAxisValue)

@@ -33,6 +33,14 @@ FCharacterAbilityData* UEncGameInstance::GetCharacterAbilityData(int32 Point) co
 	return CharacterAbilityTable->FindRow<FCharacterAbilityData>(*FString::FromInt(Point), TEXT(""));
 }
 
+int32 UEncGameInstance::GetLevelUpPoint(int32 CurLevel) const
+{
+	auto LevelUpPointData = LevelUpPointTable->FindRow<FLevelUpPointData>(*FString::FromInt(CurLevel), TEXT(""));
+	return_if(LevelUpPointData == nullptr, -1);
+
+	return LevelUpPointData->Point;
+}
+
 const TArray<FSaveItemData>& UEncGameInstance::GetDefaultItems() const
 {
 	return DefaultItems;

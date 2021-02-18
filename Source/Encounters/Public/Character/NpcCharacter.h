@@ -9,6 +9,9 @@
 class UBehaviorTree;
 class UBlackboardData;
 class UNpcDataAsset;
+class ANpcCharacter;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnNpcDeadDelegate, ANpcCharacter*);
 
 UCLASS()
 class ENCOUNTERS_API ANpcCharacter : public AEncCharacter
@@ -30,6 +33,9 @@ public:
 
 	float GetDetectionRange() const;
 	float GetAttackRange() const;
+
+public:
+	FOnNpcDeadDelegate OnNpcDead;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = UI, Meta = (AllowPrivateAccess = true))

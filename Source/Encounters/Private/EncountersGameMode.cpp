@@ -99,7 +99,23 @@ void AEncountersGameMode::SpawnEnemies()
 			FVector Pos = SpawnBoxes[FMath::RandRange(0, SpawnBoxes.Num() - 1)]->GetActorLocation();
 			FRotator Rot(0.0f, FMath::FRandRange(-180.f, 180.f), 0.0f);
 
-			GetWorld()->SpawnActor<ANpcCharacter>(NpcDataAsset->NpcActorClass, Pos, Rot);
+			auto Enemy = GetWorld()->SpawnActor<ANpcCharacter>(NpcDataAsset->NpcActorClass, Pos, Rot);
+			Enemy->OnNpcDead.AddUObject(this, &AEncountersGameMode::OnEnemyDead);
+
+			Enemies.Emplace(Enemy);
 		}
+	}
+}
+
+void AEncountersGameMode::OnEnemyDead(ANpcCharacter* DeadEnemy)
+{
+	int32 RemovedEnemyCount = Enemies.Remove(DeadEnemy);
+	if (RemovedEnemyCount != 1)
+	{
+		LOG(Warning, TEXT("Failed To Remove Enemy"));
+	}
+
+	if (Enemies.Num() <= 0)
+	{
 	}
 }

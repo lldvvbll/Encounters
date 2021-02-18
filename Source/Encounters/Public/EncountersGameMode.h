@@ -8,6 +8,8 @@
 
 class ASpawnBox;
 class UStageDataAsset;
+class APlayerCharacter;
+class ANpcCharacter;
 
 UCLASS()
 class ENCOUNTERS_API AEncountersGameMode : public AGameModeBase
@@ -27,10 +29,15 @@ private:
 	void StartStage();
 	void SpawnEnemies();
 
+	void OnEnemyDead(ANpcCharacter* DeadEnemy);
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = DataAsset, Meta = (AllowPrivateAccess = true))
 	UStageDataAsset* StageDataAsset;
 
-	UPROPERTY(Transient)
+	UPROPERTY()
 	TArray<ASpawnBox*> SpawnBoxes;
+
+	UPROPERTY()
+	TArray<ANpcCharacter*> Enemies;
 };

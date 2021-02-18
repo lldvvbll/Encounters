@@ -15,6 +15,9 @@ class ENCOUNTERS_API UEncSaveGame : public USaveGame
 public:
 	UEncSaveGame();
 
+	void Copy(UEncSaveGame* Src);
+
+public:
 	UPROPERTY()
 	FSavePlayerStateData PlayerState;
 
