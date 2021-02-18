@@ -197,13 +197,13 @@ void UPlayerStateWidget::CheckPlayerAttributeUpButtonsVisibility()
 	int32 LvUpPoint = GameInstance->GetLevelUpPoint(SavedGame->PlayerState.Level);
 	return_if(LvUpPoint < 0);
 
-	ESlateVisibility ButtonVisibility = 
+	ESlateVisibility VisibilityByPoint = 
 		(SavedGame->PlayerState.Point >= LvUpPoint) ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
 
-	StrengthUpButton->SetVisibility(ButtonVisibility);
-	AgilityUpButton->SetVisibility(ButtonVisibility);
-	VitalityUpButton->SetVisibility(ButtonVisibility);
-	EnduranceUpButton->SetVisibility(ButtonVisibility);
+	StrengthUpButton->SetVisibility((SavedGame->PlayerState.Strength >= 10) ? ESlateVisibility::Hidden : VisibilityByPoint);
+	AgilityUpButton->SetVisibility((SavedGame->PlayerState.Agility >= 10) ? ESlateVisibility::Hidden : VisibilityByPoint);
+	VitalityUpButton->SetVisibility((SavedGame->PlayerState.Vitality >= 10) ? ESlateVisibility::Hidden : VisibilityByPoint);
+	EnduranceUpButton->SetVisibility((SavedGame->PlayerState.Endurance >= 10) ? ESlateVisibility::Hidden : VisibilityByPoint);
 
 	LevelUpPointText->SetText(FText::FromString(FString::FromInt(LvUpPoint)));
 }
