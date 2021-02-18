@@ -152,5 +152,25 @@ void AEncountersGameMode::OnEnemyDead(ANpcCharacter* DeadEnemy)
 
 	if (Enemies.Num() <= 0)
 	{
+		for (auto It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+		{
+			auto EncPlayerController = Cast<AEncPlayerController>(It->Get());
+			if (EncPlayerController != nullptr)
+			{
+				EncPlayerController->OnStageCleard();
+			}
+		}
+
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle,
+			FTimerDelegate::CreateLambda(
+				[this]()
+				{
+					auto GameInstance = GetGameInstance<UEncGameInstance>();
+					return_if(GameInstance == nullptr);
+
+					GameInstance->GoNextStage();
+				}),
+			3.0f, false);
 	}
 }

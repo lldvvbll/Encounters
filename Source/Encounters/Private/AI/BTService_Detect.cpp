@@ -25,8 +25,13 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	return_if(World == nullptr);
 
 	UBlackboardComponent* BlackboardComp = OwnerComp.GetBlackboardComponent();
-	if (BlackboardComp->GetValueAsObject(AEncAIController::TargetKey) != nullptr)
-		return;
+	if (auto OldTarget = Cast<APlayerCharacter>(BlackboardComp->GetValueAsObject(AEncAIController::TargetKey)))
+	{
+		if (OldTarget->IsDead())
+		{
+			BlackboardComp->SetValueAsObject(AEncAIController::TargetKey, nullptr);
+		}
+	}
 
 	FVector Center = NpcChar->GetActorLocation();
 	float DetectionRange = NpcChar->GetDetectionRange();

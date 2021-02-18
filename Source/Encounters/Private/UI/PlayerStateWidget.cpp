@@ -228,10 +228,7 @@ void UPlayerStateWidget::OnPlayerAttributeUp()
 	NewSaveGame->Copy(SavedGame);
 	SavedGame = NewSaveGame;
 
-	if (!UGameplayStatics::SaveGameToSlot(SavedGame, SlotName, UserIndex))
-	{
-		LOG(Error, TEXT("SaveGame Error"));
-	}
+	UGameplayStatics::AsyncSaveGameToSlot(NewSaveGame, SlotName, UserIndex);
 
 	CheckPlayerAttributeUpButtonsVisibility();
 	SetPlayerAttributeText();

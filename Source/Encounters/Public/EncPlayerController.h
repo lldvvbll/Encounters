@@ -32,6 +32,7 @@ public:
 	APlayerCharacter* GetPlayerCharacter() const;
 
 	void OnPlayerDead();
+	void OnStageCleard();
 
 protected:
 	virtual void BeginPlay() override;

@@ -89,10 +89,7 @@ void AEncPlayerController::SaveGame()
 
 	PlayerCharacter->SaveCharacter(NewSaveGame);
 
-	if (!UGameplayStatics::SaveGameToSlot(NewSaveGame, UEncGameInstance::SaveGameSlotName, UEncGameInstance::SaveGameUserIndex))
-	{
-		LOG(Error, TEXT("SaveGame Error"));
-	}
+	UGameplayStatics::AsyncSaveGameToSlot(NewSaveGame, SlotName, UserIndex);
 }
 
 void AEncPlayerController::ChangeInputMode(bool bGameMode)
@@ -126,6 +123,11 @@ void AEncPlayerController::OnPlayerDead()
 				UGameplayStatics::OpenLevel(GetWorld(), TEXT("PlayerState"));
 			}), 
 		3.0f, false);
+}
+
+void AEncPlayerController::OnStageCleard()
+{
+	SaveGame();
 }
 
 void AEncPlayerController::BeginPlay()

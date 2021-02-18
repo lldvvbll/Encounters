@@ -28,6 +28,7 @@ public:
 
 	void StartNewGame();
 	void ContinueGame();
+	void GoNextStage();
 
 	FPrimaryAssetId GetCurrentStageDataAssetId() const;
 	int32 GetCurrentStageIndex() const;

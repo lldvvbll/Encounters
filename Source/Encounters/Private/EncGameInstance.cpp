@@ -69,9 +69,21 @@ void UEncGameInstance::StartNewGame()
 
 void UEncGameInstance::ContinueGame()
 {
+	CurrentStageIndex = 0;
+
 	return_if(StageAssetIds.Num() == 0);
 
-	UStageDataAsset* StageDataAsset = UEncAssetManager::Get().GetDataAsset<UStageDataAsset>(StageAssetIds[0]);
+	UStageDataAsset* StageDataAsset = UEncAssetManager::Get().GetDataAsset<UStageDataAsset>(StageAssetIds[CurrentStageIndex]);
+	return_if(StageDataAsset == nullptr);
+
+	UGameplayStatics::OpenLevel(GetWorld(), StageDataAsset->LevelAssetId.PrimaryAssetName);
+}
+
+void UEncGameInstance::GoNextStage()
+{
+	CurrentStageIndex++;
+
+	UStageDataAsset* StageDataAsset = UEncAssetManager::Get().GetDataAsset<UStageDataAsset>(StageAssetIds[CurrentStageIndex]);
 	return_if(StageDataAsset == nullptr);
 
 	UGameplayStatics::OpenLevel(GetWorld(), StageDataAsset->LevelAssetId.PrimaryAssetName);
