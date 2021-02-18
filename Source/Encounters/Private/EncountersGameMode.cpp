@@ -53,7 +53,7 @@ void AEncountersGameMode::PostLogin(APlayerController* NewPlayer)
 	EncPlayerController->LoadOrCreateSaveGame();
 }
 
-void AEncountersGameMode::exec_SpawnEnemy() const
+void AEncountersGameMode::SpawnEnemy() const
 {
 	static FString DataAssetTypeAndName = TEXT("Enemy:KnightDataAsset");
 
@@ -74,11 +74,46 @@ void AEncountersGameMode::exec_SpawnEnemy() const
 	World->SpawnActor<ANpcCharacter>(DataAsset->NpcActorClass, Pos, FRotator::ZeroRotator);
 }
 
+void AEncountersGameMode::SetAttr(const FString& Attr, int32 Value) const
+{
+	UWorld* World = GetWorld();
+	return_if(World == nullptr);
+
+	APlayerController* PlayerController = World->GetFirstPlayerController();
+	return_if(PlayerController == nullptr);
+
+	auto EncPlayerState = PlayerController->GetPlayerState<AEncPlayerState>();
+	return_if(EncPlayerState == nullptr);
+
+	if (Attr.Compare(TEXT("l")) == 0)
+	{
+		EncPlayerState->SetLevel(Value);
+	}
+	else if (Attr.Compare(TEXT("p")) == 0)
+	{
+		EncPlayerState->SetPoint(Value);
+	}
+	else if (Attr.Compare(TEXT("s")) == 0)
+	{
+		EncPlayerState->SetStrength(Value);
+	}
+	else if (Attr.Compare(TEXT("a")) == 0)
+	{
+		EncPlayerState->SetAgility(Value);
+	}
+	else if (Attr.Compare(TEXT("v")) == 0)
+	{
+		EncPlayerState->SetVitality(Value);
+	}
+	else if (Attr.Compare(TEXT("e")) == 0)
+	{
+		EncPlayerState->SetEndurance(Value);
+	}
+}
+
 void AEncountersGameMode::StartStage()
 {
 	SpawnEnemies();
-
-
 }
 
 void AEncountersGameMode::SpawnEnemies()

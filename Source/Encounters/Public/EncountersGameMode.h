@@ -23,7 +23,10 @@ public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 	UFUNCTION(Exec, Category = ExecFunctions)
-	void exec_SpawnEnemy() const;
+	void SpawnEnemy() const;
+
+	UFUNCTION(Exec, Category = ExecFunctions)
+	void SetAttr(const FString& Attr, int32 Value) const;
 
 private:
 	void StartStage();
