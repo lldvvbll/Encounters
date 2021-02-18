@@ -1,5 +1,5 @@
 Name, AttackPower, RollingSpeed, RollingVelocityRate, HP, Stamina
-1,100,1.5,1.1,100,30
+1,10,1.5,1.1,100,30
 2,11,1.55,1.1,105,33
 3,12,1.6,1.1,110,36
 4,13,1.65,1.1,115,39
