@@ -5,6 +5,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Character/EncCharacterStateComponent.h"
+#include "EncGameInstance.h"
 
 void UHudWidget::BindCharacterState(UEncCharacterStateComponent* NewCharacterState)
 {
@@ -27,6 +28,7 @@ void UHudWidget::NativeConstruct()
 	MaxStaminaText = Cast<UTextBlock>(GetWidgetFromName(TEXT("txtMaxStamina")));
 	CurrentHpText = Cast<UTextBlock>(GetWidgetFromName(TEXT("txtCurHP")));
 	CurrentStaminaText = Cast<UTextBlock>(GetWidgetFromName(TEXT("txtCurStamina")));
+	StageText = Cast<UTextBlock>(GetWidgetFromName(TEXT("txtStage")));
 
 	return_if(HpBar == nullptr);
 	return_if(StaminaBar == nullptr);
@@ -34,6 +36,12 @@ void UHudWidget::NativeConstruct()
 	return_if(MaxStaminaText == nullptr);
 	return_if(CurrentHpText == nullptr);
 	return_if(CurrentStaminaText == nullptr);
+	return_if(StageText == nullptr);
+
+	auto GameInstance = GetGameInstance<UEncGameInstance>();
+	return_if(GameInstance == nullptr);
+		
+	StageText->SetText(FText::FromString(FString::Printf(TEXT("STAGE %d"), GameInstance->GetCurrentStageIndex() + 1)));
 }
 
 void UHudWidget::UpdateCharacterState()

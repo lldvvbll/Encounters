@@ -42,4 +42,7 @@ private:
 
 	UPROPERTY()
 	UTextBlock* CurrentStaminaText;
+
+	UPROPERTY()
+	UTextBlock* StageText;
 };

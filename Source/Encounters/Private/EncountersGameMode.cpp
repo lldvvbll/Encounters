@@ -135,6 +135,12 @@ void AEncountersGameMode::SpawnEnemies()
 			FRotator Rot(0.0f, FMath::FRandRange(-180.f, 180.f), 0.0f);
 
 			auto Enemy = GetWorld()->SpawnActor<ANpcCharacter>(NpcDataAsset->NpcActorClass, Pos, Rot);
+			if (Enemy == nullptr)
+			{
+				LOG(Warning, TEXT("Spawned Enemy is nullptr"));
+				continue;
+			}
+
 			Enemy->OnNpcDead.AddUObject(this, &AEncountersGameMode::OnEnemyDead);
 
 			Enemies.Emplace(Enemy);
@@ -152,25 +158,44 @@ void AEncountersGameMode::OnEnemyDead(ANpcCharacter* DeadEnemy)
 
 	if (Enemies.Num() <= 0)
 	{
+		auto GameInstance = GetGameInstance<UEncGameInstance>();
+		return_if(GameInstance == nullptr);
+
+		bool bLastStage = GameInstance->IsLastStage();
+
 		for (auto It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 		{
 			auto EncPlayerController = Cast<AEncPlayerController>(It->Get());
-			if (EncPlayerController != nullptr)
+			if (EncPlayerController != nullptr && EncPlayerController->IsPlayerController())
 			{
-				EncPlayerController->OnStageCleard();
+				EncPlayerController->OnStageCleard(bLastStage);
 			}
 		}
 
-		FTimerHandle TimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle,
-			FTimerDelegate::CreateLambda(
-				[this]()
-				{
-					auto GameInstance = GetGameInstance<UEncGameInstance>();
-					return_if(GameInstance == nullptr);
+		if (bLastStage)
+		{
+			FTimerHandle TimerHandle;
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle,
+				FTimerDelegate::CreateLambda(
+					[this]()
+					{
+						UGameplayStatics::OpenLevel(GetWorld(), TEXT("Title"));
+					}),
+				5.0f, false);
+		}
+		else
+		{
+			FTimerHandle TimerHandle;
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle,
+				FTimerDelegate::CreateLambda(
+					[this]()
+					{
+						auto GameInstance = GetGameInstance<UEncGameInstance>();
+						return_if(GameInstance == nullptr);
 
-					GameInstance->GoNextStage();
-				}),
-			3.0f, false);
+						GameInstance->GoToNextStage();
+					}),
+				3.0f, false);
+		}
 	}
 }

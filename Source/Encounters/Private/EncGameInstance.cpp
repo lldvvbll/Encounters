@@ -58,35 +58,22 @@ const TArray<FPrimaryAssetId>& UEncGameInstance::GetStageAssetIds() const
 
 void UEncGameInstance::StartNewGame()
 {
-	return_if(StageAssetIds.Num() == 0);
-
-	UStageDataAsset* StageDataAsset = UEncAssetManager::Get().GetDataAsset<UStageDataAsset>(StageAssetIds[0]);
-	return_if(StageDataAsset == nullptr);
+	CurrentStageIndex = 0;
 
 	UGameplayStatics::DeleteGameInSlot(UEncGameInstance::SaveGameSlotName, UEncGameInstance::SaveGameUserIndex);
-	UGameplayStatics::OpenLevel(GetWorld(), StageDataAsset->LevelAssetId.PrimaryAssetName);
+	GoToStage(CurrentStageIndex);
 }
 
 void UEncGameInstance::ContinueGame()
 {
 	CurrentStageIndex = 0;
-
-	return_if(StageAssetIds.Num() == 0);
-
-	UStageDataAsset* StageDataAsset = UEncAssetManager::Get().GetDataAsset<UStageDataAsset>(StageAssetIds[CurrentStageIndex]);
-	return_if(StageDataAsset == nullptr);
-
-	UGameplayStatics::OpenLevel(GetWorld(), StageDataAsset->LevelAssetId.PrimaryAssetName);
+	GoToStage(CurrentStageIndex);
 }
 
-void UEncGameInstance::GoNextStage()
+void UEncGameInstance::GoToNextStage()
 {
 	CurrentStageIndex++;
-
-	UStageDataAsset* StageDataAsset = UEncAssetManager::Get().GetDataAsset<UStageDataAsset>(StageAssetIds[CurrentStageIndex]);
-	return_if(StageDataAsset == nullptr);
-
-	UGameplayStatics::OpenLevel(GetWorld(), StageDataAsset->LevelAssetId.PrimaryAssetName);
+	GoToStage(CurrentStageIndex);
 }
 
 FPrimaryAssetId UEncGameInstance::GetCurrentStageDataAssetId() const
@@ -99,4 +86,21 @@ FPrimaryAssetId UEncGameInstance::GetCurrentStageDataAssetId() const
 int32 UEncGameInstance::GetCurrentStageIndex() const
 {
 	return CurrentStageIndex;
+}
+
+bool UEncGameInstance::IsLastStage() const
+{
+	return CurrentStageIndex == StageAssetIds.Num();
+}
+
+void UEncGameInstance::GoToStage(int32 Index)
+{
+	return_if(StageAssetIds.Num() == 0);
+	return_if(Index < 0);
+	return_if(StageAssetIds.Num() <= Index);
+
+	UStageDataAsset* StageDataAsset = UEncAssetManager::Get().GetDataAsset<UStageDataAsset>(StageAssetIds[Index]);
+	return_if(StageDataAsset == nullptr);
+
+	UGameplayStatics::OpenLevel(GetWorld(), StageDataAsset->LevelAssetId.PrimaryAssetName);
 }

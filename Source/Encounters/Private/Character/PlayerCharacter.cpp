@@ -261,6 +261,11 @@ void APlayerCharacter::GivePoint(int32 Point)
 	return_if(EncPlayerState == nullptr);
 
 	EncPlayerState->ModifyPoint(Point);
+
+	if (auto EncPlayerController = GetController<AEncPlayerController>())
+	{
+		EncPlayerController->SaveGame();
+	}
 }
 
 void APlayerCharacter::MoveForward(float NewAxisValue)

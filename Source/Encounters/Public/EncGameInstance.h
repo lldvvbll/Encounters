@@ -28,10 +28,14 @@ public:
 
 	void StartNewGame();
 	void ContinueGame();
-	void GoNextStage();
+	void GoToNextStage();
 
 	FPrimaryAssetId GetCurrentStageDataAssetId() const;
 	int32 GetCurrentStageIndex() const;
+	bool IsLastStage() const;
+
+private:
+	void GoToStage(int32 Index);
 
 public:
 	static const FString SaveGameSlotName;

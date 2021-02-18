@@ -32,7 +32,7 @@ public:
 	APlayerCharacter* GetPlayerCharacter() const;
 
 	void OnPlayerDead();
-	void OnStageCleard();
+	void OnStageCleard(bool bAllClear);
 
 protected:
 	virtual void BeginPlay() override;
@@ -59,6 +59,15 @@ private:
 
 	UPROPERTY()
 	UPlayerStateWidget* PlayerStateWidget;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI, Meta = (AllowPrivateAccess = true))
+	TSubclassOf<UUserWidget> StageClearWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI, Meta = (AllowPrivateAccess = true))
+	TSubclassOf<UUserWidget> AllStageClearWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI, Meta = (AllowPrivateAccess = true))
+	TSubclassOf<UUserWidget> YouDiedWidgetClass;
 
 	FDelegateHandle OnAddItemDelegateHandle;
 	FDelegateHandle OnRemoveItemDelegateHandle;

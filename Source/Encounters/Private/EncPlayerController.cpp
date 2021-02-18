@@ -26,6 +26,27 @@ AEncPlayerController::AEncPlayerController()
 	{
 		PlayerStateWidgetClass = UI_PLAYERSTATE.Class;
 	}
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> UI_STAGECLEAR(
+		TEXT("/Game/Encounters/UI/UI_StageClear.UI_StageClear_C"));
+	if (UI_STAGECLEAR.Succeeded())
+	{
+		StageClearWidgetClass = UI_STAGECLEAR.Class;
+	}
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> UI_ALLSTAGECLEAR(
+		TEXT("/Game/Encounters/UI/UI_AllStageClear.UI_AllStageClear_C"));
+	if (UI_ALLSTAGECLEAR.Succeeded())
+	{
+		AllStageClearWidgetClass = UI_ALLSTAGECLEAR.Class;
+	}
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> UI_YOUDIED(
+		TEXT("/Game/Encounters/UI/UI_YouDied.UI_YouDied_C"));
+	if (UI_YOUDIED.Succeeded())
+	{
+		YouDiedWidgetClass = UI_YOUDIED.Class;
+	}
 }
 
 void AEncPlayerController::SetPawn(APawn* InPawn)
@@ -89,7 +110,10 @@ void AEncPlayerController::SaveGame()
 
 	PlayerCharacter->SaveCharacter(NewSaveGame);
 
-	UGameplayStatics::AsyncSaveGameToSlot(NewSaveGame, SlotName, UserIndex);
+	if (!UGameplayStatics::SaveGameToSlot(NewSaveGame, SlotName, UserIndex))
+	{
+		LOG(Error, TEXT("SaveGame Error"));
+	}
 }
 
 void AEncPlayerController::ChangeInputMode(bool bGameMode)
@@ -115,6 +139,11 @@ void AEncPlayerController::OnPlayerDead()
 {
 	SaveGame();
 
+	if (auto YouDiedWidget = CreateWidget<UUserWidget>(this, YouDiedWidgetClass))
+	{
+		YouDiedWidget->AddToViewport(1);
+	}
+
 	FTimerHandle TimerHandle;
 	GetWorldTimerManager().SetTimer(TimerHandle, 
 		FTimerDelegate::CreateLambda(
@@ -125,9 +154,13 @@ void AEncPlayerController::OnPlayerDead()
 		3.0f, false);
 }
 
-void AEncPlayerController::OnStageCleard()
+void AEncPlayerController::OnStageCleard(bool bAllClear)
 {
-	SaveGame();
+	TSubclassOf<UUserWidget>& ClearWidgetClass = bAllClear ? AllStageClearWidgetClass : StageClearWidgetClass;
+	if (auto ClearWidget = CreateWidget<UUserWidget>(this, ClearWidgetClass))
+	{
+		ClearWidget->AddToViewport(1);
+	}
 }
 
 void AEncPlayerController::BeginPlay()
