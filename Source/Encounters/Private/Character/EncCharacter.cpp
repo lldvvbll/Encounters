@@ -373,6 +373,20 @@ float AEncCharacter::GiveAttackDamage(TWeakObjectPtr<AActor>& TargetPtr)
 	return TargetPtr->TakeDamage(GetAttackDamage(), DamageEvent, GetController(), this);
 }
 
+void AEncCharacter::SetSavedInput(const FVector& Input)
+{
+	SavedInput = Input;
+}
+
+void AEncCharacter::RotateBySavedInput()
+{
+	if (SavedInput.IsNearlyZero())
+		return;
+
+	FVector DirVec = FRotator(0.0f, GetControlRotation().Yaw, 0.0f).RotateVector(SavedInput);
+	SetActorRotation(DirVec.Rotation(), ETeleportType::TeleportPhysics);
+}
+
 void AEncCharacter::Guard()
 {
 	if (bRagdoll)
@@ -630,11 +644,7 @@ void AEncCharacter::OnComboCheck()
 		EncAnim->JumpToAttackMontageSection(CurrentCombo);
 	}
 
-	if (!SavedInput.IsNearlyZero())
-	{
-		FVector DirVec = FRotator(0.0f, GetControlRotation().Yaw, 0.0f).RotateVector(SavedInput);
-		SetActorRotation(DirVec.Rotation(), ETeleportType::TeleportPhysics);
-	}
+	RotateBySavedInput();
 }
 
 void AEncCharacter::OnBeginAvoidance()

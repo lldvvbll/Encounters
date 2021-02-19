@@ -20,6 +20,8 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	if (NpcChar == nullptr)
 		return EBTNodeResult::Failed;
 
+	NpcChar->SetSavedInput(FVector::ZeroVector);
+
 	if (!NpcChar->Attack())
 		return EBTNodeResult::Failed;
 	
@@ -32,15 +34,29 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 
 	auto NpcChar = Cast<ANpcCharacter>(OwnerComp.GetAIOwner()->GetPawn());
 	auto Target = Cast<APlayerCharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(AEncAIController::TargetKey));
+
 	if (NpcChar == nullptr || Target == nullptr)
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		return;
 	}
 	else if (Target->IsDead())
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		return;
 	}
-	else if (!NpcChar->IsAttacking())
+
+	if (NpcChar->CanSaveAttack() &&
+		Target->GetDistanceTo(NpcChar) <= NpcChar->GetAttackRange())
+	{
+		FVector Dir = Target->GetActorLocation() - NpcChar->GetActorLocation();
+		Dir.Normalize();
+
+		NpcChar->SetSavedInput(Dir);
+		NpcChar->Attack();
+	}
+
+	if (!NpcChar->IsAttacking())
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}

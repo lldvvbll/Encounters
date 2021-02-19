@@ -59,6 +59,8 @@ public:
 	bool CanSaveAttack() const;
 	float GetAttackDamage() const;
 	virtual float GiveAttackDamage(TWeakObjectPtr<AActor>& Target);
+	void SetSavedInput(const FVector& Input);
+	virtual void RotateBySavedInput();
 
 	void Guard();
 	void GuardDown();

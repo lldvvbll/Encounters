@@ -86,6 +86,15 @@ float ANpcCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 	return FinalDamage;
 }
 
+void ANpcCharacter::RotateBySavedInput()
+{
+	if (SavedInput.IsNearlyZero())
+		return;
+
+	SetActorRotation(SavedInput.Rotation(), ETeleportType::TeleportPhysics);
+	SavedInput = FVector::ZeroVector;
+}
+
 void ANpcCharacter::Dead()
 {
 	Super::Dead();
