@@ -392,6 +392,18 @@ void AEncCharacter::RotateBySavedInput()
 	SetActorRotation(DirVec.Rotation(), ETeleportType::TeleportPhysics);
 }
 
+float AEncCharacter::GetStaminaForAttack() const
+{
+	if (CurWeapon == nullptr)
+		return 0.0f;
+
+	float AttackStamina = CurWeapon->GetUseStaminaOnAttack();
+	if (AttackStamina < 0.0f)
+		return 0.0f;
+
+	return AttackStamina;
+}
+
 void AEncCharacter::Guard()
 {
 	if (bRagdoll)
@@ -508,6 +520,16 @@ void AEncCharacter::StartRagdoll()
 	{
 		EncAnim->StopAllMontages(0.2f);
 	}
+}
+
+float AEncCharacter::GetCurrentStamina() const
+{
+	return CharacterState->GetStamina();
+}
+
+float AEncCharacter::GetCurrentStaminaRatio() const
+{
+	return CharacterState->GetStaminaRatio();
 }
 
 float AEncCharacter::GetCurrentRootMotionVelocityRate() const

@@ -30,7 +30,7 @@ void UBTService_CheckGuard::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
 		{
 			NpcChar->GuardDown();
 		}
-		else if (Target->GetDistanceTo(NpcChar) > 200.0f)
+		else if (Target->GetDistanceTo(NpcChar) > 210.0f)
 		{
 			NpcChar->GuardDown();
 		}
@@ -38,7 +38,7 @@ void UBTService_CheckGuard::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
 	else
 	{
 		APlayerCharacter* Target = Cast<APlayerCharacter>(BlackboardComp->GetValueAsObject(AEncAIController::TargetKey));
-		if (Target != nullptr && Target->GetDistanceTo(NpcChar) <= 200.0f)
+		if (Target != nullptr && Target->GetDistanceTo(NpcChar) <= 210.0f)
 		{
 			NpcChar->Guard();
 		}

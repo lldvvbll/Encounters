@@ -4,15 +4,15 @@
 
 #include "Encounters.h"
 #include "BehaviorTree/BTDecorator.h"
-#include "BTDecorator_CanSaveAttack.generated.h"
+#include "BTDecorator_IsEnoughStamina.generated.h"
 
 UCLASS()
-class ENCOUNTERS_API UBTDecorator_CanSaveAttack : public UBTDecorator
+class ENCOUNTERS_API UBTDecorator_IsEnoughStamina : public UBTDecorator
 {
 	GENERATED_BODY()
-	
+
 public:
-	UBTDecorator_CanSaveAttack();
+	UBTDecorator_IsEnoughStamina();
 
 protected:
 	virtual bool CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const override;

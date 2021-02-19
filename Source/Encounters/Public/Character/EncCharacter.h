@@ -61,6 +61,7 @@ public:
 	virtual float GiveAttackDamage(TWeakObjectPtr<AActor>& Target);
 	void SetSavedInput(const FVector& Input);
 	virtual void RotateBySavedInput();
+	float GetStaminaForAttack() const;
 
 	void Guard();
 	void GuardDown();
@@ -79,6 +80,8 @@ public:
 	virtual bool IsLockOnTarget() const { return false; }
 	virtual TWeakObjectPtr<AEncCharacter> FindLockOnTarget() const { return TWeakObjectPtr<AEncCharacter>(); }
 
+	float GetCurrentStamina() const;
+	float GetCurrentStaminaRatio() const;
 	float GetCurrentRootMotionVelocityRate() const;
 
 	UEncCharacterStateComponent* GetCharacterStateComponent() const;
