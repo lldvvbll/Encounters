@@ -21,7 +21,7 @@ public:
 	FPrimaryAssetType StageType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Level)
-	FPrimaryAssetId LevelAssetId;
+	TArray<FPrimaryAssetId> LevelAssetIds;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Enemy)
 	TMap<FPrimaryAssetId, int32> EnemyMap;

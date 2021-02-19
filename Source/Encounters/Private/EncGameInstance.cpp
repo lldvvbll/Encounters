@@ -101,6 +101,8 @@ void UEncGameInstance::GoToStage(int32 Index)
 
 	UStageDataAsset* StageDataAsset = UEncAssetManager::Get().GetDataAsset<UStageDataAsset>(StageAssetIds[Index]);
 	return_if(StageDataAsset == nullptr);
+	return_if(StageDataAsset->LevelAssetIds.Num() <= 0);
 
-	UGameplayStatics::OpenLevel(GetWorld(), StageDataAsset->LevelAssetId.PrimaryAssetName);
+	int32 LvIdx = FMath::RandRange(0, StageDataAsset->LevelAssetIds.Num() - 1);
+	UGameplayStatics::OpenLevel(GetWorld(), StageDataAsset->LevelAssetIds[LvIdx].PrimaryAssetName);
 }
