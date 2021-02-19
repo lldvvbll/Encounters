@@ -20,6 +20,13 @@ void UTitleWidget::NativeConstruct()
 	NewGameButton->OnClicked.AddDynamic(this, &UTitleWidget::OnNewGameButtonClicked);
 	ContinueButton->OnClicked.AddDynamic(this, &UTitleWidget::OnContinueButtonClicked);
 	ExitButton->OnClicked.AddDynamic(this, &UTitleWidget::OnExitButtonClicked);
+
+	const FString& SlotName = UEncGameInstance::SaveGameSlotName;
+	const int32& UserIndex = UEncGameInstance::SaveGameUserIndex;
+	if (!UGameplayStatics::DoesSaveGameExist(SlotName, UserIndex))
+	{
+		ContinueButton->SetIsEnabled(false);
+	}
 }
 
 void UTitleWidget::OnNewGameButtonClicked()

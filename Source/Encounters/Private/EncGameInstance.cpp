@@ -90,7 +90,7 @@ int32 UEncGameInstance::GetCurrentStageIndex() const
 
 bool UEncGameInstance::IsLastStage() const
 {
-	return CurrentStageIndex == StageAssetIds.Num();
+	return CurrentStageIndex == (StageAssetIds.Num() - 1);
 }
 
 void UEncGameInstance::GoToStage(int32 Index)

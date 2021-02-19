@@ -161,6 +161,16 @@ void AEncPlayerController::OnStageCleard(bool bAllClear)
 	{
 		ClearWidget->AddToViewport(1);
 	}
+
+	if (bAllClear)
+	{
+		const FString& SlotName = UEncGameInstance::SaveGameSlotName;
+		const int32& UserIndex = UEncGameInstance::SaveGameUserIndex;
+		if (UGameplayStatics::DoesSaveGameExist(SlotName, UserIndex))
+		{
+			UGameplayStatics::DeleteGameInSlot(SlotName, UserIndex);
+		}
+	}	
 }
 
 void AEncPlayerController::BeginPlay()
