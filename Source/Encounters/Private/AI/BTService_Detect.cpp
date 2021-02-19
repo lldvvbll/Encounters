@@ -60,10 +60,10 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 		BlackboardComp->SetValueAsObject(AEncAIController::TargetKey, PlayerChar);
 
 #if ENABLE_DRAW_DEBUG
-		DrawDebugSphere(World, Center, DetectionRange, 16, FColor::Green, false, 0.2f);
-		DrawDebugPoint(World, PlayerChar->GetActorLocation(), 10.0f, FColor::Blue, false, 0.2f);
-		DrawDebugLine(World, NpcChar->GetActorLocation(), PlayerChar->GetActorLocation(),
-			FColor::Blue, false, 0.2f);
+		//DrawDebugSphere(World, Center, DetectionRange, 16, FColor::Green, false, 0.2f);
+		//DrawDebugPoint(World, PlayerChar->GetActorLocation(), 10.0f, FColor::Blue, false, 0.2f);
+		//DrawDebugLine(World, NpcChar->GetActorLocation(), PlayerChar->GetActorLocation(),
+		//	FColor::Blue, false, 0.2f);
 #endif // ENABLE_DRAW_DEBUG
 
 		break;

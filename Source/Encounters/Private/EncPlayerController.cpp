@@ -94,7 +94,7 @@ bool AEncPlayerController::LoadOrCreateSaveGame()
 	return false;
 }
 
-void AEncPlayerController::SaveGame()
+void AEncPlayerController::SaveGame(bool bImmediate/* = false*/)
 {
 	const FString& SlotName = UEncGameInstance::SaveGameSlotName;
 	const int32& UserIndex = UEncGameInstance::SaveGameUserIndex;
@@ -110,9 +110,16 @@ void AEncPlayerController::SaveGame()
 
 	PlayerCharacter->SaveCharacter(NewSaveGame);
 
-	if (!UGameplayStatics::SaveGameToSlot(NewSaveGame, SlotName, UserIndex))
+	if (bImmediate)
 	{
-		LOG(Error, TEXT("SaveGame Error"));
+		if (!UGameplayStatics::SaveGameToSlot(NewSaveGame, SlotName, UserIndex))
+		{
+			LOG(Error, TEXT("SaveGame Error"));
+		}
+	}
+	else
+	{
+		UGameplayStatics::AsyncSaveGameToSlot(NewSaveGame, SlotName, UserIndex);
 	}
 }
 

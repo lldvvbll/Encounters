@@ -32,7 +32,7 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 	bShowAttackBox = false;
 	bShowAttackBoxInAttack = false;
 	bShowGuardAngle = false;
-	bShowGuardSituation = true;
+	bShowGuardSituation = false;
 
 	UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
 	CapsuleComp->SetCollisionProfileName(TEXT("EncCharacter"));
@@ -100,16 +100,16 @@ float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 {
 	if (CanGuardByShield(DamageCauser))
 	{
-		if (bShowGuardSituation)
-		{
-			DrawDebugGuardSituation(DamageCauser);
-		}
-		
 		if (CurShield != nullptr)
 		{
 			float UseStamina = CurShield->GetUseStaminaOnGuard();
 			if (UseStamina >= 0.0f && CharacterState->GetStamina() >= UseStamina)
 			{
+				if (bShowGuardSituation)
+				{
+					DrawDebugGuardSituation(DamageCauser);
+				}
+
 				CharacterState->ModifyStamina(-UseStamina);
 				CharacterState->SetStaminaRecovery(false);
 				bShovedOnBlocking = true;
@@ -155,9 +155,9 @@ float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 	{
 		if (!CanBeDamaged())
 		{
-			auto Capsule = GetCapsuleComponent();
-			DrawDebugCapsule(GetWorld(), Capsule->GetComponentLocation(), Capsule->GetScaledCapsuleHalfHeight(), Capsule->GetScaledCapsuleRadius(),
-				Capsule->GetComponentQuat(), FColor::Red, false, 1.0f);
+			//auto Capsule = GetCapsuleComponent();
+			//DrawDebugCapsule(GetWorld(), Capsule->GetComponentLocation(), Capsule->GetScaledCapsuleHalfHeight(), Capsule->GetScaledCapsuleRadius(),
+			//	Capsule->GetComponentQuat(), FColor::Red, false, 1.0f);
 		}
 	}
 

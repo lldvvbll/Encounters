@@ -25,7 +25,7 @@ public:
 	virtual void SetPawn(APawn* InPawn) override;
 
 	bool LoadOrCreateSaveGame();
-	void SaveGame();
+	void SaveGame(bool bImmediate = false);
 
 	void ChangeInputMode(bool bGameMode);
 

@@ -137,7 +137,7 @@ void AEncountersGameMode::SpawnEnemies()
 			auto Enemy = GetWorld()->SpawnActor<ANpcCharacter>(NpcDataAsset->NpcActorClass, Pos, Rot);
 			if (Enemy == nullptr)
 			{
-				LOG(Warning, TEXT("Spawned Enemy is nullptr"));
+				LOG(Warning, TEXT("Spawned Enemy is nullptr. SpawnBox Pos: %f, %f"), Pos.X, Pos.Y);
 				continue;
 			}
 
