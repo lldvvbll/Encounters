@@ -20,6 +20,7 @@ public:
 	virtual void SetItemDataAsset(UItemDataAsset* DataAsset) override;
 	const UArmorDataAsset* GetArmorDataAsset() const;
 
+	float GetDefense() const;
 	float GetUseStaminaOnRolling() const;
 
 protected:

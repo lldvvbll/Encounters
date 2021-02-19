@@ -61,8 +61,6 @@ void ANpcCharacter::BeginPlay()
 
 	if (auto EncGameInstance = GetGameInstance<UEncGameInstance>())
 	{
-		Inventory->AddItemFromSaveItemDatas(EncGameInstance->GetDefaultItems());
-
 		SetNpcDataAsset(UEncAssetManager::Get().GetDataAsset<UNpcDataAsset>(FPrimaryAssetId(TEXT("Enemy:KnightDataAsset"))));
 	}
 }
@@ -128,6 +126,8 @@ void ANpcCharacter::SetNpcDataAsset(UNpcDataAsset* DataAsset)
 	CharacterState->SetStamina(DataAsset->Stamina);
 	CharacterState->SetRollingSpeed(DataAsset->RollingSpeed);
 	CharacterState->SetRollingVelocityRate(DataAsset->RollingVelocityRate);
+
+	Inventory->AddItemFromSaveItemDatas(DataAsset->Items);
 }
 
 float ANpcCharacter::GetDetectionRange() const

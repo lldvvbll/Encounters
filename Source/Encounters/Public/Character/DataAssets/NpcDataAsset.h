@@ -4,6 +4,7 @@
 
 #include "Encounters.h"
 #include "Engine/DataAsset.h"
+#include "EncStructures.h"
 #include "NpcDataAsset.generated.h"
 
 UCLASS()
@@ -46,4 +47,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = ActorClass)
 	TSubclassOf<AActor> NpcActorClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Items)
+	TArray<FSaveItemData> Items;
 };

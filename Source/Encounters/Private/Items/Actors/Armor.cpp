@@ -24,6 +24,13 @@ const UArmorDataAsset* AArmor::GetArmorDataAsset() const
 	return ArmorDataAsset;
 }
 
+float AArmor::GetDefense() const
+{
+	return_if(ArmorDataAsset == nullptr, 0.0f);
+
+	return ArmorDataAsset->Defense;
+}
+
 float AArmor::GetUseStaminaOnRolling() const
 {
 	return_if(ArmorDataAsset == nullptr, -1.0f);

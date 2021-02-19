@@ -129,8 +129,13 @@ float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 
 				DamageAmount = FMath::Max(0.0f, DamageAmount * (1.0f - CurShield->GetDamageReduction()));
 			}
-		}				
-	}		
+		}
+	}
+
+	if (CurArmor != nullptr)
+	{
+		DamageAmount -= CurArmor->GetDefense();
+	}	
 
 	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	if (FinalDamage > KINDA_SMALL_NUMBER)
