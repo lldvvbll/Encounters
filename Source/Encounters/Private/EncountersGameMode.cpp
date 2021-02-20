@@ -55,7 +55,7 @@ void AEncountersGameMode::PostLogin(APlayerController* NewPlayer)
 
 void AEncountersGameMode::SpawnEnemy() const
 {
-	static FString DataAssetTypeAndName = TEXT("Enemy:KnightDataAsset");
+	static FString DataAssetTypeAndName = TEXT("Enemy:DA_NPC_AxeBandit");
 
 	UWorld* World = GetWorld();
 	return_if(World == nullptr);
@@ -141,6 +141,7 @@ void AEncountersGameMode::SpawnEnemies()
 				continue;
 			}
 
+			Enemy->SetNpcDataAsset(NpcDataAsset);
 			Enemy->OnNpcDead.AddUObject(this, &AEncountersGameMode::OnEnemyDead);
 
 			Enemies.Emplace(Enemy);

@@ -58,11 +58,6 @@ void ANpcCharacter::BeginPlay()
 	{
 		CharWidget->BindCharacterState(CharacterState);
 	}
-
-	if (auto EncGameInstance = GetGameInstance<UEncGameInstance>())
-	{
-		SetNpcDataAsset(UEncAssetManager::Get().GetDataAsset<UNpcDataAsset>(FPrimaryAssetId(TEXT("Enemy:KnightDataAsset"))));
-	}
 }
 
 float ANpcCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
