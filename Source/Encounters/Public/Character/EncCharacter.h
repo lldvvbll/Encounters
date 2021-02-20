@@ -86,6 +86,7 @@ public:
 	UEncCharacterStateComponent* GetCharacterStateComponent() const;
 
 	void DrawDebugGuardSituation(AActor* DamageCauser);
+	void DrawDebugAvoidSituation(AActor* DamageCauser);
 
 protected:
 	void SetEquipment(AEquipment* Equipment, const FName& SocketName);
@@ -156,6 +157,9 @@ protected:
 
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Rolling)
 	bool bRolling;
+
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Rolling)
+	bool bAvoid;
 
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Ragdoll)
 	bool bDead;

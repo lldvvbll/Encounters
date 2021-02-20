@@ -82,50 +82,68 @@ void AEncCharacter::PostInitializeComponents()
 
 float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if (CanGuardByShield(DamageCauser))
+	if (bAvoid)
 	{
-		if (CurShield != nullptr)
-		{
-			float UseStamina = CurShield->GetUseStaminaOnGuard();
-			if (UseStamina >= 0.0f && CharacterState->GetStamina() >= UseStamina)
-			{
-				CharacterState->ModifyStamina(-UseStamina);
-				CharacterState->SetStaminaRecovery(false);
-				bShovedOnBlocking = true;
-
-				if (EncAnim != nullptr)
-				{
-					EncAnim->PlayShovedOnBlockingMontage(1.0f);
-				}
-
-				if (DamageCauser != nullptr)
-				{
-					FVector Dir = GetActorLocation() - DamageCauser->GetActorLocation();
-					Dir.Normalize();
-
-					LaunchCharacter(Dir * 500.0f, false, false);
-				}
-
-				DamageAmount = FMath::Max(0.0f, DamageAmount * (1.0f - CurShield->GetDamageReduction()));
+		DamageAmount = 0.0f;
 
 #if ENABLE_DRAW_DEBUG
-				if (auto GameState = GetWorld()->GetGameState<AEncGameState>())
+		if (auto GameState = GetWorld()->GetGameState<AEncGameState>())
+		{
+			if (GameState->IsDrawDebugAvoid())
+			{
+				DrawDebugAvoidSituation(DamageCauser);
+			}
+
+		}
+#endif // ENABLE_DRAW_DEBUG
+	}
+	else
+	{
+		if (CanGuardByShield(DamageCauser))
+		{
+			if (CurShield != nullptr)
+			{
+				float UseStamina = CurShield->GetUseStaminaOnGuard();
+				if (UseStamina >= 0.0f && CharacterState->GetStamina() >= UseStamina)
 				{
-					if (GameState->IsDrawDebugGuard())
+					CharacterState->ModifyStamina(-UseStamina);
+					CharacterState->SetStaminaRecovery(false);
+					bShovedOnBlocking = true;
+
+					if (EncAnim != nullptr)
 					{
-						DrawDebugGuardSituation(DamageCauser);
+						EncAnim->PlayShovedOnBlockingMontage(1.0f);
 					}
 
-				}
+					if (DamageCauser != nullptr)
+					{
+						FVector Dir = GetActorLocation() - DamageCauser->GetActorLocation();
+						Dir.Normalize();
+
+						LaunchCharacter(Dir * 500.0f, false, false);
+					}
+
+					DamageAmount = FMath::Max(0.0f, DamageAmount * (1.0f - CurShield->GetDamageReduction()));
+
+#if ENABLE_DRAW_DEBUG
+					if (auto GameState = GetWorld()->GetGameState<AEncGameState>())
+					{
+						if (GameState->IsDrawDebugGuard())
+						{
+							DrawDebugGuardSituation(DamageCauser);
+						}
+
+					}
 #endif // ENABLE_DRAW_DEBUG
+				}
 			}
 		}
-	}
 
-	if (CurArmor != nullptr)
-	{
-		DamageAmount -= CurArmor->GetDefense();
-	}	
+		if (CurArmor != nullptr)
+		{
+			DamageAmount -= CurArmor->GetDefense();
+		}
+	}
 
 	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	if (FinalDamage > KINDA_SMALL_NUMBER)
@@ -144,24 +162,6 @@ float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 			Dir.Normalize();
 
 			LaunchCharacter(Dir * 500.0f, false, false);
-		}
-	}
-	else
-	{
-		if (!CanBeDamaged())
-		{
-#if ENABLE_DRAW_DEBUG
-			if (auto GameState = GetWorld()->GetGameState<AEncGameState>())
-			{
-				if (GameState->IsDrawDebugAvoid())
-				{
-					auto Capsule = GetCapsuleComponent();
-					DrawDebugCapsule(GetWorld(), Capsule->GetComponentLocation(), Capsule->GetScaledCapsuleHalfHeight(), Capsule->GetScaledCapsuleRadius(),
-						Capsule->GetComponentQuat(), FColor::Red, false, 1.0f);
-				}
-
-			}
-#endif // ENABLE_DRAW_DEBUG
 		}
 	}
 
@@ -571,6 +571,23 @@ void AEncCharacter::DrawDebugGuardSituation(AActor* DamageCauser)
 #endif // ENABLE_DRAW_DEBUG
 }
 
+void AEncCharacter::DrawDebugAvoidSituation(AActor* DamageCauser)
+{
+#if ENABLE_DRAW_DEBUG
+	auto Capsule = GetCapsuleComponent();
+	DrawDebugCapsule(GetWorld(), Capsule->GetComponentLocation(), Capsule->GetScaledCapsuleHalfHeight(), Capsule->GetScaledCapsuleRadius(),
+		Capsule->GetComponentQuat(), FColor::Blue, false, 5.0f);
+
+	if (auto Attacker = Cast<AEncCharacter>(DamageCauser))
+	{
+		if (auto AttackerWeapon = Attacker->GetCurrentWeapon())
+		{
+			AttackerWeapon->DrawDebugCollisionBox();
+		}
+	}
+#endif // ENABLE_DRAW_DEBUG
+}
+
 void AEncCharacter::SetEquipment(AEquipment* Equipment, const FName& SocketName)
 {
 	return_if(Equipment == nullptr);
@@ -608,7 +625,7 @@ void AEncCharacter::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 		{
 			CurrentRootMotionVelocityRate = 1.0f;
 			bRolling = false;
-			SetCanBeDamaged(true);
+			bAvoid = false;
 		}
 		else if (EncAnim->IsShovedOnBlockingMontage(Montage))
 		{
@@ -666,12 +683,12 @@ void AEncCharacter::OnComboCheck()
 
 void AEncCharacter::OnBeginAvoidance()
 {
-	SetCanBeDamaged(false);
+	bAvoid = true;
 }
 
 void AEncCharacter::OnEndAvoidance()
 {
-	SetCanBeDamaged(true);
+	bAvoid = false;
 }
 
 void AEncCharacter::OnGuardUp()
