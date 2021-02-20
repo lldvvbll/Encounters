@@ -31,4 +31,4 @@ UE4 C++개발 실습 - ENCOUNTERS
 * 장비 착용 시 장비 액터 스폰
   * 캐릭터 인벤토리 컴포넌트에 아이템이 추가될 때 브로드캐스팅하는 Delegate를 설치하여 이벤트가 발생했을 때 장비 액터를 스폰하도록 구현
 * AI
-  * 타겟 감지, 공격, 공격 거리 체크 등을 Service, Task, Decorator로 만들고 Blockboard 를 추가하여 BehaviorTree를 구성
+  * 타겟 감지, 공격, 공격 거리 체크 등을 Service, Task, Decorator로 만들고 Blockboard를 추가하여 BehaviorTree 구성
