@@ -12,7 +12,6 @@
 #include "Character/DataAssets/NpcDataAsset.h"
 #include "Stage/DataAssets/StageDataAsset.h"
 #include "Stage/SpawnBox.h"
-#include "Stage/EncStage.h"
 #include "EngineUtils.h"
 #include "EncGameInstance.h"
 #include "EncGameState.h"
