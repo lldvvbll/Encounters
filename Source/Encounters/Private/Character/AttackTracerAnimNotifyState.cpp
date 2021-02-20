@@ -4,6 +4,7 @@
 #include "Character/AttackTracerAnimNotifyState.h"
 #include "Character/EncCharacter.h"
 #include "Items/Actors/Weapon.h"
+#include "EncGameState.h"
 #include "DrawDebugHelpers.h"
 
 void UAttackTracerAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
@@ -53,10 +54,15 @@ void UAttackTracerAnimNotifyState::NotifyTick(USkeletalMeshComponent* MeshComp, 
 		EncChar->GiveAttackDamage(Result.Actor);
 	}
 
-	if (EncChar->IsShowAttackBoxInAttack())
+#if ENABLE_DRAW_DEBUG
+	if (auto GameState = EncChar->GetWorld()->GetGameState<AEncGameState>())
 	{
-		Weapon->DrawAttackBox();
+		if (GameState->IsDrawDebugWeaponCollisionBox())
+		{
+			Weapon->DrawDebugCollisionBox();
+		}		
 	}
+#endif
 
 	LastAttackBoxPos = CurPos;
 

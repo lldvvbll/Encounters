@@ -28,7 +28,6 @@ class ENCOUNTERS_API AEncCharacter : public ACharacter
 public:
 	AEncCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	virtual void Tick(float DeltaTime) override;
 	virtual void PostInitializeComponents() override;
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
@@ -86,7 +85,6 @@ public:
 
 	UEncCharacterStateComponent* GetCharacterStateComponent() const;
 
-	bool IsShowAttackBoxInAttack() const;
 	void DrawDebugGuardSituation(AActor* DamageCauser);
 
 protected:
@@ -192,15 +190,6 @@ protected:
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = RootMotion)
 	float CurrentRootMotionVelocityRate;
 
-	UPROPERTY(Transient, EditAnywhere, Category = Debug)
-	bool bShowAttackBox;
-
-	UPROPERTY(Transient, EditAnywhere, Category = Debug)
-	bool bShowAttackBoxInAttack;
-
-	UPROPERTY(Transient, EditAnywhere, Category = Debug)
-	bool bShowGuardAngle;
-	
 	UPROPERTY(Transient, EditAnywhere, Category = Debug)
 	bool bShowGuardSituation;
 };

@@ -64,7 +64,7 @@ float AWeapon::GetUseStaminaOnAttack() const
 	return WeaponDataAsset->Stamina;
 }
 
-void AWeapon::DrawAttackBox(FColor Color/* = FColor::Red*/) const
+void AWeapon::DrawDebugCollisionBox(FColor Color/* = FColor::Red*/) const
 {
 #if ENABLE_DRAW_DEBUG
 	if (CollisionBox != nullptr)

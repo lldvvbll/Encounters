@@ -3,12 +3,42 @@
 
 #include "EncGameState.h"
 
-void AEncGameState::SetReadyState(bool bReady)
+void AEncGameState::SetDrawDebugDetectRange(bool bDraw)
 {
-	bGameReady = bReady;
+	bDrawDebugDetectRange = bDraw;
 }
 
-bool AEncGameState::IsReadyState() const
+bool AEncGameState::IsDrawDebugDetectRange() const
 {
-	return bGameReady;
+	return bDrawDebugDetectRange;
+}
+
+void AEncGameState::SetDrawDebugWeaponCollisionBox(bool bDraw)
+{
+	bDrawDebugWeaponCollisionBox = bDraw;
+}
+
+bool AEncGameState::IsDrawDebugWeaponCollisionBox() const
+{
+	return bDrawDebugWeaponCollisionBox;
+}
+
+void AEncGameState::SetDrawDebugGuard(bool bDraw)
+{
+	bDrawDebugGuard = bDraw;
+}
+
+bool AEncGameState::IsDrawDebugGuard() const
+{
+	return bDrawDebugGuard;
+}
+
+void AEncGameState::SetDrawDebugAvoid(bool bDraw)
+{
+	bDrawDebugAvoid = bDraw;
+}
+
+bool AEncGameState::IsDrawDebugAvoid() const
+{
+	return bDrawDebugAvoid;
 }

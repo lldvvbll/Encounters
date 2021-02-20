@@ -15,6 +15,7 @@
 #include "Items/DataAssets/ArmorDataAsset.h"
 #include "Items/EncItem.h"
 #include "EncStructures.h"
+#include "EncGameState.h"
 #include "DrawDebugHelpers.h"
 
 AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FObjectInitializer::Get()*/)
@@ -29,9 +30,6 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 	LockOnDistanceMax = 800.0f;
 	LockOnDistanceMaxSquared = LockOnDistanceMax * LockOnDistanceMax;
 	
-	bShowAttackBox = false;
-	bShowAttackBoxInAttack = false;
-	bShowGuardAngle = false;
 	bShowGuardSituation = false;
 
 	UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
@@ -59,20 +57,6 @@ AEncCharacter::AEncCharacter(const FObjectInitializer& ObjectInitializer/* = FOb
 	if (ENC_ANIM.Succeeded())
 	{
 		SkeletalMeshComp->SetAnimInstanceClass(ENC_ANIM.Class);
-	}
-}
-
-void AEncCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	if (CurWeapon != nullptr && bShowAttackBox)
-	{
-		CurWeapon->DrawAttackBox();
-	}
-	if (CurShield != nullptr && bShowGuardAngle)
-	{
-		CurShield->DrawGuardAngle();
 	}
 }
 
@@ -105,11 +89,6 @@ float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 			float UseStamina = CurShield->GetUseStaminaOnGuard();
 			if (UseStamina >= 0.0f && CharacterState->GetStamina() >= UseStamina)
 			{
-				if (bShowGuardSituation)
-				{
-					DrawDebugGuardSituation(DamageCauser);
-				}
-
 				CharacterState->ModifyStamina(-UseStamina);
 				CharacterState->SetStaminaRecovery(false);
 				bShovedOnBlocking = true;
@@ -128,6 +107,17 @@ float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 				}
 
 				DamageAmount = FMath::Max(0.0f, DamageAmount * (1.0f - CurShield->GetDamageReduction()));
+
+#if ENABLE_DRAW_DEBUG
+				if (auto GameState = GetWorld()->GetGameState<AEncGameState>())
+				{
+					if (GameState->IsDrawDebugGuard())
+					{
+						DrawDebugGuardSituation(DamageCauser);
+					}
+
+				}
+#endif // ENABLE_DRAW_DEBUG
 			}
 		}
 	}
@@ -160,9 +150,18 @@ float AEncCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 	{
 		if (!CanBeDamaged())
 		{
-			//auto Capsule = GetCapsuleComponent();
-			//DrawDebugCapsule(GetWorld(), Capsule->GetComponentLocation(), Capsule->GetScaledCapsuleHalfHeight(), Capsule->GetScaledCapsuleRadius(),
-			//	Capsule->GetComponentQuat(), FColor::Red, false, 1.0f);
+#if ENABLE_DRAW_DEBUG
+			if (auto GameState = GetWorld()->GetGameState<AEncGameState>())
+			{
+				if (GameState->IsDrawDebugAvoid())
+				{
+					auto Capsule = GetCapsuleComponent();
+					DrawDebugCapsule(GetWorld(), Capsule->GetComponentLocation(), Capsule->GetScaledCapsuleHalfHeight(), Capsule->GetScaledCapsuleRadius(),
+						Capsule->GetComponentQuat(), FColor::Red, false, 1.0f);
+				}
+
+			}
+#endif // ENABLE_DRAW_DEBUG
 		}
 	}
 
@@ -542,15 +541,6 @@ UEncCharacterStateComponent* AEncCharacter::GetCharacterStateComponent() const
 	return CharacterState;
 }
 
-bool AEncCharacter::IsShowAttackBoxInAttack() const
-{
-#if ENABLE_DRAW_DEBUG
-	return bShowAttackBoxInAttack;
-#else
-	return false;
-#endif
-}
-
 void AEncCharacter::DrawDebugGuardSituation(AActor* DamageCauser)
 {
 #if ENABLE_DRAW_DEBUG
@@ -560,12 +550,12 @@ void AEncCharacter::DrawDebugGuardSituation(AActor* DamageCauser)
 		AWeapon* Weapon = Attacker->GetCurrentWeapon();
 		if (Weapon != nullptr)
 		{
-			Weapon->DrawAttackBox(FColor::Red);
+			Weapon->DrawDebugCollisionBox(FColor::Red);
 		}
 	}
 	if (CurShield != nullptr)
 	{
-		CurShield->DrawGuardAngle(FColor::Blue);
+		CurShield->DrawDebugGuardAngle(FColor::Blue);
 	}
 
 	FVector MyPos = GetActorLocation();

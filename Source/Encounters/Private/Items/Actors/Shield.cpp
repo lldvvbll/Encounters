@@ -54,7 +54,7 @@ float AShield::GetGuardSpeed() const
     return ShieldDataAsset->GuardSpeed;
 }
 
-void AShield::DrawGuardAngle(FColor Color/* = FColor::Red*/) const
+void AShield::DrawDebugGuardAngle(FColor Color/* = FColor::Red*/) const
 {
 #if ENABLE_DRAW_DEBUG
     AActor* Char = GetOwner();

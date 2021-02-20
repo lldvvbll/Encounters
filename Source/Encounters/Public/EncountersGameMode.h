@@ -24,9 +24,24 @@ public:
 
 	UFUNCTION(Exec, Category = ExecFunctions)
 	void SpawnEnemy() const;
-
+	
 	UFUNCTION(Exec, Category = ExecFunctions)
 	void SetAttr(const FString& Attr, int32 Value) const;
+
+	UFUNCTION(Exec, Category = ExecFunctions)
+	void DrawDebugAll(bool bDraw) const;
+
+	UFUNCTION(Exec, Category = ExecFunctions)
+	void DrawDebugDetect(bool bDraw) const;
+
+	UFUNCTION(Exec, Category = ExecFunctions)
+	void DrawDebugWeapon(bool bDraw) const;
+
+	UFUNCTION(Exec, Category = ExecFunctions)
+	void DrawDebugGuard(bool bDraw) const;
+
+	UFUNCTION(Exec, Category = ExecFunctions)
+	void DrawDebugAvoid(bool bDraw) const;
 
 private:
 	void StartStage();

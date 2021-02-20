@@ -27,7 +27,7 @@ public:
 
 	float GetUseStaminaOnAttack() const;
 
-	void DrawAttackBox(FColor Color = FColor::Red) const;
+	void DrawDebugCollisionBox(FColor Color = FColor::Red) const;
 
 protected:
 	UPROPERTY()

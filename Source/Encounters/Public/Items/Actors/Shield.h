@@ -25,7 +25,7 @@ public:
 	float GetDamageReduction() const;
 	float GetGuardSpeed() const;
 
-	void DrawGuardAngle(FColor Color = FColor::Red) const;
+	void DrawDebugGuardAngle(FColor Color = FColor::Red) const;
 
 protected:
 	UPROPERTY()

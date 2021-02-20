@@ -14,6 +14,7 @@
 #include "Stage/EncStage.h"
 #include "EngineUtils.h"
 #include "EncGameInstance.h"
+#include "EncGameState.h"
 
 AEncountersGameMode::AEncountersGameMode()
 {
@@ -109,6 +110,54 @@ void AEncountersGameMode::SetAttr(const FString& Attr, int32 Value) const
 	{
 		EncPlayerState->SetEndurance(Value);
 	}
+}
+
+void AEncountersGameMode::DrawDebugAll(bool bDraw) const
+{
+	auto EncGameState = GetGameState<AEncGameState>();
+	if (EncGameState == nullptr)
+		return;
+
+	DrawDebugDetect(bDraw);
+	DrawDebugWeapon(bDraw);
+	DrawDebugGuard(bDraw);
+	DrawDebugAvoid(bDraw);
+}
+
+void AEncountersGameMode::DrawDebugDetect(bool bDraw) const
+{
+	auto EncGameState = GetGameState<AEncGameState>();
+	if (EncGameState == nullptr)
+		return;
+
+	EncGameState->SetDrawDebugDetectRange(bDraw);
+}
+
+void AEncountersGameMode::DrawDebugWeapon(bool bDraw) const
+{
+	auto EncGameState = GetGameState<AEncGameState>();
+	if (EncGameState == nullptr)
+		return;
+
+	EncGameState->SetDrawDebugWeaponCollisionBox(bDraw);
+}
+
+void AEncountersGameMode::DrawDebugGuard(bool bDraw) const
+{
+	auto EncGameState = GetGameState<AEncGameState>();
+	if (EncGameState == nullptr)
+		return;
+
+	EncGameState->SetDrawDebugGuard(bDraw);
+}
+
+void AEncountersGameMode::DrawDebugAvoid(bool bDraw) const
+{
+	auto EncGameState = GetGameState<AEncGameState>();
+	if (EncGameState == nullptr)
+		return;
+
+	EncGameState->SetDrawDebugAvoid(bDraw);
 }
 
 void AEncountersGameMode::StartStage()
