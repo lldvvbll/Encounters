@@ -9,13 +9,6 @@
 const FName AEncAIController::TargetKey(TEXT("Target"));
 const FName AEncAIController::RecoveryStaminaRatioKey(TEXT("RecoveryStaminaRatio"));
 
-void AEncAIController::OnPossess(APawn* InPawn)
-{
-	Super::OnPossess(InPawn);
-	
-	RunAI();
-}
-
 void AEncAIController::RunAI()
 {
 	auto NpcChar = Cast<ANpcCharacter>(GetPawn());

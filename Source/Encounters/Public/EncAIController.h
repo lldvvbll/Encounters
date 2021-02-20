@@ -15,8 +15,6 @@ class ENCOUNTERS_API AEncAIController : public AAIController
 	GENERATED_BODY()
 	
 public:
-	virtual void OnPossess(APawn* InPawn) override;
-
 	void RunAI();
 	void StopAI();
 

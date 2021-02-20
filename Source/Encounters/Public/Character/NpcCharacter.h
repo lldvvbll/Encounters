@@ -46,12 +46,6 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = DataAsset, Meta = (AllowPrivateAccess = true))
 	UNpcDataAsset* NpcDataAsset;
 
-	UPROPERTY(EditAnywhere, Category = AI, Meta = (AllowPrivateAccess = true))
-	UBehaviorTree* BehaviorTree;
-
-	UPROPERTY(EditAnywhere, Category = AI, Meta = (AllowPrivateAccess = true))
-	UBlackboardData* BlackboardData;
-
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	int32 RemainComboCount;
 };

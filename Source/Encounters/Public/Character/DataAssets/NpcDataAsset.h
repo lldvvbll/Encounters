@@ -45,8 +45,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Ability)
 	float DropPoint;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = ActorClass)
+	UPROPERTY(EditAnywhere, Category = ActorClass)
 	TSubclassOf<AActor> NpcActorClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = AI)
+	UBehaviorTree* BehaviorTree;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = AI)
+	UBlackboardData* BlackboardData;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Items)
 	TArray<FSaveItemData> Items;

@@ -34,20 +34,6 @@ ANpcCharacter::ANpcCharacter()
 		HpBarWidget->SetWidgetSpace(EWidgetSpace::Screen);
 		HpBarWidget->SetVisibility(false);
 	}
-
-	static ConstructorHelpers::FObjectFinder<UBlackboardData> BB_Data(
-		TEXT("/Game/Encounters/AI/BB_Knight.BB_Knight"));
-	if (BB_Data.Succeeded())
-	{
-		BlackboardData = BB_Data.Object;
-	}
-
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BT_OBJECT(
-		TEXT("/Game/Encounters/AI/BT_Knight.BT_Knight"));
-	if (BT_OBJECT.Succeeded())
-	{
-		BehaviorTree = BT_OBJECT.Object;
-	}
 }
 
 void ANpcCharacter::BeginPlay()
@@ -100,12 +86,12 @@ void ANpcCharacter::Dead()
 
 UBehaviorTree* ANpcCharacter::GetBehaviorTree() const
 {
-	return BehaviorTree;
+	return (NpcDataAsset != nullptr) ? NpcDataAsset->BehaviorTree : nullptr;
 }
 
 UBlackboardData* ANpcCharacter::GetBlackboardData() const
 {
-	return BlackboardData;
+	return (NpcDataAsset != nullptr) ? NpcDataAsset->BlackboardData : nullptr;
 }
 
 void ANpcCharacter::SetNpcDataAsset(UNpcDataAsset* DataAsset)

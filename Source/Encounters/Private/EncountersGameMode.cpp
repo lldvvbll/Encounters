@@ -7,6 +7,7 @@
 #include "Character/NpcCharacter.h"
 #include "EncPlayerState.h"
 #include "EncPlayerController.h"
+#include "EncAIController.h"
 #include "EncAssetManager.h"
 #include "Character/DataAssets/NpcDataAsset.h"
 #include "Stage/DataAssets/StageDataAsset.h"
@@ -192,6 +193,15 @@ void AEncountersGameMode::SpawnEnemies()
 
 			Enemy->SetNpcDataAsset(NpcDataAsset);
 			Enemy->OnNpcDead.AddUObject(this, &AEncountersGameMode::OnEnemyDead);
+
+			if (auto AIController = Enemy->GetController<AEncAIController>())
+			{
+				AIController->RunAI();
+			}
+			else
+			{
+				LOG(Warning, TEXT("Invalid AIController. DataAsset: %s"), *EnemyDataAssetId.ToString());
+			}
 
 			Enemies.Emplace(Enemy);
 		}
